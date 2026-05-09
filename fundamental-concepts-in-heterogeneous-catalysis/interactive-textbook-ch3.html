@@ -70,6 +70,8 @@ nav {
   max-width: 1200px; width: 100%; margin: 0 auto;
   display: flex; align-items: center; justify-content: space-between;
 }
+.nav-back { font-size:18px; color:var(--color-graphite); text-decoration:none; margin-right:16px; transition:color 0.15s; }
+.nav-back:hover { color:var(--color-void); }
 .nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
 .nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
 .nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
@@ -320,6 +322,7 @@ p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
     <a href="#" class="nav-brand">Surface Equilibria</a>
     <ul class="nav-links">
       <li><a href="#s31">3.1 Gibbs</a></li>
