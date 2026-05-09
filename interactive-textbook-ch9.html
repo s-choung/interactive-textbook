@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Electrocatalysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "\2014"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '\25B6'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Electrocatalysis</a>
+    <ul class="nav-links">
+      <li><a href="#s91">9.1 CHE</a></li>
+      <li><a href="#s92">9.2 HER</a></li>
+      <li><a href="#s93">9.3 OER</a></li>
+      <li><a href="#s94">9.4 Overpotential</a></li>
+    </ul>
+    <span class="nav-badge">Norskov Ch.9</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="page">
+  <section class="hero">
+    <p class="hero-eyebrow">움직이는 교과서 &middot; Interactive Textbook</p>
+    <h1 class="hero-title">Electrocatalysis</h1>
+    <p class="hero-subtitle">Norskov, <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 9. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+    <div class="hero-chips">
+      <span class="chip">Computational Hydrogen Electrode</span>
+      <span class="chip">HER</span>
+      <span class="chip">OER</span>
+      <span class="chip">Overpotential</span>
+      <span class="chip">Free Energy Diagram</span>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 9.1 =================== -->
+  <section id="s91" class="section">
+    <div class="two-col">
+      <div>
+        <p class="section-label">Section 9.1</p>
+        <h2 class="section-title">Computational Hydrogen Electrode (CHE)</h2>
+        <div class="section-body">
+          <p>전기화학 반응에서 가장 강력한 근사 중 하나가 Computational Hydrogen Electrode(CHE)입니다. 핵심 아이디어: U = 0 V vs SHE에서 H<sup>+</sup> + e<sup>&minus;</sup>는 &frac12;H<sub>2</sub>와 열역학적 평형에 있습니다.</p>
+          <p>이 관계를 이용하면, 각 proton-electron transfer step의 자유에너지 변화가 applied potential U에 의해 $eU$만큼 shift됩니다. DFT로 계산한 $\Delta G(U\!=\!0)$에 $eU$만 더하면 임의의 전압에서의 자유에너지를 구할 수 있습니다.</p>
+        </div>
+        <div class="eq-block">$$\Delta G(U) = \Delta G(U\!=\!0) + neU$$</div>
+        <div class="eq-block">$$\Delta G_{H^*} = \Delta E_{H^*} + \Delta E_{ZPE} - T\Delta S \approx \Delta E_{H^*} + 0.24\,\text{eV}$$</div>
+        <ul class="concept-list">
+          <li>U = 0 V vs SHE에서 H<sup>+</sup> + e<sup>&minus;</sup> &harr; &frac12;H<sub>2</sub> (평형)</li>
+          <li>각 proton-electron transfer step의 자유에너지가 $eU$만큼 이동</li>
+          <li>ZPE + entropy correction &asymp; 0.24 eV (HER에 대해)</li>
+          <li>DFT 결과에 전압 효과를 단순 덧셈으로 포함 가능</li>
+        </ul>
+
+        <div class="whatif-grid" style="margin-top:24px;">
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 &Delta;G<sub>H*</sub> = +0.3 eV라면?</div>
+            <div class="whatif-hint">H*가 불안정해서 흡착이 잘 안 됩니다. 반응을 진행하려면 U = &minus;0.3 V를 인가해야 첫 번째 step이 내리막이 됩니다. 즉, 과전압 0.3 V가 필요하고 이는 에너지 손실을 의미합니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 &Delta;G<sub>H*</sub> = &minus;0.3 eV라면?</div>
+            <div class="whatif-hint">H*가 너무 안정적이어서 흡착은 쉽지만 탈착이 문제입니다. H<sub>2</sub> 생성 step이 +0.3 eV 오르막이 되어, 역시 과전압이 필요합니다. 흡착과 탈착 모두 자유로운 &Delta;G<sub>H*</sub> = 0이 최적입니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Figure 9.1 -->
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 9.1</span>
+            <span class="figure-title">HER Free Energy Diagram</span>
+            <button class="challenge-btn" onclick="toggleChallenge('ch91')">도전 과제</button>
+          </div>
+          <div class="challenge-panel" id="ch91">
+            <div class="challenge-goal">목표: &Delta;G<sub>H*</sub> = 0이 최적임을 확인하세요</div>
+            <div class="challenge-desc">&Delta;G<sub>H*</sub>를 0으로 설정하고, U = 0 V에서 모든 step이 에너지적으로 평탄한지 확인하세요. 그 다음 &Delta;G<sub>H*</sub>를 양/음으로 바꿔서 어떤 step이 bottleneck이 되는지 관찰해보세요.</div>
+            <div class="challenge-status" id="ch91-status">현재: 슬라이더를 조작해보세요</div>
+          </div>
+          <div class="figure-body">
+            <div id="fig91" class="plotly-container"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">&Delta;G<sub>H*</sub></span>
+                <input type="range" id="her-dG" min="-50" max="50" value="0" step="1">
+                <span class="control-value" id="her-dG-val">0.00 eV</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">U (V vs SHE)</span>
+                <input type="range" id="her-U" min="-50" max="50" value="0" step="1">
+                <span class="control-value" id="her-U-val">0.00 V</span>
+              </div>
+            </div>
+            <div class="readout">
+              <div class="readout-item"><span class="readout-key">&Delta;G<sub>H*</sub></span><span class="readout-val" id="rd-dGH">0.00 eV</span></div>
+              <div class="readout-item"><span class="readout-key">U</span><span class="readout-val" id="rd-U91">0.00 V</span></div>
+              <div class="readout-item"><span class="readout-key">&eta; (overpotential)</span><span class="readout-val" id="rd-eta91">0.00 V</span></div>
+            </div>
+            <div class="highlight">
+              <div class="highlight-title">핵심 관찰</div>
+              <div class="highlight-body">&Delta;G<sub>H*</sub> = 0이 HER의 최적 조건입니다. Pt가 이 조건에 가장 가깝습니다 (&Delta;G<sub>H*</sub> &asymp; &minus;0.09 eV).</div>
+            </div>
+
+            <button class="explore-toggle" onclick="toggleExplore('ex91')">Step-by-step 탐색 &#9662;</button>
+            <div class="explore-panel" id="ex91">
+              <ol class="explore-steps">
+                <li>&Delta;G<sub>H*</sub> = 0 eV, U = 0 V로 설정하세요. 세 level이 모두 같은 높이 &mdash; 이상적 촉매 조건입니다.</li>
+                <li>&Delta;G<sub>H*</sub> = +0.2 eV로 바꿔보세요. 첫 번째 step이 오르막. U = &minus;0.2 V를 인가해야 평탄해집니다.</li>
+                <li>&Delta;G<sub>H*</sub> = &minus;0.2 eV로 설정하세요. 두 번째 step(H* &rarr; &frac12;H<sub>2</sub>)이 오르막 &mdash; 탈착이 문제입니다.</li>
+              </ol>
+              <div class="explore-insight"><strong>Key Insight:</strong> &Delta;G<sub>H*</sub> &gt; 0이면 흡착이 어렵고, &lt; 0이면 탈착이 어렵습니다. 어느 쪽이든 과전압이 필요하므로 0이 최적입니다. 이것이 Sabatier principle의 전기화학 버전입니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 9.1 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: CHE에서 applied potential U가 하는 역할은?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz91')">A) 활성화 에너지를 낮춘다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz91')">B) 각 전자 전달 step의 자유에너지를 eU만큼 shift한다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz91')">C) 촉매 표면의 결합 에너지를 변화시킨다</button>
+      </div>
+      <div class="quiz-explain" id="quiz91">정답: B) CHE 모델에서 전압 U는 proton-electron pair의 화학 포텐셜을 eU만큼 변화시킵니다. 촉매 자체의 성질(&Delta;E)은 바꾸지 않고, 반응의 열역학적 driving force만 조절합니다.</div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 9.2 =================== -->
+  <section id="s92" class="section">
+    <div class="two-col">
+      <div>
+        <p class="section-label">Section 9.2</p>
+        <h2 class="section-title">HER Volcano</h2>
+        <div class="section-body">
+          <p>HER(Hydrogen Evolution Reaction)의 활성은 &Delta;G<sub>H*</sub> 하나로 기술됩니다. 교환전류밀도 $i_0$을 &Delta;G<sub>H*</sub>에 대해 plot하면 volcano 형태가 나타납니다.</p>
+          <p>왼쪽 다리(&Delta;G<sub>H*</sub> &lt; 0): H가 너무 강하게 결합하여 탈착이 rate-limiting. 오른쪽 다리(&Delta;G<sub>H*</sub> &gt; 0): H가 너무 약하게 결합하여 흡착이 rate-limiting. 정점은 &Delta;G<sub>H*</sub> = 0에서 나타납니다.</p>
+        </div>
+        <div class="eq-block">$$\log i_0 = -\frac{|\Delta G_{H^*}|}{k_BT \cdot 2.303}$$</div>
+        <ul class="concept-list">
+          <li>&Delta;G<sub>H*</sub> &lt; 0: 수소가 너무 강하게 결합 &rarr; desorption limited</li>
+          <li>&Delta;G<sub>H*</sub> &gt; 0: 수소가 너무 약하게 결합 &rarr; adsorption limited</li>
+          <li>Volcano 정점(&Delta;G<sub>H*</sub> = 0)에서 최대 교환전류밀도</li>
+          <li>Pt가 정점에 가장 가까운 금속</li>
+        </ul>
+      </div>
+
+      <div>
+        <!-- Figure 9.2 -->
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 9.2</span>
+            <span class="figure-title">HER Volcano Plot</span>
+            <button class="challenge-btn" onclick="toggleChallenge('ch92')">도전 과제</button>
+          </div>
+          <div class="challenge-panel" id="ch92">
+            <div class="challenge-goal">목표: MoS<sub>2</sub>가 Pt와 비슷한 &Delta;G<sub>H*</sub>를 가지는 이유를 생각해보세요</div>
+            <div class="challenge-desc">MoS<sub>2</sub>의 edge site에서 S 원자가 H를 적절한 세기로 결합합니다. 비싼 Pt를 대체할 수 있는 이유가 여기에 있습니다. 그래프에서 MoS<sub>2</sub>의 위치를 확인하세요.</div>
+            <div class="challenge-status" id="ch92-status">현재: 금속 라벨을 확인해보세요</div>
+          </div>
+          <div class="figure-body">
+            <div id="fig92" class="plotly-container"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">Temperature</span>
+                <input type="range" id="vol-T" min="298" max="373" value="298" step="5">
+                <span class="control-value" id="vol-T-val">298 K</span>
+              </div>
+            </div>
+            <div class="readout">
+              <div class="readout-item"><span class="readout-key">Peak position</span><span class="readout-val" id="rd-peak92">&Delta;G = 0</span></div>
+              <div class="readout-item"><span class="readout-key">Best metal</span><span class="readout-val" id="rd-best92">Pt</span></div>
+              <div class="readout-item"><span class="readout-key">i&sub0; at peak</span><span class="readout-val" id="rd-i0peak">---</span></div>
+            </div>
+
+            <button class="explore-toggle" onclick="toggleExplore('ex92')">Step-by-step 탐색 &#9662;</button>
+            <div class="explore-panel" id="ex92">
+              <ol class="explore-steps">
+                <li>Pt의 위치를 확인하세요 &mdash; volcano 정점에 가장 가깝습니다.</li>
+                <li>Au(&Delta;G<sub>H*</sub> = +0.40 eV)를 찾아보세요. 왜 HER 촉매로 나쁜가요? 수소가 거의 흡착되지 않기 때문입니다.</li>
+                <li>MoS<sub>2</sub>가 Pt 근처에 있는 것을 확인하세요 &mdash; 저렴한 대안 촉매의 근거입니다.</li>
+                <li>T를 373 K로 올려보세요. Volcano가 넓어지면서 더 많은 금속이 "acceptable" 영역에 들어옵니다.</li>
+              </ol>
+              <div class="explore-insight"><strong>Key Insight:</strong> HER volcano는 단일 descriptor(&Delta;G<sub>H*</sub>)로 촉매 활성을 예측하는 가장 성공적인 사례입니다. 이 단순한 그림이 Pt가 최고의 HER 촉매인 이유를 설명합니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 9.2 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: HER에서 &Delta;G<sub>H*</sub> = +0.3 eV인 금속의 과전압은?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz92')">A) 0 V</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz92')">B) 0.3 V</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz92')">C) 0.6 V</button>
+      </div>
+      <div class="quiz-explain" id="quiz92">정답: B) &Delta;G<sub>H*</sub> = +0.3 eV이면 흡착 step이 +0.3 eV 오르막입니다. 이를 평탄하게 만들려면 U = &minus;0.3 V가 필요하므로, 과전압 &eta; = |U| = 0.3 V입니다.</div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 9.3 =================== -->
+  <section id="s93" class="section">
+    <p class="section-label">Section 9.3</p>
+    <h2 class="section-title">OER Free Energy Diagram</h2>
+    <div class="section-body">
+      <p>OER(Oxygen Evolution Reaction, 2H<sub>2</sub>O &rarr; O<sub>2</sub> + 4H<sup>+</sup> + 4e<sup>&minus;</sup>)은 4단계 proton-coupled electron transfer를 거칩니다. 4개의 중간체(HO*, O*, HOO*, O<sub>2</sub>)를 지나며, 각 step의 자유에너지는 $eU$만큼 shift됩니다.</p>
+      <p>OER의 핵심 제약: OOH-OH scaling 관계(&Delta;G<sub>OOH*</sub> &asymp; &Delta;G<sub>OH*</sub> + 3.2 eV)가 모든 금속 산화물에서 성립합니다. 이 관계가 OER 과전압의 이론적 하한(~0.37 V)을 결정합니다.</p>
+    </div>
+    <div class="eq-block" style="max-width:600px;margin:0 auto var(--spacing-24);">
+      $$\Delta G_1 = \Delta G_{OH^*}, \quad \Delta G_2 = \Delta G_{O^*} - \Delta G_{OH^*}$$
+    </div>
+    <div class="eq-block" style="max-width:600px;margin:0 auto var(--spacing-32);">
+      $$\Delta G_3 = \Delta G_{OOH^*} - \Delta G_{O^*}, \quad \Delta G_4 = 4.92 - \Delta G_{OOH^*}$$
+    </div>
+
+    <div class="figure-full">
+      <div class="figure-header">
+        <span class="figure-label">Figure 9.3</span>
+        <span class="figure-title">OER Free Energy Diagram</span>
+        <button class="challenge-btn" onclick="toggleChallenge('ch93')">도전 과제</button>
+      </div>
+      <div class="challenge-panel" id="ch93">
+        <div class="challenge-goal">목표: PDS(potential-determining step)가 바뀌는 조건을 찾아보세요</div>
+        <div class="challenge-desc">&Delta;G<sub>OH*</sub>를 변화시키면서, 어떤 step이 가장 큰 자유에너지 변화를 가지는지(PDS) 관찰하세요. U를 올리면 모든 step이 내려가는 것도 확인해보세요.</div>
+        <div class="challenge-status" id="ch93-status">현재: 슬라이더를 조작해보세요</div>
+      </div>
+      <div class="figure-body">
+        <div id="fig93" class="plotly-container" style="min-height:420px;"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">&Delta;G<sub>OH*</sub> (eV)</span>
+            <input type="range" id="oer-dGOH" min="0" max="250" value="120" step="5">
+            <span class="control-value" id="oer-dGOH-val">1.20 eV</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">U (V vs SHE)</span>
+            <input type="range" id="oer-U" min="0" max="250" value="123" step="1">
+            <span class="control-value" id="oer-U-val">1.23 V</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item"><span class="readout-key">&Delta;G<sub>1</sub></span><span class="readout-val" id="rd-dG1">---</span></div>
+          <div class="readout-item"><span class="readout-key">&Delta;G<sub>2</sub></span><span class="readout-val" id="rd-dG2">---</span></div>
+          <div class="readout-item"><span class="readout-key">&Delta;G<sub>3</sub></span><span class="readout-val" id="rd-dG3">---</span></div>
+          <div class="readout-item"><span class="readout-key">&Delta;G<sub>4</sub></span><span class="readout-val" id="rd-dG4">---</span></div>
+          <div class="readout-item"><span class="readout-key">PDS</span><span class="readout-val" id="rd-pds">---</span></div>
+          <div class="readout-item"><span class="readout-key">&eta;<sub>OER</sub></span><span class="readout-val" id="rd-etaOER">---</span></div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-title">핵심 관찰</div>
+          <div class="highlight-body">OOH-OH scaling (&Delta;G<sub>OOH*</sub> &asymp; &Delta;G<sub>OH*</sub> + 3.2 eV)이 모든 금속에서 성립하여 OER 과전압의 하한을 결정합니다. 이것이 OER이 어려운 근본적 이유입니다.</div>
+        </div>
+
+        <div class="whatif-grid" style="margin-top:16px;">
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 OOH-OH scaling을 깰 수 있다면?</div>
+            <div class="whatif-hint">이론적 과전압 하한 ~0.37 V가 사라집니다. &Delta;G<sub>OOH*</sub>를 &Delta;G<sub>OH*</sub>와 독립적으로 조절할 수 있다면, 모든 step을 동시에 최적화할 수 있어 과전압을 0에 가깝게 줄일 수 있습니다. 이것이 "scaling-breaker" 연구의 동기입니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">U = 1.23 V (평형 전압)에서 반응이 가능할까?</div>
+            <div class="whatif-hint">평형 전압에서는 전체 반응 &Delta;G = 0이지만, 개별 step 중 적어도 하나는 여전히 오르막입니다. 이 가장 큰 오르막이 바로 과전압의 원인이며, 실제로 반응을 진행하려면 U &gt; 1.23 V가 필요합니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+        </div>
+
+        <button class="explore-toggle" onclick="toggleExplore('ex93')">Step-by-step 탐색 &#9662;</button>
+        <div class="explore-panel" id="ex93">
+          <ol class="explore-steps">
+            <li>U = 1.23 V (평형)에서 diagram을 확인하세요. 전체 &Delta;G = 0이지만 개별 step은 고르지 않습니다.</li>
+            <li>U를 1.6 V로 올려보세요. 모든 step의 자유에너지가 내려가면서 반응이 자발적으로 진행됩니다.</li>
+            <li>&Delta;G<sub>OH*</sub>를 바꾸면서 PDS가 어떻게 변하는지 관찰하세요. step 2와 step 3 사이에서 PDS가 전환됩니다.</li>
+          </ol>
+          <div class="explore-insight"><strong>Key Insight:</strong> OER은 4개 step 중 가장 큰 오르막(PDS)에 의해 제한됩니다. Scaling 관계 때문에 모든 step을 동시에 내리막으로 만들 수 없어, 최소 ~0.37 V의 과전압이 불가피합니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 9.4 =================== -->
+  <section id="s94" class="section">
+    <div class="two-col">
+      <div>
+        <p class="section-label">Section 9.4</p>
+        <h2 class="section-title">OER Overpotential Volcano</h2>
+        <div class="section-body">
+          <p>과전압 &eta; = U<sub>applied</sub> &minus; U<sub>eq</sub>는 평형 전압 대비 얼마나 추가 전압이 필요한지를 나타냅니다. OER에서 &eta; = max(&Delta;G<sub>i</sub>)/e &minus; 1.23 V.</p>
+          <p>&eta;를 descriptor(&Delta;G<sub>O*</sub> &minus; &Delta;G<sub>OH*</sub>)에 대해 plot하면 아래로 볼록한 volcano(V자)가 나타납니다. 최소 &eta;가 최적 촉매를 나타내며, RuO<sub>2</sub>가 이 최적점에 가장 가깝습니다.</p>
+        </div>
+        <ul class="concept-list">
+          <li>&eta; = max(&Delta;G<sub>i</sub>)/e &minus; 1.23 V</li>
+          <li>Descriptor: &Delta;G<sub>O*</sub> &minus; &Delta;G<sub>OH*</sub></li>
+          <li>V자형 volcano: 낮은 &eta;가 더 좋은 촉매</li>
+          <li>이론적 최소 &eta; &asymp; 0.37 V (scaling 관계에서 유래)</li>
+        </ul>
+      </div>
+
+      <div>
+        <!-- Figure 9.4 -->
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 9.4</span>
+            <span class="figure-title">OER Overpotential Volcano</span>
+            <button class="challenge-btn" onclick="toggleChallenge('ch94')">도전 과제</button>
+          </div>
+          <div class="challenge-panel" id="ch94">
+            <div class="challenge-goal">목표: &eta; &lt; 0.4 V인 촉매를 찾아보세요</div>
+            <div class="challenge-desc">그래프에서 &eta; &lt; 0.4 V인 촉매가 몇 개나 있는지 세어보세요. RuO<sub>2</sub>만이 이 기준을 만족하는 이유가 무엇일까요?</div>
+            <div class="challenge-status" id="ch94-status">현재: 금속 산화물 라벨을 확인해보세요</div>
+          </div>
+          <div class="figure-body">
+            <div id="fig94" class="plotly-container"></div>
+            <div class="readout">
+              <div class="readout-item"><span class="readout-key">Min &eta;</span><span class="readout-val" id="rd-minEta">---</span></div>
+              <div class="readout-item"><span class="readout-key">Best catalyst</span><span class="readout-val" id="rd-bestCat">---</span></div>
+              <div class="readout-item"><span class="readout-key">Optimal descriptor</span><span class="readout-val" id="rd-optDesc">---</span></div>
+            </div>
+            <div class="highlight">
+              <div class="highlight-title">핵심 관찰</div>
+              <div class="highlight-body">OER volcano의 최소 과전압은 ~0.37 V (RuO<sub>2</sub>). 이론적 하한 ~0.37 V는 OOH-OH scaling 관계에서 나옵니다. 이 하한을 깨는 것이 전기촉매 연구의 Holy Grail입니다.</div>
+            </div>
+
+            <button class="explore-toggle" onclick="toggleExplore('ex94')">Step-by-step 탐색 &#9662;</button>
+            <div class="explore-panel" id="ex94">
+              <ol class="explore-steps">
+                <li>RuO<sub>2</sub>를 찾아보세요 &mdash; volcano 최저점에 있습니다 (&eta; &asymp; 0.37 V).</li>
+                <li>TiO<sub>2</sub>는 왜 나쁜 촉매인가요? Descriptor 값이 최적에서 너무 멀어 &eta; &gt; 1 V입니다.</li>
+                <li>IrO<sub>2</sub>는 RuO<sub>2</sub>보다 안정적이지만 &eta;가 약간 높습니다 &mdash; 활성-안정성 tradeoff입니다.</li>
+              </ol>
+              <div class="explore-insight"><strong>Key Insight:</strong> 모든 금속 산화물이 같은 volcano 위에 놓이는 것은 scaling 관계가 보편적이기 때문입니다. 이 제약을 벗어나려면 완전히 다른 종류의 촉매(예: single-atom, 효소 모방)가 필요합니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 9.4 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: OER 과전압의 이론적 하한이 ~0.37 V인 이유는?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz94')">A) RuO<sub>2</sub>의 고유 특성</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz94')">B) OOH-OH scaling 관계 때문</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz94')">C) 물의 분해 에너지 때문</button>
+      </div>
+      <div class="quiz-explain" id="quiz94">정답: B) &Delta;G<sub>OOH*</sub> &asymp; &Delta;G<sub>OH*</sub> + 3.2 eV 관계가 모든 금속 산화물에서 성립합니다. 이상적으로 각 step이 4.92/4 = 1.23 eV씩 분배되어야 하지만, 이 scaling 때문에 step 2와 step 3의 합이 항상 3.2 eV로 고정되어 균등 분배가 불가능합니다. 결과적으로 최소 과전압 &asymp; (3.2 &minus; 2.46)/2 = 0.37 V가 됩니다.</div>
+    </div>
+  </section>
+
+  <!-- =================== TAKEAWAYS =================== -->
+  <section class="takeaways section">
+    <p class="section-label">Key Takeaways</p>
+    <h2 class="section-title">Chapter 9 핵심 메시지</h2>
+    <div class="takeaway-grid">
+      <div class="takeaway-card">
+        <div class="takeaway-number">eU</div>
+        <div class="takeaway-title">전압은 자유에너지를 움직인다</div>
+        <div class="takeaway-body">CHE에서 applied potential U는 각 전자 전달 step의 자유에너지를 eU만큼 shift합니다. 이 단순한 관계가 전기촉매 설계의 핵심입니다.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">0</div>
+        <div class="takeaway-title">&Delta;G<sub>H*</sub> = 0이 최적</div>
+        <div class="takeaway-body">HER에서 수소 결합이 너무 강하지도(desorption limited) 약하지도(adsorption limited) 않은 조건. Pt가 이 조건에 가장 가까운 금속입니다.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">3.2</div>
+        <div class="takeaway-title">eV의 족쇄</div>
+        <div class="takeaway-body">OOH-OH scaling (&Delta;G<sub>OOH*</sub> &asymp; &Delta;G<sub>OH*</sub> + 3.2 eV)이 OER 과전압의 하한을 ~0.37 V로 고정합니다. 이 scaling을 깨는 것이 전기촉매 연구의 Holy Grail입니다.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Norskov, Bligaard, Kleis &mdash; <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 9</span>
+    <span class="footer-text">움직이는 교과서 &middot; Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+const kB = 8.617e-5; // eV/K
+const h  = 4.136e-15; // eV·s
+const c  = 2.998e10;  // cm/s
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function safeExp(x) {
+  return Math.exp(Math.max(-500, Math.min(500, x)));
+}
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  return Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis),
+    font: Object.assign({}, baseLayout.font, extra.font)
+  });
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+const rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(() => { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// FIGURE 9.1: HER FREE ENERGY DIAGRAM
+// ============================================================
+function fig91Data(dG_H, U) {
+  // 3 levels: H+ + e- (left), H* (middle), 1/2 H2 (right)
+  // At U=0: level0 = 0, level1 = dG_H, level2 = 0
+  // At U!=0: level0 shifts by -eU (CHE: proton-electron pair energy shifts by -eU)
+  const level0 = -U; // H+ + e- shifts by -eU
+  const level1 = dG_H; // H* is on surface, not affected by U directly
+  const level2 = 0; // 1/2 H2 reference
+
+  const labels = ['H⁺ + e⁻', 'H*', '½H₂'];
+  const xPos = [0, 1, 2];
+  const levels = [level0, level1, level2];
+
+  // Step plot: horizontal platforms connected by vertical risers
+  const xStep = [];
+  const yStep = [];
+  const platformW = 0.35;
+
+  // Build platforms and connecting lines
+  const xAll = [];
+  const yAll = [];
+
+  // Platform 0
+  xAll.push(xPos[0] - platformW, xPos[0] + platformW, null);
+  yAll.push(levels[0], levels[0], null);
+  // Connector 0->1
+  xAll.push(xPos[0] + platformW, xPos[1] - platformW, null);
+  yAll.push(levels[0], levels[1], null);
+  // Platform 1
+  xAll.push(xPos[1] - platformW, xPos[1] + platformW, null);
+  yAll.push(levels[1], levels[1], null);
+  // Connector 1->2
+  xAll.push(xPos[1] + platformW, xPos[2] - platformW, null);
+  yAll.push(levels[1], levels[2], null);
+  // Platform 2
+  xAll.push(xPos[2] - platformW, xPos[2] + platformW);
+  yAll.push(levels[2], levels[2]);
+
+  // Step colors
+  const dG_step1 = levels[1] - levels[0]; // H+ + e- -> H*
+  const dG_step2 = levels[2] - levels[1]; // H* -> 1/2 H2
+  const step1Color = dG_step1 > 0 ? '#c0392b' : '#2980b9';
+  const step2Color = dG_step2 > 0 ? '#c0392b' : '#2980b9';
+
+  // Main line trace (black)
+  const traceLine = {
+    x: xAll, y: yAll,
+    type: 'scatter', mode: 'lines',
+    line: { color: '#000', width: 2.5 },
+    hoverinfo: 'skip',
+    showlegend: false
+  };
+
+  // Step 1 connector (colored)
+  const traceStep1 = {
+    x: [xPos[0] + platformW, xPos[1] - platformW],
+    y: [levels[0], levels[1]],
+    type: 'scatter', mode: 'lines',
+    line: { color: step1Color, width: 2, dash: 'dot' },
+    hoverinfo: 'skip',
+    showlegend: false
+  };
+
+  // Step 2 connector (colored)
+  const traceStep2 = {
+    x: [xPos[1] + platformW, xPos[2] - platformW],
+    y: [levels[1], levels[2]],
+    type: 'scatter', mode: 'lines',
+    line: { color: step2Color, width: 2, dash: 'dot' },
+    hoverinfo: 'skip',
+    showlegend: false
+  };
+
+  // Label annotations
+  const annotations = labels.map((label, i) => ({
+    x: xPos[i], y: levels[i],
+    xref: 'x', yref: 'y',
+    text: label + '<br>' + levels[i].toFixed(2) + ' eV',
+    showarrow: false,
+    font: { size: 12, color: '#000', family: 'Inter, sans-serif' },
+    yshift: levels[i] >= Math.max(...levels) ? 18 : -22
+  }));
+
+  // dG arrows annotations
+  const dGannot = [];
+  if (Math.abs(dG_step1) > 0.01) {
+    dGannot.push({
+      x: 0.5, y: (levels[0] + levels[1]) / 2,
+      xref: 'x', yref: 'y',
+      text: 'ΔG₁=' + dG_step1.toFixed(2),
+      showarrow: false,
+      font: { size: 11, color: step1Color }
+    });
+  }
+  if (Math.abs(dG_step2) > 0.01) {
+    dGannot.push({
+      x: 1.5, y: (levels[1] + levels[2]) / 2,
+      xref: 'x', yref: 'y',
+      text: 'ΔG₂=' + dG_step2.toFixed(2),
+      showarrow: false,
+      font: { size: 11, color: step2Color }
+    });
+  }
+
+  const yMin = Math.min(...levels) - 0.2;
+  const yMax = Math.max(...levels) + 0.3;
+
+  const layoutExtras = {
+    xaxis: {
+      range: [-0.6, 2.6],
+      showgrid: false,
+      zeroline: false,
+      showticklabels: false,
+      linecolor: 'rgba(0,0,0,0)'
+    },
+    yaxis: {
+      title: 'Free Energy (eV)',
+      range: [yMin, yMax]
+    },
+    annotations: annotations.concat(dGannot),
+    showlegend: false
+  };
+
+  return { traces: [traceLine, traceStep1, traceStep2], layoutExtras };
+}
+
+function buildFig91() {
+  const dG = 0, U = 0;
+  const { traces, layoutExtras } = fig91Data(dG, U);
+  Plotly.newPlot('fig91', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout91(dG, U);
+}
+
+function updateFig91(dG, U) {
+  const { traces, layoutExtras } = fig91Data(dG, U);
+  Plotly.react('fig91', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout91(dG, U);
+}
+
+function updateReadout91(dG, U) {
+  document.getElementById('rd-dGH').textContent = dG.toFixed(2) + ' eV';
+  document.getElementById('rd-U91').textContent = U.toFixed(2) + ' V';
+  // Overpotential: the |U| needed to make the max step = 0
+  // For dG > 0: need U = -dG to make step1 = 0 => eta = dG
+  // For dG < 0: need U = 0, but step2 = -dG > 0 => eta = |dG|
+  const eta = Math.abs(dG);
+  document.getElementById('rd-eta91').textContent = eta.toFixed(2) + ' V';
+
+  // Challenge check
+  const s = document.getElementById('ch91-status');
+  if (s) {
+    if (Math.abs(dG) < 0.02 && Math.abs(U) < 0.02) {
+      s.textContent = '완벽! ΔG_H* = 0, U = 0에서 모든 level이 평탄합니다.';
+      s.className = 'challenge-status success';
+      showToast('정답! ΔG_H* = 0이 최적 조건 — Pt가 이 조건에 가장 가깝습니다.');
+    } else {
+      s.textContent = '현재: ΔG_H*=' + dG.toFixed(2) + ' eV, U=' + U.toFixed(2) + ' V';
+      s.className = 'challenge-status';
+    }
+  }
+}
+
+// ============================================================
+// FIGURE 9.2: HER VOLCANO
+// ============================================================
+const herMetals = [
+  { name: 'Pt',    dG: -0.09 },
+  { name: 'Pd',    dG: -0.20 },
+  { name: 'Ni',    dG: -0.26 },
+  { name: 'Co',    dG: -0.30 },
+  { name: 'Mo',    dG: -0.45 },
+  { name: 'W',     dG: -0.55 },
+  { name: 'Cu',    dG:  0.05 },
+  { name: 'Au',    dG:  0.40 },
+  { name: 'Ag',    dG:  0.50 },
+  { name: 'MoS₂', dG: 0.08 },
+  { name: 'Pt/C',  dG: -0.05 }
+];
+
+function fig92Data(T) {
+  const factor = kB * T * 2.303;
+  const offset = 0; // log(i0) at peak
+
+  // Volcano curve
+  const N = 200;
+  const xCurve = [], yCurve = [];
+  for (let i = 0; i < N; i++) {
+    const dG = -0.8 + i / (N - 1) * 1.6;
+    xCurve.push(dG);
+    yCurve.push(-Math.abs(dG) / factor + offset);
+  }
+
+  const traceCurve = {
+    x: xCurve, y: yCurve,
+    type: 'scatter', mode: 'lines',
+    line: { color: '#000', width: 2.5 },
+    hovertemplate: 'ΔG_H*=%{x:.2f} eV<br>log(i₀)=%{y:.1f}<extra></extra>',
+    showlegend: false
+  };
+
+  // Metal scatter points
+  const xMetals = herMetals.map(m => m.dG);
+  const yMetals = herMetals.map(m => -Math.abs(m.dG) / factor + offset);
+  const metalLabels = herMetals.map(m => m.name);
+
+  const traceMetals = {
+    x: xMetals, y: yMetals,
+    type: 'scatter', mode: 'markers+text',
+    marker: { color: '#c0392b', size: 9, line: { color: '#fff', width: 1.5 } },
+    text: metalLabels,
+    textposition: 'top center',
+    textfont: { size: 10, color: '#666', family: 'Inter, sans-serif' },
+    hovertemplate: '%{text}<br>ΔG_H*=%{x:.2f} eV<br>log(i₀)=%{y:.1f}<extra></extra>',
+    showlegend: false
+  };
+
+  // Find best metal
+  let bestIdx = 0;
+  let bestAbs = Math.abs(herMetals[0].dG);
+  herMetals.forEach((m, i) => {
+    if (Math.abs(m.dG) < bestAbs) { bestAbs = Math.abs(m.dG); bestIdx = i; }
+  });
+
+  const peakI0 = offset;
+
+  const layoutExtras = {
+    xaxis: { title: 'ΔG_H* (eV)', range: [-0.8, 0.8] },
+    yaxis: { title: 'log₁₀(i₀) (A/cm²)', range: [Math.min(...yCurve) - 1, offset + 1] },
+    showlegend: false
+  };
+
+  return { traces: [traceCurve, traceMetals], layoutExtras, bestMetal: herMetals[bestIdx].name, peakI0 };
+}
+
+function buildFig92() {
+  const T = 298;
+  const { traces, layoutExtras, bestMetal, peakI0 } = fig92Data(T);
+  Plotly.newPlot('fig92', traces, mergeLayout(layoutExtras), plotlyCfg);
+  document.getElementById('rd-best92').textContent = bestMetal;
+  document.getElementById('rd-i0peak').textContent = peakI0.toFixed(1);
+}
+
+function updateFig92(T) {
+  const { traces, layoutExtras, bestMetal, peakI0 } = fig92Data(T);
+  Plotly.react('fig92', traces, mergeLayout(layoutExtras), plotlyCfg);
+  document.getElementById('rd-best92').textContent = bestMetal;
+  document.getElementById('rd-i0peak').textContent = peakI0.toFixed(1);
+}
+
+// ============================================================
+// FIGURE 9.3: OER FREE ENERGY DIAGRAM
+// ============================================================
+function fig93Data(dG_OH, U) {
+  // Scaling relations
+  const dG_O = 2.0 * dG_OH; // approximate
+  const dG_OOH = dG_OH + 3.2; // universal scaling
+
+  // 4 steps at U=0
+  const dG1_0 = dG_OH;
+  const dG2_0 = dG_O - dG_OH;
+  const dG3_0 = dG_OOH - dG_O;
+  const dG4_0 = 4.92 - dG_OOH;
+
+  // At potential U, each step shifts by -eU
+  const dG1 = dG1_0 - U;
+  const dG2 = dG2_0 - U;
+  const dG3 = dG3_0 - U;
+  const dG4 = dG4_0 - U;
+
+  // Cumulative levels: H2O(0) -> OH* -> O* -> OOH* -> O2
+  const level0 = 0;
+  const level1 = dG1;
+  const level2 = dG1 + dG2;
+  const level3 = dG1 + dG2 + dG3;
+  const level4 = dG1 + dG2 + dG3 + dG4; // should = 4.92 - 4*U
+
+  const levels = [level0, level1, level2, level3, level4];
+  const labels = ['H₂O', 'OH*', 'O*', 'OOH*', 'O₂'];
+  const steps = [dG1, dG2, dG3, dG4];
+  const stepLabels = ['ΔG₁', 'ΔG₂', 'ΔG₃', 'ΔG₄'];
+
+  // Build platform traces
+  const platformW = 0.3;
+  const xAll = [], yAll = [];
+
+  for (let i = 0; i < 5; i++) {
+    // Platform
+    xAll.push(i - platformW, i + platformW, null);
+    yAll.push(levels[i], levels[i], null);
+    // Connector to next
+    if (i < 4) {
+      xAll.push(i + platformW, i + 1 - platformW, null);
+      yAll.push(levels[i], levels[i + 1], null);
+    }
+  }
+
+  const traceLine = {
+    x: xAll, y: yAll,
+    type: 'scatter', mode: 'lines',
+    line: { color: '#000', width: 2.5 },
+    hoverinfo: 'skip',
+    showlegend: false
+  };
+
+  // Colored step connectors
+  const stepTraces = [];
+  for (let i = 0; i < 4; i++) {
+    const color = steps[i] > 0 ? '#c0392b' : '#2980b9';
+    stepTraces.push({
+      x: [i + platformW, i + 1 - platformW],
+      y: [levels[i], levels[i + 1]],
+      type: 'scatter', mode: 'lines',
+      line: { color: color, width: 2, dash: 'dot' },
+      hoverinfo: 'skip',
+      showlegend: false
+    });
+  }
+
+  // Annotations for levels
+  const annotations = labels.map((label, i) => ({
+    x: i, y: levels[i],
+    xref: 'x', yref: 'y',
+    text: label,
+    showarrow: false,
+    font: { size: 11, color: '#000', family: 'Inter, sans-serif' },
+    yshift: 16
+  }));
+
+  // Step delta annotations
+  for (let i = 0; i < 4; i++) {
+    const color = steps[i] > 0 ? '#c0392b' : '#2980b9';
+    annotations.push({
+      x: i + 0.5,
+      y: (levels[i] + levels[i + 1]) / 2,
+      xref: 'x', yref: 'y',
+      text: stepLabels[i] + '=' + steps[i].toFixed(2),
+      showarrow: false,
+      font: { size: 10, color: color }
+    });
+  }
+
+  // PDS
+  let pdsIdx = 0;
+  let maxStep = steps[0];
+  for (let i = 1; i < 4; i++) {
+    if (steps[i] > maxStep) { maxStep = steps[i]; pdsIdx = i; }
+  }
+  const pds = 'Step ' + (pdsIdx + 1);
+  const etaOER = Math.max(maxStep / 1 - 0, 0); // max(dGi) at the given U
+  // But overpotential is defined at U=1.23V, so recalculate at U=0
+  const steps_0 = [dG1_0, dG2_0, dG3_0, dG4_0];
+  const maxStep_0 = Math.max(...steps_0);
+  const etaOER_calc = Math.max(maxStep_0 - 1.23, 0);
+
+  const yMin = Math.min(...levels) - 0.5;
+  const yMax = Math.max(...levels) + 0.6;
+
+  const layoutExtras = {
+    xaxis: {
+      range: [-0.6, 4.6],
+      showgrid: false,
+      zeroline: false,
+      showticklabels: false,
+      linecolor: 'rgba(0,0,0,0)'
+    },
+    yaxis: {
+      title: 'Free Energy (eV)',
+      range: [yMin, yMax]
+    },
+    annotations: annotations,
+    showlegend: false
+  };
+
+  return {
+    traces: [traceLine, ...stepTraces],
+    layoutExtras,
+    dG1, dG2, dG3, dG4,
+    pds, etaOER: etaOER_calc
+  };
+}
+
+function buildFig93() {
+  const dG_OH = 1.20, U = 1.23;
+  const { traces, layoutExtras, dG1, dG2, dG3, dG4, pds, etaOER } = fig93Data(dG_OH, U);
+  Plotly.newPlot('fig93', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout93(dG1, dG2, dG3, dG4, pds, etaOER);
+}
+
+function updateFig93(dG_OH, U) {
+  const { traces, layoutExtras, dG1, dG2, dG3, dG4, pds, etaOER } = fig93Data(dG_OH, U);
+  Plotly.react('fig93', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout93(dG1, dG2, dG3, dG4, pds, etaOER);
+}
+
+function updateReadout93(dG1, dG2, dG3, dG4, pds, etaOER) {
+  document.getElementById('rd-dG1').textContent = dG1.toFixed(2) + ' eV';
+  document.getElementById('rd-dG2').textContent = dG2.toFixed(2) + ' eV';
+  document.getElementById('rd-dG3').textContent = dG3.toFixed(2) + ' eV';
+  document.getElementById('rd-dG4').textContent = dG4.toFixed(2) + ' eV';
+  document.getElementById('rd-pds').textContent = pds;
+  document.getElementById('rd-etaOER').textContent = etaOER.toFixed(2) + ' V';
+
+  const s = document.getElementById('ch93-status');
+  if (s) {
+    s.textContent = '현재: PDS = ' + pds + ', η = ' + etaOER.toFixed(2) + ' V';
+  }
+}
+
+// ============================================================
+// FIGURE 9.4: OER OVERPOTENTIAL VOLCANO
+// ============================================================
+const oerOxides = [
+  { name: 'RuO₂',   desc: 1.50, eta: 0.37 },
+  { name: 'IrO₂',   desc: 1.60, eta: 0.56 },
+  { name: 'MnO₂',   desc: 1.00, eta: 0.60 },
+  { name: 'Co₃O₄', desc: 1.20, eta: 0.48 },
+  { name: 'NiO',         desc: 1.30, eta: 0.42 },
+  { name: 'TiO₂',   desc: 0.50, eta: 1.20 },
+  { name: 'PtO₂',   desc: 2.00, eta: 0.70 },
+  { name: 'Fe₂O₃', desc: 1.10, eta: 0.55 }
+];
+
+function fig94Data() {
+  // Volcano curve: two legs meeting at minimum
+  // Left leg: eta increases as desc decreases from optimum
+  // Right leg: eta increases as desc increases from optimum
+  // Using scaling: dG_OH = desc is actually dG_O - dG_OH
+  // Optimal desc ~ 1.5 (where eta is minimized)
+  const optDesc = 1.50;
+  const minEta = 0.37;
+
+  const N = 200;
+  const xCurve = [], yCurve = [];
+  for (let i = 0; i < N; i++) {
+    const d = 0 + i / (N - 1) * 3.0;
+    // V-shape: eta = |d - optDesc| * slope + minEta
+    // Adjust slope to match data roughly
+    const slopeLeft = 1.0;
+    const slopeRight = 0.6;
+    let eta;
+    if (d <= optDesc) {
+      eta = (optDesc - d) * slopeLeft + minEta;
+    } else {
+      eta = (d - optDesc) * slopeRight + minEta;
+    }
+    xCurve.push(d);
+    yCurve.push(eta);
+  }
+
+  const traceCurve = {
+    x: xCurve, y: yCurve,
+    type: 'scatter', mode: 'lines',
+    line: { color: '#000', width: 2.5 },
+    hovertemplate: 'Descriptor=%{x:.2f} eV<br>η=%{y:.2f} V<extra></extra>',
+    showlegend: false
+  };
+
+  // Oxide scatter points
+  const traceOxides = {
+    x: oerOxides.map(o => o.desc),
+    y: oerOxides.map(o => o.eta),
+    type: 'scatter', mode: 'markers+text',
+    marker: { color: '#c0392b', size: 9, line: { color: '#fff', width: 1.5 } },
+    text: oerOxides.map(o => o.name),
+    textposition: oerOxides.map(o => {
+      if (o.name === 'NiO') return 'bottom right';
+      if (o.name.startsWith('Co')) return 'bottom left';
+      if (o.name === 'RuO₂') return 'bottom center';
+      return 'top center';
+    }),
+    textfont: { size: 10, color: '#666', family: 'Inter, sans-serif' },
+    hovertemplate: '%{text}<br>Descriptor=%{x:.2f} eV<br>η=%{y:.2f} V<extra></extra>',
+    showlegend: false
+  };
+
+  // Find best
+  let bestIdx = 0;
+  oerOxides.forEach((o, i) => { if (o.eta < oerOxides[bestIdx].eta) bestIdx = i; });
+
+  const layoutExtras = {
+    xaxis: { title: 'ΔG_O* − ΔG_OH* (eV)', range: [0, 3] },
+    yaxis: { title: 'Overpotential η (V)', range: [0, 1.5], autorange: false },
+    showlegend: false
+  };
+
+  return {
+    traces: [traceCurve, traceOxides],
+    layoutExtras,
+    minEta: oerOxides[bestIdx].eta,
+    bestCat: oerOxides[bestIdx].name,
+    optDesc: optDesc
+  };
+}
+
+function buildFig94() {
+  const { traces, layoutExtras, minEta, bestCat, optDesc } = fig94Data();
+  Plotly.newPlot('fig94', traces, mergeLayout(layoutExtras), plotlyCfg);
+  document.getElementById('rd-minEta').textContent = minEta.toFixed(2) + ' V';
+  document.getElementById('rd-bestCat').textContent = bestCat;
+  document.getElementById('rd-optDesc').textContent = optDesc.toFixed(2) + ' eV';
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 9.1 sliders
+  document.getElementById('her-dG').addEventListener('input', () => {
+    const dG = parseFloat(document.getElementById('her-dG').value) / 100;
+    const U  = parseFloat(document.getElementById('her-U').value) / 100;
+    document.getElementById('her-dG-val').textContent = (dG >= 0 ? '+' : '') + dG.toFixed(2) + ' eV';
+    throttledDraw('fig91', () => updateFig91(dG, U));
+  });
+  document.getElementById('her-U').addEventListener('input', () => {
+    const dG = parseFloat(document.getElementById('her-dG').value) / 100;
+    const U  = parseFloat(document.getElementById('her-U').value) / 100;
+    document.getElementById('her-U-val').textContent = (U >= 0 ? '+' : '') + U.toFixed(2) + ' V';
+    throttledDraw('fig91', () => updateFig91(dG, U));
+  });
+
+  // Fig 9.2 slider
+  document.getElementById('vol-T').addEventListener('input', () => {
+    const T = parseFloat(document.getElementById('vol-T').value);
+    document.getElementById('vol-T-val').textContent = T + ' K';
+    throttledDraw('fig92', () => updateFig92(T));
+  });
+
+  // Fig 9.3 sliders
+  document.getElementById('oer-dGOH').addEventListener('input', () => {
+    const dG_OH = parseFloat(document.getElementById('oer-dGOH').value) / 100;
+    const U     = parseFloat(document.getElementById('oer-U').value) / 100;
+    document.getElementById('oer-dGOH-val').textContent = dG_OH.toFixed(2) + ' eV';
+    throttledDraw('fig93', () => updateFig93(dG_OH, U));
+  });
+  document.getElementById('oer-U').addEventListener('input', () => {
+    const dG_OH = parseFloat(document.getElementById('oer-dGOH').value) / 100;
+    const U     = parseFloat(document.getElementById('oer-U').value) / 100;
+    document.getElementById('oer-U-val').textContent = U.toFixed(2) + ' V';
+    throttledDraw('fig93', () => updateFig93(dG_OH, U));
+  });
+
+  // Fig 9.4 has no sliders (static volcano with oxide data)
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig91();
+  buildFig92();
+  buildFig93();
+  buildFig94();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

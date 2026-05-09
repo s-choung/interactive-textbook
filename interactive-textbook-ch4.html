@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Rate Constants & Transition State Theory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "—"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '▶'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Rate Constants &amp; TST</a>
+    <ul class="nav-links">
+      <li><a href="#s41">4.1 PES</a></li>
+      <li><a href="#s42">4.2 TST</a></li>
+      <li><a href="#s43">4.3 Arrhenius</a></li>
+      <li><a href="#s44">4.4 Surface Rates</a></li>
+    </ul>
+    <span class="nav-badge">Norskov Ch.4</span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">움직이는 교과서 &middot; Interactive Textbook</p>
+    <h1 class="hero-title">Rate Constants</h1>
+    <p class="hero-subtitle">Norskov, <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 4. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+    <div class="hero-chips">
+      <span class="chip">Activation Energy</span>
+      <span class="chip">Transition State Theory</span>
+      <span class="chip">Arrhenius Equation</span>
+      <span class="chip">Pre-exponential Factor</span>
+      <span class="chip">Surface Kinetics</span>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 4.1: Potential Energy Surfaces -->
+  <!-- ============================================================ -->
+  <section id="s41" class="section">
+    <p class="section-label">Section 4.1</p>
+    <h2 class="section-title">Potential Energy Surfaces</h2>
+    <div class="section-body">
+      <p>화학반응은 반응좌표(reaction coordinate)를 따라 Initial State(IS)에서 Transition State(TS)를 거쳐 Final State(FS)로 진행합니다. 활성화 에너지 $E_a$는 IS와 TS의 에너지 차이이며, 반응이 진행되기 위해 넘어야 하는 에너지 장벽입니다.</p>
+      <p>반응 에너지 $\Delta E$는 IS와 FS의 에너지 차이로, 반응의 열역학적 구동력을 결정합니다. 역반응의 활성화 에너지는 $E_{a,\text{reverse}} = E_a - \Delta E$로 주어집니다.</p>
+    </div>
+
+    <div class="eq-block">$$E_a = E_{\text{TS}} - E_{\text{IS}}$$</div>
+    <div class="eq-block">$$\Delta E = E_{\text{FS}} - E_{\text{IS}}$$</div>
+    <div class="eq-block">$$E_{a,\text{reverse}} = E_a - \Delta E$$</div>
+
+    <ul class="concept-list">
+      <li>$E_a$는 항상 양수입니다. 음수가 되면 barrier가 없다는 의미이므로 barrierless 반응이 됩니다.</li>
+      <li>$\Delta E &lt; 0$이면 발열 반응(exothermic), $\Delta E &gt; 0$이면 흡열 반응(endothermic)입니다.</li>
+      <li>촉매는 $E_a$를 낮추지만 $\Delta E$는 변하지 않습니다. 반응의 열역학은 촉매로 바꿀 수 없습니다.</li>
+      <li>역반응의 barrier는 $E_{a,\text{reverse}} = E_a - \Delta E$입니다. 발열 반응일수록 reverse barrier가 커집니다.</li>
+    </ul>
+
+    <!-- Figure 4.1 -->
+    <div class="figure-card" style="margin-top: var(--spacing-32);">
+      <div class="figure-header">
+        <span class="figure-label">Figure 4.1</span>
+        <span class="figure-title">Reaction Coordinate Diagram</span>
+        <button class="challenge-btn" onclick="toggleChallenge('ch41')">도전 과제</button>
+      </div>
+      <div class="challenge-panel" id="ch41">
+        <div class="challenge-goal">목표: $E_{a,\text{reverse}} = 0$이 되는 조건을 찾아보세요</div>
+        <div class="challenge-desc">슬라이더를 조절해서 역반응 barrier가 정확히 0이 되는 $E_a$와 $\Delta E$의 조합을 찾아보세요. 이 조건이 물리적으로 어떤 의미인지 생각해보세요.</div>
+        <div class="challenge-status" id="ch41-status">현재: 슬라이더를 조작해보세요</div>
+      </div>
+      <div class="figure-body">
+        <div id="fig41" class="plotly-container"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">E<sub>a</sub></span>
+            <input type="range" id="pes-Ea" min="0.2" max="2.0" value="0.8" step="0.05">
+            <span class="control-value" id="pes-Ea-val">0.80 eV</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">&Delta;E</span>
+            <input type="range" id="pes-dE" min="-1.0" max="0.5" value="-0.3" step="0.05">
+            <span class="control-value" id="pes-dE-val">&minus;0.30 eV</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item">
+            <span class="readout-key">E<sub>a</sub></span>
+            <span class="readout-val" id="rd-Ea41">0.80 eV</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">&Delta;E</span>
+            <span class="readout-val" id="rd-dE41">&minus;0.30 eV</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">E<sub>a,reverse</sub></span>
+            <span class="readout-val" id="rd-Ear41">1.10 eV</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">TS position</span>
+            <span class="readout-val" id="rd-xts41">--</span>
+          </div>
+        </div>
+
+        <!-- What-If -->
+        <div class="whatif-grid">
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 E<sub>a</sub> = 0이라면?</div>
+            <div class="whatif-hint">Barrierless 반응이 됩니다. 모든 온도에서 즉시 진행되며, rate constant는 attempt frequency ($k_BT/h$)에만 의존합니다. 실제로는 매우 드문 경우입니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 &Delta;E = 0이라면?</div>
+            <div class="whatif-hint">완전 가역 반응입니다. Forward barrier = reverse barrier이므로, 평형에서 IS와 FS의 농도가 동일해집니다. 대칭적인 PES가 됩니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+        </div>
+
+        <!-- Explore -->
+        <button class="explore-toggle" onclick="toggleExplore('ex41')">Step-by-step 탐색 &#x25BE;</button>
+        <div class="explore-panel" id="ex41">
+          <ol class="explore-steps">
+            <li>E<sub>a</sub>를 0.8 eV로 고정하세요.</li>
+            <li>&Delta;E를 &minus;1.0 eV에서 시작해서 천천히 +0.5 eV까지 올려보세요.</li>
+            <li>&Delta;E가 음수일 때 FS가 IS보다 낮습니다 (발열 반응). 양수가 되면 FS가 IS보다 높아집니다 (흡열 반응).</li>
+            <li>reverse barrier가 어떻게 변하는지 readout에서 확인하세요. &Delta;E가 양수로 갈수록 reverse barrier는 줄어듭니다.</li>
+          </ol>
+          <div class="explore-insight"><strong>Key Insight:</strong> &Delta;E를 변화시켜도 forward barrier E<sub>a</sub>는 고정되어 있습니다. 하지만 reverse barrier는 E<sub>a</sub> &minus; &Delta;E이므로, 반응 열역학이 바뀌면 역반응의 kinetics가 달라집니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 4.1 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: &Delta;E = &minus;0.5 eV, E<sub>a</sub> = 1.0 eV일 때 reverse barrier는?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz41')">A) 0.5 eV</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz41')">B) 1.5 eV</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz41')">C) 1.0 eV</button>
+      </div>
+      <div class="quiz-explain" id="quiz41">E<sub>a,reverse</sub> = E<sub>a</sub> &minus; &Delta;E = 1.0 &minus; (&minus;0.5) = 1.5 eV. 발열 반응이므로 역반응의 barrier가 forward barrier보다 큽니다.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 4.2: Transition State Theory -->
+  <!-- ============================================================ -->
+  <section id="s42" class="section">
+    <p class="section-label">Section 4.2</p>
+    <h2 class="section-title">Transition State Theory (TST)</h2>
+    <div class="section-body">
+      <p>Transition State Theory에서 rate constant는 $k_{\text{TST}} = (k_BT/h)\cdot\exp(-E_a/k_BT)$로 주어집니다. 여기서 $k_BT/h$는 attempt frequency로, 300 K에서 약 $6.25\times10^{12}$ s$^{-1}$입니다. 분자가 1초에 약 6조 번 barrier를 "시도"하고, Boltzmann factor $\exp(-E_a/k_BT)$만큼 성공합니다.</p>
+      <p>이 식의 핵심은 $E_a$의 영향이 지수적이라는 것입니다. $E_a$가 0.2 eV만 증가해도 300 K에서 rate은 약 1000배 감소합니다. 이것이 촉매가 반응속도를 극적으로 바꿀 수 있는 이유입니다.</p>
+    </div>
+
+    <div class="eq-block">$$k_{\text{TST}} = \frac{k_BT}{h}\exp\!\left(-\frac{E_a}{k_BT}\right)$$</div>
+
+    <ul class="concept-list">
+      <li>$k_BT/h$ = attempt frequency. 300 K에서 약 $6.25 \times 10^{12}$ s$^{-1}$입니다.</li>
+      <li>$\exp(-E_a/k_BT)$ = 성공 확률. $E_a$가 클수록, 온도가 낮을수록 이 값은 급격히 감소합니다.</li>
+      <li>$E_a$가 0.2 eV 증가하면 300 K에서 $k$가 약 1000배 감소합니다. 촉매의 핵심 역할입니다.</li>
+    </ul>
+
+    <!-- Figure 4.2 -->
+    <div class="figure-card" style="margin-top: var(--spacing-32);">
+      <div class="figure-header">
+        <span class="figure-label">Figure 4.2</span>
+        <span class="figure-title">Rate vs Temperature</span>
+      </div>
+      <div class="figure-body">
+        <div id="fig42" class="plotly-container"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">E<sub>a</sub></span>
+            <input type="range" id="tst-Ea" min="0.1" max="2.0" value="0.8" step="0.05">
+            <span class="control-value" id="tst-Ea-val">0.80 eV</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item">
+            <span class="readout-key">k(300K)</span>
+            <span class="readout-val" id="rd-k300">--</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">k(500K)</span>
+            <span class="readout-val" id="rd-k500">--</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">k(800K)</span>
+            <span class="readout-val" id="rd-k800">--</span>
+          </div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-title">E<sub>a</sub>가 0.2 eV 변하면 rate이 ~1000배 변합니다 (300 K)</div>
+          <div class="highlight-body">이것이 촉매가 반응속도를 극적으로 바꾸는 이유입니다. 활성화 에너지의 작은 변화가 지수함수를 통해 rate의 거대한 변화로 증폭됩니다. 온도가 높아질수록 이 효과는 완화됩니다.</div>
+        </div>
+
+        <!-- Explore -->
+        <button class="explore-toggle" onclick="toggleExplore('ex42')">Step-by-step 탐색 &#x25BE;</button>
+        <div class="explore-panel" id="ex42">
+          <ol class="explore-steps">
+            <li>E<sub>a</sub> = 0.3 eV로 설정하고 k(300K) 값을 확인하세요.</li>
+            <li>E<sub>a</sub> = 1.5 eV로 변경하고 k(300K) 값을 확인하세요.</li>
+            <li>두 값의 차이가 몇 자릿수(orders of magnitude)인지 계산하세요.</li>
+            <li>같은 비교를 800 K에서 해보세요. 온도가 높아지면 E<sub>a</sub>의 영향이 줄어드는 것을 확인할 수 있습니다.</li>
+          </ol>
+          <div class="explore-insight"><strong>Key Insight:</strong> 높은 온도에서는 더 많은 분자가 barrier를 넘을 수 있는 에너지를 갖고 있으므로, E<sub>a</sub>의 차이가 rate에 미치는 영향이 줄어듭니다. 이것이 "고온에서는 촉매의 역할이 줄어든다"는 의미입니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 4.3: Arrhenius Analysis -->
+  <!-- ============================================================ -->
+  <section id="s43" class="section">
+    <p class="section-label">Section 4.3</p>
+    <h2 class="section-title">Arrhenius Analysis</h2>
+    <div class="section-body">
+      <p>실험에서 rate constant를 여러 온도에서 측정한 뒤, $\ln k$ vs $1/T$ 그래프(Arrhenius plot)를 그리면 직선이 됩니다. 이 직선의 기울기에서 활성화 에너지를, y절편에서 pre-exponential factor $A$를 추출할 수 있습니다.</p>
+    </div>
+
+    <div class="eq-block">$$\ln k = \ln A - \frac{E_a}{k_B}\cdot\frac{1}{T}$$</div>
+
+    <!-- Derivation -->
+    <details class="derivation">
+      <summary>유도 과정 보기</summary>
+      <div class="deriv-body">
+        <div class="deriv-step">
+          <div class="deriv-step-row">
+            <span class="deriv-step-num">1</span>
+            <div class="deriv-step-text">TST rate: $k = (k_BT/h)\exp(-E_a/k_BT)$</div>
+          </div>
+          <div class="deriv-meaning">출발점은 Transition State Theory의 rate expression입니다.</div>
+        </div>
+        <div class="deriv-step">
+          <div class="deriv-step-row">
+            <span class="deriv-step-num">2</span>
+            <div class="deriv-step-text">양변에 $\ln$: $\ln k = \ln(k_BT/h) - E_a/(k_BT)$</div>
+          </div>
+          <div class="deriv-meaning">로그를 취하면 지수 항이 선형 항으로 바뀝니다.</div>
+        </div>
+        <div class="deriv-step">
+          <div class="deriv-step-row">
+            <span class="deriv-step-num">3</span>
+            <div class="deriv-step-text">$\ln(k_BT/h)$의 $T$ 의존성은 $\ln T$로 매우 약합니다. 이를 상수 $\ln A \approx 29.5$로 근사합니다.</div>
+          </div>
+          <div class="deriv-meaning">Pre-exponential factor $A \approx k_BT/h$는 온도에 선형적으로만 의존하므로, 지수 항에 비해 변화가 작습니다.</div>
+        </div>
+        <div class="deriv-step">
+          <div class="deriv-step-row">
+            <span class="deriv-step-num">4</span>
+            <div class="deriv-step-text">최종: $\ln k = \ln A - (E_a/k_B)\cdot(1/T)$. 기울기 = $-E_a/k_B$</div>
+          </div>
+          <div class="deriv-meaning">$1/T$에 대한 직선 관계이며, 기울기의 절대값에 $k_B$를 곱하면 $E_a$를 얻습니다.</div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Figure 4.3 -->
+    <div class="figure-card" style="margin-top: var(--spacing-32);">
+      <div class="figure-header">
+        <span class="figure-label">Figure 4.3</span>
+        <span class="figure-title">Arrhenius Plot</span>
+        <button class="challenge-btn" onclick="toggleChallenge('ch43')">도전 과제</button>
+      </div>
+      <div class="challenge-panel" id="ch43">
+        <div class="challenge-goal">목표: slope = &minus;8000 K일 때 E<sub>a</sub>는 몇 eV?</div>
+        <div class="challenge-desc">Arrhenius plot에서 기울기를 읽고, $E_a = -\text{slope} \times k_B$로 활성화 에너지를 계산해보세요. $k_B = 8.617 \times 10^{-5}$ eV/K입니다. (정답: 8000 &times; 8.617&times;10<sup>&minus;5</sup> &approx; 0.69 eV)</div>
+        <div class="challenge-status" id="ch43-status">현재: 슬라이더를 조작해보세요</div>
+      </div>
+      <div class="figure-body">
+        <div id="fig43" class="plotly-container"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">E<sub>a</sub></span>
+            <input type="range" id="arr-Ea" min="0.2" max="1.5" value="0.6" step="0.05">
+            <span class="control-value" id="arr-Ea-val">0.60 eV</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">ln(A)</span>
+            <input type="range" id="arr-lnA" min="25" max="35" value="29.5" step="0.5">
+            <span class="control-value" id="arr-lnA-val">29.5</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item">
+            <span class="readout-key">Slope</span>
+            <span class="readout-val" id="rd-slope43">--</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">Extracted E<sub>a</sub></span>
+            <span class="readout-val" id="rd-extEa43">--</span>
+          </div>
+        </div>
+
+        <!-- What-If -->
+        <div class="whatif-grid">
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 A가 10배 커지면?</div>
+            <div class="whatif-hint">$\ln A$가 $\ln 10 \approx 2.3$만큼 증가합니다. Arrhenius plot에서 y절편만 위로 이동하고, 기울기(slope)는 변하지 않습니다. 즉, $E_a$ 추출에는 영향이 없습니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 E<sub>a</sub> = 0이라면?</div>
+            <div class="whatif-hint">기울기가 0이 되어 수평선이 됩니다. $k$가 온도에 거의 의존하지 않는 barrierless 반응입니다. 실험에서 이런 결과를 보면 율속 단계가 확산(diffusion-limited)일 수 있습니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+        </div>
+
+        <!-- Explore -->
+        <button class="explore-toggle" onclick="toggleExplore('ex43')">Step-by-step 탐색 &#x25BE;</button>
+        <div class="explore-panel" id="ex43">
+          <ol class="explore-steps">
+            <li>E<sub>a</sub> = 0.6 eV로 설정하고 readout의 slope 값을 읽으세요.</li>
+            <li>slope에 $k_B$를 곱해서 E<sub>a</sub>를 계산하세요. Extracted E<sub>a</sub>와 일치하는지 확인하세요.</li>
+            <li>ln(A)를 25에서 35까지 변경해보세요. slope가 변하지 않는 것을 확인하세요.</li>
+          </ol>
+          <div class="explore-insight"><strong>Key Insight:</strong> Arrhenius plot의 기울기는 오직 $E_a$에만 의존합니다. Pre-exponential factor $A$는 y절편만 바꿀 뿐, 기울기에는 영향을 주지 않습니다. 이것이 Arrhenius analysis의 강력한 점입니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 4.4: Rates of Surface Reactions -->
+  <!-- ============================================================ -->
+  <section id="s44" class="section">
+    <p class="section-label">Section 4.4</p>
+    <h2 class="section-title">Rates of Surface Reactions</h2>
+    <div class="section-body">
+      <p>표면 반응에서 net rate은 forward rate과 reverse rate의 차이입니다. Forward rate은 $k_f \cdot \theta_A \cdot \theta_*$, reverse rate은 $k_r \cdot \theta_B \cdot \theta_*$로 주어집니다. 여기서 $\theta_*$는 빈 사이트의 분율입니다.</p>
+      <p>Forward rate = reverse rate일 때 평형에 도달합니다. 촉매는 $k_f$와 $k_r$을 둘 다 올리지만, 평형 상수 $K_{\text{eq}} = k_f/k_r = \exp(-\Delta E/k_BT)$는 변하지 않습니다. 이것이 "촉매는 평형을 바꾸지 못한다"는 원리의 수학적 근거입니다.</p>
+    </div>
+
+    <div class="eq-block">$$r_{\text{net}} = k_f\,\theta_A\,\theta_* - k_r\,\theta_B\,\theta_*$$</div>
+    <div class="eq-block">$$K_{\text{eq}} = \frac{k_f}{k_r} = \exp\!\left(-\frac{\Delta E}{k_BT}\right)$$</div>
+
+    <!-- Figure 4.4 -->
+    <div class="figure-card" style="margin-top: var(--spacing-32);">
+      <div class="figure-header">
+        <span class="figure-label">Figure 4.4</span>
+        <span class="figure-title">Forward, Reverse &amp; Net Rate vs Temperature</span>
+      </div>
+      <div class="figure-body">
+        <div id="fig44" class="plotly-container"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">E<sub>a,f</sub></span>
+            <input type="range" id="sr-Eaf" min="0.3" max="1.5" value="0.6" step="0.05">
+            <span class="control-value" id="sr-Eaf-val">0.60 eV</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">&Delta;E</span>
+            <input type="range" id="sr-dE" min="-1.0" max="0" value="-0.3" step="0.05">
+            <span class="control-value" id="sr-dE-val">&minus;0.30 eV</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item">
+            <span class="readout-key">E<sub>a,f</sub></span>
+            <span class="readout-val" id="rd-Eaf44">0.60 eV</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">E<sub>a,r</sub></span>
+            <span class="readout-val" id="rd-Ear44">0.90 eV</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">T<sub>eq</sub></span>
+            <span class="readout-val" id="rd-Teq44">--</span>
+          </div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#c0392b;"></span>r<sub>forward</sub></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#2980b9;"></span>r<sub>reverse</sub></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#000;"></span>r<sub>net</sub></div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-title">Forward와 reverse가 만나는 온도가 평형 온도입니다</div>
+          <div class="highlight-body">촉매는 이 교차점을 바꾸지 않습니다. 촉매가 $E_a$를 낮추면 forward와 reverse rate이 모두 올라가지만, 교차점의 온도($T_{\text{eq}}$)는 열역학적으로 결정되므로 동일합니다.</div>
+        </div>
+
+        <!-- What-If -->
+        <div class="whatif-grid">
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 촉매로 E<sub>a</sub>를 0.3 eV 낮추면?</div>
+            <div class="whatif-hint">Forward rate과 reverse rate이 둘 다 올라갑니다. 하지만 두 rate이 만나는 교차점 온도($T_{\text{eq}}$)는 변하지 않습니다. 촉매는 평형에 더 빨리 도달하게 할 뿐, 평형 자체를 바꾸지 못합니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 &Delta;E = 0이라면?</div>
+            <div class="whatif-hint">Forward와 reverse barrier가 동일해집니다. 두 rate 곡선이 모든 온도에서 거의 겹치며, net rate은 0에 가깝습니다. 반응이 어느 방향으로도 잘 진행되지 않는 상태입니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+          </div>
+        </div>
+
+        <!-- Explore -->
+        <button class="explore-toggle" onclick="toggleExplore('ex44')">Step-by-step 탐색 &#x25BE;</button>
+        <div class="explore-panel" id="ex44">
+          <ol class="explore-steps">
+            <li>E<sub>a,f</sub> = 0.6 eV, &Delta;E = &minus;0.3 eV에서 시작하세요.</li>
+            <li>Forward(빨간색)와 reverse(파란색)가 만나는 온도를 readout에서 확인하세요.</li>
+            <li>E<sub>a,f</sub>를 0.3 eV로 낮춰보세요. 두 곡선이 모두 위로 올라가지만, 교차점 온도는 바뀌지 않는 것을 확인하세요.</li>
+            <li>&Delta;E를 &minus;0.5 eV로 바꿔보세요. 교차점 온도가 어떻게 변하는지 관찰하세요.</li>
+          </ol>
+          <div class="explore-insight"><strong>Key Insight:</strong> 교차점 온도(T<sub>eq</sub>)는 &Delta;E에만 의존하고, E<sub>a</sub>에는 의존하지 않습니다. 이것이 "촉매는 thermodynamics를 바꾸지 못한다"의 핵심입니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 4.4 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: E<sub>a,f</sub> = 0.5 eV, &Delta;E = &minus;0.3 eV. Reverse barrier는?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz44')">A) 0.2 eV</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz44')">B) 0.8 eV</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz44')">C) 0.3 eV</button>
+      </div>
+      <div class="quiz-explain" id="quiz44">E<sub>a,r</sub> = E<sub>a,f</sub> &minus; &Delta;E = 0.5 &minus; (&minus;0.3) = 0.8 eV. 발열 반응(&Delta;E &lt; 0)이므로 reverse barrier가 forward보다 큽니다.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- TAKEAWAYS -->
+  <!-- ============================================================ -->
+  <section class="takeaways section">
+    <p class="section-label">Key Takeaways</p>
+    <h2 class="section-title">Chapter 4 핵심 메시지</h2>
+    <div class="takeaway-grid">
+      <div class="takeaway-card">
+        <div class="takeaway-number">10<sup>12</sup></div>
+        <div class="takeaway-title">s<sup>&minus;1</sup> Attempt Frequency</div>
+        <div class="takeaway-body">$k_BT/h$ at 300 K. 분자가 매초 6조 번 barrier를 시도합니다. 이 숫자 &times; Boltzmann factor = 실제 reaction rate.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">0.2</div>
+        <div class="takeaway-title">eV = 1000&times; Rate</div>
+        <div class="takeaway-body">$E_a$가 0.2 eV 변하면 300 K에서 rate이 ~1000배. 촉매가 $E_a$를 줄이면 반응이 기하급수적으로 빨라지는 이유입니다.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">&x21CC;</div>
+        <div class="takeaway-title">Microscopic Reversibility</div>
+        <div class="takeaway-body">Forward와 reverse barrier는 $\Delta E = E_{a,f} - E_{a,r}$로 연결됩니다. 촉매는 두 barrier를 동시에 낮추지만 $\Delta E$는 바꾸지 못합니다 &mdash; 평형은 촉매로 바꿀 수 없습니다.</div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Norskov, Bligaard, Kleis &mdash; <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 4</span>
+    <span class="footer-text">움직이는 교과서 &middot; Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+const kB = 8.617e-5; // eV/K
+const h_planck = 4.136e-15; // eV·s
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function safeExp(x) {
+  return Math.exp(Math.max(-500, Math.min(500, x)));
+}
+
+function tstRate(T, Ea) {
+  return (kB * T / h_planck) * safeExp(-Ea / (kB * T));
+}
+
+function calcCoverage(dH_eV, T, p_bar, dS_eV_K) {
+  if (dS_eV_K === undefined) dS_eV_K = -0.002;
+  var dG = dH_eV - T * dS_eV_K;
+  var K = safeExp(-dG / (kB * T));
+  return (K * p_bar) / (1 + K * p_bar);
+}
+
+function pesEnergy(x, Ea, dE) {
+  return 4 * (Ea - dE / 4) * x * (1 - x) + dE * x;
+}
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  return Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis),
+    font: Object.assign({}, baseLayout.font, extra.font)
+  });
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  var t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  var opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(function(o) {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+var rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(function() { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// FIGURE 4.1: Reaction Coordinate Diagram (PES)
+// ============================================================
+function fig41Data(Ea, dE) {
+  var N = 200;
+  var xs = [], ys = [];
+  var peakY = -Infinity, peakX = 0;
+  for (var i = 0; i < N; i++) {
+    var x = i / (N - 1);
+    var E = pesEnergy(x, Ea, dE);
+    xs.push(x);
+    ys.push(E);
+    if (E > peakY) { peakY = E; peakX = x; }
+  }
+  var Ea_r = Ea - dE;
+
+  // main PES curve
+  var mainTrace = {
+    x: xs, y: ys,
+    type: 'scatter', mode: 'lines',
+    line: { color: '#000', width: 2.5 },
+    hovertemplate: 'x=%{x:.2f}<br>E=%{y:.3f} eV<extra></extra>',
+    showlegend: false
+  };
+
+  // IS, TS, FS markers
+  var markers = {
+    x: [0, peakX, 1],
+    y: [0, peakY, dE],
+    type: 'scatter', mode: 'markers+text',
+    marker: { color: '#000', size: 8, line: { color: '#fff', width: 1.5 } },
+    text: ['IS', 'TS', 'FS'],
+    textposition: ['bottom center', 'top center', 'bottom center'],
+    textfont: { size: 12, color: '#000', family: 'Inter, sans-serif' },
+    showlegend: false,
+    hoverinfo: 'skip'
+  };
+
+  // Dashed lines at E=0 and E=dE
+  var shapes = [
+    { type: 'line', x0: 0, x1: 1, y0: 0, y1: 0, xref: 'x', yref: 'y', line: { color: '#bbb', width: 1.5, dash: 'dash' } },
+    { type: 'line', x0: 0, x1: 1, y0: dE, y1: dE, xref: 'x', yref: 'y', line: { color: '#bbb', width: 1.5, dash: 'dash' } }
+  ];
+
+  // Ea arrow (vertical at x=0.05)
+  var annotations = [
+    { x: 0.05, y: Ea * 0.5, xref: 'x', yref: 'y', text: 'E<sub>a</sub>=' + Ea.toFixed(2) + ' eV', showarrow: false, font: { size: 11, color: '#666' }, xanchor: 'left' },
+    { x: 0.95, y: (dE + peakY) / 2, xref: 'x', yref: 'y', text: 'E<sub>a,r</sub>=' + Ea_r.toFixed(2) + ' eV', showarrow: false, font: { size: 11, color: '#666' }, xanchor: 'right' }
+  ];
+
+  var layoutExtras = {
+    xaxis: { title: 'Reaction Coordinate', range: [-0.05, 1.05] },
+    yaxis: { title: 'Energy (eV)', range: [Math.min(dE, -0.3) - 0.2, peakY + 0.3] },
+    shapes: shapes,
+    annotations: annotations
+  };
+
+  return { traces: [mainTrace, markers], layoutExtras: layoutExtras };
+}
+
+function buildFig41() {
+  var Ea = 0.8, dE = -0.3;
+  var d = fig41Data(Ea, dE);
+  Plotly.newPlot('fig41', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout41(Ea, dE);
+}
+
+function updateFig41(Ea, dE) {
+  var d = fig41Data(Ea, dE);
+  Plotly.react('fig41', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout41(Ea, dE);
+}
+
+function updateReadout41(Ea, dE) {
+  var Ea_r = Ea - dE;
+  document.getElementById('rd-Ea41').textContent = Ea.toFixed(2) + ' eV';
+  document.getElementById('rd-dE41').innerHTML = (dE < 0 ? '&minus;' : '+') + Math.abs(dE).toFixed(2) + ' eV';
+  document.getElementById('rd-Ear41').textContent = Ea_r.toFixed(2) + ' eV';
+
+  // Find peak position
+  var peakX = 0, peakY = -Infinity;
+  for (var i = 0; i <= 200; i++) {
+    var x = i / 200;
+    var E = pesEnergy(x, Ea, dE);
+    if (E > peakY) { peakY = E; peakX = x; }
+  }
+  document.getElementById('rd-xts41').textContent = peakX.toFixed(2);
+
+  // Challenge: check if Ea_r ≈ 0
+  var s = document.getElementById('ch41-status');
+  if (s) {
+    s.textContent = 'E_a,reverse = ' + Ea_r.toFixed(2) + ' eV';
+    s.className = 'challenge-status';
+    if (Math.abs(Ea_r) < 0.06) {
+      s.textContent = 'E_a,reverse ≈ 0! Ea = ' + Ea.toFixed(2) + ', ΔE = ' + dE.toFixed(2) + ' → Ea = ΔE일 때 reverse barrier가 사라집니다.';
+      s.className = 'challenge-status success';
+      showToast('정답! Ea = ΔE일 때 reverse barrier가 0이 됩니다!');
+    }
+  }
+}
+
+// ============================================================
+// FIGURE 4.2: Rate vs Temperature (TST)
+// ============================================================
+function fig42Data(Ea_sel) {
+  var refEas = [0.3, 0.5, 0.8, 1.0, 1.5];
+  var N = 200;
+  var traces = [];
+
+  // Reference curves in grey
+  refEas.forEach(function(Ea_ref) {
+    var xs = [], ys = [];
+    for (var i = 0; i < N; i++) {
+      var T = 200 + i / (N - 1) * 800;
+      var k = tstRate(T, Ea_ref);
+      var logk = Math.log10(Math.max(1e-50, k));
+      xs.push(T);
+      ys.push(logk);
+    }
+    var isSelected = Math.abs(Ea_ref - Ea_sel) < 0.01;
+    if (!isSelected) {
+      traces.push({
+        x: xs, y: ys,
+        type: 'scatter', mode: 'lines',
+        name: 'Ea=' + Ea_ref.toFixed(1) + ' eV',
+        line: { color: '#cccccc', width: 1.2 },
+        hovertemplate: 'T=%{x:.0f} K<br>log₁₀(k)=%{y:.1f}<extra>Ea=' + Ea_ref.toFixed(1) + '</extra>'
+      });
+    }
+  });
+
+  // Selected Ea curve in black
+  var xs_sel = [], ys_sel = [];
+  for (var i = 0; i < N; i++) {
+    var T = 200 + i / (N - 1) * 800;
+    var k = tstRate(T, Ea_sel);
+    xs_sel.push(T);
+    ys_sel.push(Math.log10(Math.max(1e-50, k)));
+  }
+  traces.push({
+    x: xs_sel, y: ys_sel,
+    type: 'scatter', mode: 'lines',
+    name: 'Ea=' + Ea_sel.toFixed(2) + ' eV',
+    line: { color: '#000', width: 2.5 },
+    hovertemplate: 'T=%{x:.0f} K<br>log₁₀(k)=%{y:.1f}<extra>Selected</extra>'
+  });
+
+  var layoutExtras = {
+    xaxis: { title: 'Temperature (K)', range: [200, 1000] },
+    yaxis: { title: 'log₁₀(k / s⁻¹)', range: [-30, 15] },
+    showlegend: false
+  };
+
+  return { traces: traces, layoutExtras: layoutExtras };
+}
+
+function buildFig42() {
+  var Ea = 0.8;
+  var d = fig42Data(Ea);
+  Plotly.newPlot('fig42', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout42(Ea);
+}
+
+function updateFig42(Ea) {
+  var d = fig42Data(Ea);
+  Plotly.react('fig42', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout42(Ea);
+}
+
+function updateReadout42(Ea) {
+  var k300 = tstRate(300, Ea);
+  var k500 = tstRate(500, Ea);
+  var k800 = tstRate(800, Ea);
+  document.getElementById('rd-k300').textContent = k300.toExponential(2) + ' s⁻¹';
+  document.getElementById('rd-k500').textContent = k500.toExponential(2) + ' s⁻¹';
+  document.getElementById('rd-k800').textContent = k800.toExponential(2) + ' s⁻¹';
+}
+
+// ============================================================
+// FIGURE 4.3: Arrhenius Plot
+// ============================================================
+function fig43Data(Ea, lnA) {
+  var N = 200;
+  var xs = [], ys = [];
+  // x = 1000/T, T from 200 to 1000 K
+  for (var i = 0; i < N; i++) {
+    var T = 200 + i / (N - 1) * 800;
+    var invT1000 = 1000 / T;
+    var lnk = lnA - Ea / (kB * T);
+    xs.push(invT1000);
+    ys.push(lnk);
+  }
+
+  var slope_K = -Ea / kB; // slope in K (for 1/T)
+  var slope_1000K = slope_K / 1000; // slope for 1000/T axis
+  var extractedEa = -slope_K * kB;
+
+  var trace = {
+    x: xs, y: ys,
+    type: 'scatter', mode: 'lines',
+    line: { color: '#000', width: 2.5 },
+    hovertemplate: '1000/T=%{x:.2f} K⁻¹<br>ln(k)=%{y:.1f}<extra></extra>',
+    showlegend: false
+  };
+
+  // Slope annotation line
+  var annotations = [
+    {
+      x: 3.0, y: lnA - Ea / (kB * (1000 / 3.0)),
+      xref: 'x', yref: 'y',
+      text: 'slope = ' + (slope_K).toFixed(0) + ' K',
+      showarrow: false,
+      font: { size: 11, color: '#666' },
+      xanchor: 'left'
+    }
+  ];
+
+  var layoutExtras = {
+    xaxis: { title: '1000/T (K⁻¹)', range: [1.0, 5.0] },
+    yaxis: { title: 'ln(k)' },
+    annotations: annotations,
+    showlegend: false
+  };
+
+  return {
+    traces: [trace],
+    layoutExtras: layoutExtras,
+    slope_K: slope_K,
+    extractedEa: extractedEa
+  };
+}
+
+function buildFig43() {
+  var Ea = 0.6, lnA = 29.5;
+  var d = fig43Data(Ea, lnA);
+  Plotly.newPlot('fig43', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout43(d.slope_K, d.extractedEa);
+  updateCh43Status(d.slope_K);
+}
+
+function updateFig43(Ea, lnA) {
+  var d = fig43Data(Ea, lnA);
+  Plotly.react('fig43', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout43(d.slope_K, d.extractedEa);
+  updateCh43Status(d.slope_K);
+}
+
+function updateReadout43(slope_K, extractedEa) {
+  document.getElementById('rd-slope43').textContent = slope_K.toFixed(0) + ' K';
+  document.getElementById('rd-extEa43').textContent = extractedEa.toFixed(3) + ' eV';
+}
+
+function updateCh43Status(slope_K) {
+  var s = document.getElementById('ch43-status');
+  if (!s) return;
+  s.textContent = 'slope = ' + slope_K.toFixed(0) + ' K → Ea = ' + (-slope_K * kB).toFixed(3) + ' eV';
+  if (Math.abs(slope_K + 8000) < 300) {
+    s.textContent = 'slope ≈ -8000 K! Ea = ' + (-slope_K * kB).toFixed(3) + ' eV ≈ 0.69 eV';
+    s.className = 'challenge-status success';
+    showToast('정답! slope = -8000 K → Ea ≈ 0.69 eV');
+  } else {
+    s.className = 'challenge-status';
+  }
+}
+
+// ============================================================
+// FIGURE 4.4: Forward, Reverse & Net Rate vs Temperature
+// ============================================================
+function fig44Data(Eaf, dE) {
+  var Ear = Eaf - dE;
+  var N = 300;
+  var Ts = [], logFwd = [], logRev = [], logNet = [];
+  var Teq = null;
+
+  for (var i = 0; i < N; i++) {
+    var T = 200 + i / (N - 1) * 800;
+    var kf = tstRate(T, Eaf);
+    var kr = tstRate(T, Ear);
+    var thetaA = calcCoverage(dE, T, 1.0, -0.002);
+    var thetaStar = 1 - thetaA;
+    var fwd = kf * thetaA * thetaStar;
+    var rev = kr * thetaStar * thetaStar;
+    var net = fwd - rev;
+
+    Ts.push(T);
+    logFwd.push(Math.log10(Math.max(1e-50, fwd)));
+    logRev.push(Math.log10(Math.max(1e-50, rev)));
+    logNet.push(Math.log10(Math.max(1e-50, Math.abs(net))));
+
+    // Find equilibrium temperature (where fwd ≈ rev)
+    if (i > 0 && Teq === null) {
+      var prevDiff = logFwd[i - 1] - logRev[i - 1];
+      var currDiff = logFwd[i] - logRev[i];
+      if (prevDiff * currDiff < 0 || Math.abs(currDiff) < 0.05) {
+        Teq = T;
+      }
+    }
+  }
+
+  var traceFwd = {
+    x: Ts, y: logFwd,
+    type: 'scatter', mode: 'lines',
+    name: 'r_forward',
+    line: { color: '#c0392b', width: 2.5 },
+    hovertemplate: 'T=%{x:.0f} K<br>log₁₀(r_fwd)=%{y:.1f}<extra></extra>'
+  };
+
+  var traceRev = {
+    x: Ts, y: logRev,
+    type: 'scatter', mode: 'lines',
+    name: 'r_reverse',
+    line: { color: '#2980b9', width: 2.5 },
+    hovertemplate: 'T=%{x:.0f} K<br>log₁₀(r_rev)=%{y:.1f}<extra></extra>'
+  };
+
+  var traceNet = {
+    x: Ts, y: logNet,
+    type: 'scatter', mode: 'lines',
+    name: 'r_net',
+    line: { color: '#000', width: 2 },
+    hovertemplate: 'T=%{x:.0f} K<br>log₁₀(|r_net|)=%{y:.1f}<extra></extra>'
+  };
+
+  // Equilibrium marker
+  var shapes = [];
+  if (Teq !== null) {
+    shapes.push({
+      type: 'line', x0: Teq, x1: Teq, y0: -50, y1: 15,
+      xref: 'x', yref: 'y',
+      line: { color: '#bbb', width: 1.5, dash: 'dash' }
+    });
+  }
+
+  var layoutExtras = {
+    xaxis: { title: 'Temperature (K)', range: [200, 1000] },
+    yaxis: { title: 'log₁₀(rate)', range: [-30, 15] },
+    showlegend: false,
+    shapes: shapes
+  };
+
+  return { traces: [traceFwd, traceRev, traceNet], layoutExtras: layoutExtras, Teq: Teq, Ear: Ear };
+}
+
+function buildFig44() {
+  var Eaf = 0.6, dE = -0.3;
+  var d = fig44Data(Eaf, dE);
+  Plotly.newPlot('fig44', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout44(Eaf, d.Ear, d.Teq);
+}
+
+function updateFig44(Eaf, dE) {
+  var d = fig44Data(Eaf, dE);
+  Plotly.react('fig44', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout44(Eaf, d.Ear, d.Teq);
+}
+
+function updateReadout44(Eaf, Ear, Teq) {
+  document.getElementById('rd-Eaf44').textContent = Eaf.toFixed(2) + ' eV';
+  document.getElementById('rd-Ear44').textContent = Ear.toFixed(2) + ' eV';
+  document.getElementById('rd-Teq44').textContent = Teq ? (Math.round(Teq) + ' K') : '> 1000 K';
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 4.1
+  document.getElementById('pes-Ea').addEventListener('input', function() {
+    var Ea = parseFloat(document.getElementById('pes-Ea').value);
+    var dE = parseFloat(document.getElementById('pes-dE').value);
+    document.getElementById('pes-Ea-val').textContent = Ea.toFixed(2) + ' eV';
+    throttledDraw('pes', function() { updateFig41(Ea, dE); });
+  });
+  document.getElementById('pes-dE').addEventListener('input', function() {
+    var Ea = parseFloat(document.getElementById('pes-Ea').value);
+    var dE = parseFloat(document.getElementById('pes-dE').value);
+    document.getElementById('pes-dE-val').innerHTML = (dE < 0 ? '&minus;' : '+') + Math.abs(dE).toFixed(2) + ' eV';
+    throttledDraw('pes', function() { updateFig41(Ea, dE); });
+  });
+
+  // Fig 4.2
+  document.getElementById('tst-Ea').addEventListener('input', function() {
+    var Ea = parseFloat(document.getElementById('tst-Ea').value);
+    document.getElementById('tst-Ea-val').textContent = Ea.toFixed(2) + ' eV';
+    throttledDraw('tst', function() { updateFig42(Ea); });
+  });
+
+  // Fig 4.3
+  document.getElementById('arr-Ea').addEventListener('input', function() {
+    var Ea = parseFloat(document.getElementById('arr-Ea').value);
+    var lnA = parseFloat(document.getElementById('arr-lnA').value);
+    document.getElementById('arr-Ea-val').textContent = Ea.toFixed(2) + ' eV';
+    throttledDraw('arr', function() { updateFig43(Ea, lnA); });
+  });
+  document.getElementById('arr-lnA').addEventListener('input', function() {
+    var Ea = parseFloat(document.getElementById('arr-Ea').value);
+    var lnA = parseFloat(document.getElementById('arr-lnA').value);
+    document.getElementById('arr-lnA-val').textContent = lnA.toFixed(1);
+    throttledDraw('arr', function() { updateFig43(Ea, lnA); });
+  });
+
+  // Fig 4.4
+  document.getElementById('sr-Eaf').addEventListener('input', function() {
+    var Eaf = parseFloat(document.getElementById('sr-Eaf').value);
+    var dE = parseFloat(document.getElementById('sr-dE').value);
+    document.getElementById('sr-Eaf-val').textContent = Eaf.toFixed(2) + ' eV';
+    throttledDraw('sr', function() { updateFig44(Eaf, dE); });
+  });
+  document.getElementById('sr-dE').addEventListener('input', function() {
+    var Eaf = parseFloat(document.getElementById('sr-Eaf').value);
+    var dE = parseFloat(document.getElementById('sr-dE').value);
+    document.getElementById('sr-dE-val').innerHTML = (dE < 0 ? '&minus;' : '+') + Math.abs(dE).toFixed(2) + ' eV';
+    throttledDraw('sr', function() { updateFig44(Eaf, dE); });
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig41();
+  buildFig42();
+  buildFig43();
+  buildFig44();
+  setupSliders();
+}
+
+// Scroll reveal
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(function(s) { observer.observe(s); });
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.add('visible'); });
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

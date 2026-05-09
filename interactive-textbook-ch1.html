@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Introduction to Catalysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "—"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '▶'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Introduction to Catalysis</a>
+    <ul class="nav-links">
+      <li><a href="#s11">1.1 What</a></li>
+      <li><a href="#s12">1.2 Energy</a></li>
+      <li><a href="#s13">1.3 Industry</a></li>
+      <li><a href="#s14">1.4 Why Surfaces</a></li>
+    </ul>
+    <span class="nav-badge">Norskov Ch.1</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">Introduction to Catalysis</h1>
+  <p class="hero-subtitle">Norskov, <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 1. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+  <div class="hero-chips">
+    <span class="chip">Activation Energy</span>
+    <span class="chip">Turnover Frequency</span>
+    <span class="chip">Selectivity</span>
+    <span class="chip">Heterogeneous Catalysis</span>
+    <span class="chip">Haber-Bosch</span>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1.1: What is Catalysis? -->
+<!-- ============================================================ -->
+<section id="s11" class="section">
+  <p class="section-label">Section 1.1</p>
+  <h2 class="section-title">What is Catalysis?</h2>
+  <div class="section-body">
+    <p>촉매(catalyst)는 반응의 활성화 에너지($E_a$)를 낮추되, 자신은 소모되지 않는 물질입니다. 촉매는 평형 위치를 바꾸지 않고 평형에 도달하는 속도만 바꿉니다. 즉, 열역학적으로 불가능한 반응을 가능하게 만드는 것이 아니라, 가능한 반응을 더 빠르게 일어나도록 합니다.</p>
+    <p>반응 속도는 활성화 에너지에 지수적으로 의존합니다:</p>
+  </div>
+
+  <div class="eq-block">$$\text{Rate} \propto \exp\!\left(-\frac{E_a}{k_BT}\right)$$</div>
+
+  <ul class="concept-list">
+    <li><strong>Homogeneous vs Heterogeneous</strong>: 균일 촉매는 반응물과 같은 상(phase)에 존재하고, 불균일 촉매는 다른 상(주로 고체 표면)에서 작동합니다.</li>
+    <li><strong>TOF (Turnover Frequency)</strong>: 촉매 활성 사이트 1개에서 단위 시간당 일어나는 반응 횟수. 촉매 성능의 핵심 지표입니다.</li>
+    <li><strong>Selectivity</strong>: 여러 가능한 생성물 중 원하는 생성물이 만들어지는 비율. 높은 selectivity는 부반응을 줄이고 원료 효율을 높입니다.</li>
+    <li><strong>Catalyst Lifecycle</strong>: 촉매는 반응 사이클을 반복하며 재생됩니다 — 흡착, 반응, 탈착의 순환. 그러나 실제로는 sintering이나 poisoning으로 서서히 비활성화됩니다.</li>
+  </ul>
+
+  <!-- Figure 1.1 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 1.1</span>
+      <span class="figure-title">Catalyzed vs Uncatalyzed Pathway</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch11')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch11">
+      <div class="challenge-goal">목표: rate enhancement가 10<sup>6</sup>이 되는 E<sub>a,cat</sub> 값을 찾아보세요</div>
+      <div class="challenge-desc">500K에서 uncatalyzed barrier 1.5 eV 대비 백만 배 가속을 달성하는 촉매의 활성화 에너지를 슬라이더로 찾아보세요.</div>
+      <div class="challenge-status" id="ch11-status">현재: 슬라이더를 조작해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig11" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">E<sub>a,cat</sub></span>
+          <input type="range" id="pes-Ea" min="0.1" max="1.5" value="0.5" step="0.01">
+          <span class="control-value" id="pes-Ea-val">0.50 eV</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">&#916;E</span>
+          <input type="range" id="pes-dE" min="-1.0" max="0.5" value="-0.5" step="0.01">
+          <span class="control-value" id="pes-dE-val">-0.50 eV</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">E<sub>a,uncat</sub></span>
+          <span class="readout-val" id="rd-Eauncat">1.50 eV</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">E<sub>a,cat</sub></span>
+          <span class="readout-val" id="rd-Eacat">0.50 eV</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Rate Enhancement (500K)</span>
+          <span class="readout-val" id="rd-enhance">—</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">촉매는 &#916;E를 바꾸지 않습니다 — 오직 E<sub>a</sub>만 낮춥니다. 따라서 평형은 촉매 유무에 무관합니다.</div>
+      </div>
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 촉매가 &#916;E도 바꿀 수 있다면?</div>
+          <div class="whatif-hint">열역학 제2법칙에 위배됩니다. &#916;E를 자유롭게 바꿀 수 있다면, 반응의 에너지 사이클을 이용해 에너지를 무한히 생산할 수 있습니다 — 영구기관이 가능해집니다!</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 E<sub>a</sub>를 0으로 만들 수 있다면?</div>
+          <div class="whatif-hint">barrier가 0이면 반응은 확산 제어(diffusion-limited)가 됩니다. 반응물이 만나기만 하면 즉시 반응합니다. 실제로 일부 효소 반응은 이 한계에 가깝습니다 (kcat/Km ~ 10⁸ M⁻¹s⁻¹).</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 1.1 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: 촉매가 바꾸는 것은?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz11')">A) 평형상수</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz11')">B) 반응 엔탈피</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz11')">C) 활성화 에너지</button>
+    </div>
+    <div class="quiz-explain" id="quiz11">촉매는 활성화 에너지(E<sub>a</sub>)를 낮춰 반응 속도를 높입니다. 평형상수나 반응 엔탈피(&#916;H)는 열역학적 양으로, 촉매에 의해 변하지 않습니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1.2: Energy Scales in Catalysis -->
+<!-- ============================================================ -->
+<section id="s12" class="section">
+  <p class="section-label">Section 1.2</p>
+  <h2 class="section-title">Energy Scales in Catalysis</h2>
+  <div class="section-body">
+    <p>촉매 화학에서는 에너지를 eV 단위로 표현하는 것이 일반적입니다. 1 eV = 96.5 kJ/mol = 23.1 kcal/mol. 열에너지 $k_BT$는 상온(298K)에서 약 0.026 eV, 500K에서 약 0.043 eV입니다.</p>
+    <p>활성화 에너지가 $k_BT$보다 훨씬 크기 때문에, 작은 barrier 변화도 반응 속도에 지수적으로 큰 영향을 미칩니다. 이것이 촉매의 위력입니다.</p>
+  </div>
+
+  <div class="eq-block">$$k_BT = 0.0257\,\text{eV at 298K}$$</div>
+
+  <!-- Figure 1.2 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 1.2</span>
+      <span class="figure-title">Rate Enhancement vs Barrier Reduction</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig12" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Temperature</span>
+          <input type="range" id="re-T" min="200" max="1000" value="500" step="10">
+          <span class="control-value" id="re-T-val">500 K</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">&#916;E<sub>a</sub> = 0.2 eV</span>
+          <span class="readout-val" id="rd-re02">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">&#916;E<sub>a</sub> = 0.5 eV</span>
+          <span class="readout-val" id="rd-re05">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">&#916;E<sub>a</sub> = 1.0 eV</span>
+          <span class="readout-val" id="rd-re10">—</span>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#000;"></span>Selected T</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#cccccc;"></span>300K, 500K, 800K (reference)</div>
+      </div>
+      <button class="explore-toggle" onclick="toggleExplore('ex12')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex12">
+        <ol class="explore-steps">
+          <li>T = 500K에서 &#916;E<sub>a</sub> = 0.1 eV를 찾아보세요. log&#8321;&#8320;(rate enhancement) &#8776; 1, 즉 약 10배 빨라집니다.</li>
+          <li>같은 &#916;E<sub>a</sub>에서 T를 300K로 내리면? log&#8321;&#8320; &#8776; 1.7, 약 50배 — 낮은 온도에서 촉매 효과가 더 극적입니다.</li>
+          <li>&#916;E<sub>a</sub> = 1.0 eV, T = 300K이면? 10<sup>16</sup>배 이상 — 사실상 반응이 촉매 없이는 불가능한 수준입니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 낮은 온도에서 촉매의 효과가 더 극적입니다. 이것은 exp(&#916;E<sub>a</sub>/k<sub>B</sub>T)의 지수적 의존성 때문입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 1.2 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: 500K에서 활성화 에너지를 0.1 eV 낮추면 반응 속도는 약 몇 배 증가하는가?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz12')">A) ~10배</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz12')">B) ~100배</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz12')">C) ~2배</button>
+    </div>
+    <div class="quiz-explain" id="quiz12">exp(0.1/(8.617e-5 &times; 500)) = exp(2.32) &#8776; 10.2. 500K에서 0.1 eV 감소는 약 10배의 가속을 줍니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1.3: Industrial Catalysis -->
+<!-- ============================================================ -->
+<section id="s13" class="section">
+  <p class="section-label">Section 1.3</p>
+  <h2 class="section-title">Industrial Catalysis</h2>
+  <div class="section-body">
+    <p>산업 공정의 90% 이상이 촉매를 사용합니다. 대표적인 예로 Haber-Bosch 공정은 Fe 촉매 위에서 N<sub>2</sub>와 H<sub>2</sub>를 약 400&#176;C, 200 bar에서 반응시켜 NH<sub>3</sub>를 합성합니다. 이 단일 공정이 전 세계 인구의 약 50%에게 식량을 제공합니다.</p>
+    <p>Fischer-Tropsch 합성은 합성가스(CO + H<sub>2</sub>)로부터 연료를 생산하며 Co/Fe 촉매를 사용합니다. 자동차 삼원촉매(Pt/Pd/Rh)는 CO, NO<sub>x</sub>, 탄화수소를 동시에 제거합니다.</p>
+  </div>
+
+  <div class="eq-block">$$\text{N}_2 + 3\text{H}_2 \rightleftharpoons 2\text{NH}_3$$</div>
+
+  <!-- Figure 1.3 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 1.3</span>
+      <span class="figure-title">TOF Comparison Across Industrial Reactions</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig13" class="plotly-container"></div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">TOF(Turnover Frequency)는 촉매 1개 활성 사이트에서 1초에 몇 번 반응이 일어나는가를 나타냅니다. CO oxidation은 ~100 s<sup>-1</sup>로 매우 빠르지만, CH<sub>4</sub> combustion은 ~1 s<sup>-1</sup>로 비교적 느립니다.</div>
+      </div>
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 TOF가 100배 늘어나면?</div>
+          <div class="whatif-hint">반응기 크기를 1/100로 줄이거나, 같은 반응기에서 생산량을 100배로 늘릴 수 있습니다. 이것이 촉매 연구의 경제적 동기입니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 Haber-Bosch가 없었다면?</div>
+          <div class="whatif-hint">현재 세계 인구 ~80억의 절반은 먹을 수 없었을 것입니다. Fritz Haber는 이 공정으로 1918년 노벨 화학상을 받았습니다. 촉매 1톤이 수백만 톤의 비료를 생산합니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1.4: Why Surfaces Matter -->
+<!-- ============================================================ -->
+<section id="s14" class="section">
+  <p class="section-label">Section 1.4</p>
+  <h2 class="section-title">Why Surfaces Matter</h2>
+  <div class="section-body">
+    <p>불균일 촉매에서 반응은 고체 표면에서 일어납니다. 벌크 내부의 원자는 반응에 참여하지 않으므로, 표면 원자의 비율(surface fraction)이 촉매 효율을 결정합니다.</p>
+    <p>구형 나노입자의 경우, 표면 원자 비율은 입자 크기에 반비례합니다:</p>
+  </div>
+
+  <div class="eq-block">$$\frac{N_{\text{surface}}}{N_{\text{total}}} \approx \frac{6\,d_{\text{atom}}}{d}$$</div>
+
+  <ul class="concept-list">
+    <li>입자가 작을수록 surface/volume ratio가 증가합니다. 이것이 나노촉매의 핵심 장점입니다.</li>
+    <li>Pt의 경우 $d_{\text{atom}} \approx 0.28$ nm이므로, 2 nm 입자는 표면 비율 ~84%, 10 nm 입자는 ~17%입니다.</li>
+    <li>그러나 너무 작은 입자는 안정성이 떨어지고 sintering이 일어나기 쉽습니다 — 크기-활성 최적점이 존재합니다.</li>
+  </ul>
+
+  <!-- Figure 1.4 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 1.4</span>
+      <span class="figure-title">Surface Fraction vs Particle Size</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig14" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">d<sub>atom</sub></span>
+          <input type="range" id="sf-datom" min="0.24" max="0.32" value="0.28" step="0.01">
+          <span class="control-value" id="sf-datom-val">0.28 nm</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">f<sub>surf</sub> at 2 nm</span>
+          <span class="readout-val" id="rd-f2">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">f<sub>surf</sub> at 5 nm</span>
+          <span class="readout-val" id="rd-f5">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">f<sub>surf</sub> at 10 nm</span>
+          <span class="readout-val" id="rd-f10">—</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">2 nm 입자는 표면 원자 비율이 ~80%. 이것이 나노촉매가 중요한 이유입니다. 입자 크기가 5배 커지면 표면 비율은 5배 감소합니다.</div>
+      </div>
+      <button class="explore-toggle" onclick="toggleExplore('ex14')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex14">
+        <ol class="explore-steps">
+          <li>d = 2 nm, d<sub>atom</sub> = 0.28 nm: f<sub>surf</sub> = 6 &times; 0.28/2 = 0.84. 전체 원자의 84%가 표면에 있습니다.</li>
+          <li>d = 10 nm: f<sub>surf</sub> = 6 &times; 0.28/10 = 0.168. 표면 비율이 17%로 급감합니다.</li>
+          <li>d가 5배 커지면(2 &rarr; 10 nm) 표면 비율은 정확히 5배 감소합니다 (84% &rarr; 17%). 이것은 1/d 의존성의 직접적 결과입니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 나노입자의 크기를 절반으로 줄이면 표면 비율은 2배 증가합니다. 같은 양의 Pt로 두 배의 활성 사이트를 얻을 수 있습니다.</div>
+      </div>
+
+      <!-- Quiz 1.4 -->
+      <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+        <div class="quiz-q">Q: 지름 5 nm Pt 나노입자에서 표면 원자 비율은 약?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz14')">A) 10%</button>
+          <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz14')">B) 34%</button>
+          <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz14')">C) 80%</button>
+        </div>
+        <div class="quiz-explain" id="quiz14">f<sub>surf</sub> = 6 &times; 0.28 / 5 = 0.336 &#8776; 34%. 5 nm는 나노촉매에서 흔한 크기이며, 표면 비율이 여전히 상당히 높습니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TAKEAWAYS -->
+<!-- ============================================================ -->
+<section class="takeaways section">
+  <p class="section-label">Key Takeaways</p>
+  <h2 class="section-title">Chapter 1 핵심 메시지</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">10&#8310;</div>
+      <div class="takeaway-title">배의 가속</div>
+      <div class="takeaway-body">E<sub>a</sub>를 0.3 eV 낮추면 500K에서 rate이 백만 배. 이것이 촉매가 세상을 바꾸는 메커니즘입니다.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">50%</div>
+      <div class="takeaway-title">세계 인구의 식량</div>
+      <div class="takeaway-body">Haber-Bosch 공정 없이는 현재 인구의 절반이 먹을 수 없습니다. 단 하나의 촉매 반응이 문명을 지탱합니다.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">6/d</div>
+      <div class="takeaway-title">나노의 힘</div>
+      <div class="takeaway-body">입자가 작을수록 표면 비율 증가. 나노촉매는 같은 양의 금속으로 더 많은 활성 사이트를 제공합니다.</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Norskov, Bligaard, Kleis — <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 1</span>
+    <span class="footer-text">움직이는 교과서 · Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+const kB = 8.617e-5; // eV/K
+const h  = 4.136e-15; // eV·s
+const c  = 2.998e10;  // cm/s
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function safeExp(x) {
+  return Math.exp(Math.max(-500, Math.min(500, x)));
+}
+
+function pesEnergy(x, Ea, dE) {
+  return 4 * (Ea - dE / 4) * x * (1 - x) + dE * x;
+}
+
+function rateEnhancement(dEa, T) {
+  return safeExp(dEa / (kB * T));
+}
+
+function surfaceFraction(d_nm, d_atom_nm) {
+  return Math.min(1, 6 * d_atom_nm / d_nm);
+}
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  return Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis),
+    font: Object.assign({}, baseLayout.font, extra.font)
+  });
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+const rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(() => { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// FIGURE 1.1: Catalyzed vs Uncatalyzed PES
+// ============================================================
+function fig11Data(Ea_cat, dE) {
+  const Ea_uncat = 1.5;
+  const N = 200;
+  const xs = [], ys_uncat = [], ys_cat = [];
+  for (let i = 0; i < N; i++) {
+    const x = i / (N - 1);
+    xs.push(x);
+    ys_uncat.push(pesEnergy(x, Ea_uncat, dE));
+    ys_cat.push(pesEnergy(x, Ea_cat, dE));
+  }
+
+  const traces = [
+    {
+      x: xs, y: ys_uncat,
+      type: 'scatter', mode: 'lines',
+      name: 'Uncatalyzed',
+      line: { color: '#cccccc', width: 2, dash: 'dash' },
+      hovertemplate: 'x=%{x:.2f}<br>E=%{y:.3f} eV<extra>Uncatalyzed</extra>'
+    },
+    {
+      x: xs, y: ys_cat,
+      type: 'scatter', mode: 'lines',
+      name: 'Catalyzed',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'x=%{x:.2f}<br>E=%{y:.3f} eV<extra>Catalyzed</extra>'
+    }
+  ];
+
+  const layoutExtras = {
+    xaxis: { title: 'Reaction Coordinate', range: [0, 1] },
+    yaxis: { title: 'Energy (eV)', range: [Math.min(dE, -0.2) - 0.3, Math.max(Ea_uncat, Ea_cat) + 0.3] },
+    showlegend: true,
+    legend: { x: 0.6, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 },
+    annotations: [
+      {
+        x: 0.5, y: pesEnergy(0.5, Ea_uncat, dE),
+        xref: 'x', yref: 'y',
+        text: 'E_a,uncat',
+        showarrow: true, arrowhead: 0, arrowcolor: '#999',
+        ax: 40, ay: -25,
+        font: { size: 11, color: '#666' }
+      },
+      {
+        x: 0.5, y: pesEnergy(0.5, Ea_cat, dE),
+        xref: 'x', yref: 'y',
+        text: 'E_a,cat',
+        showarrow: true, arrowhead: 0, arrowcolor: '#000',
+        ax: -40, ay: -25,
+        font: { size: 11, color: '#000' }
+      }
+    ]
+  };
+
+  return { traces, layoutExtras };
+}
+
+function buildFig11() {
+  const Ea_cat = 0.5, dE = -0.5;
+  const { traces, layoutExtras } = fig11Data(Ea_cat, dE);
+  Plotly.newPlot('fig11', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout11(Ea_cat, dE);
+}
+
+function updateFig11(Ea_cat, dE) {
+  const { traces, layoutExtras } = fig11Data(Ea_cat, dE);
+  Plotly.react('fig11', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout11(Ea_cat, dE);
+}
+
+function updateReadout11(Ea_cat, dE) {
+  const Ea_uncat = 1.5;
+  const T = 500;
+  const dEa = Ea_uncat - Ea_cat;
+  const enhance = rateEnhancement(dEa, T);
+  const logEnhance = Math.log10(enhance);
+
+  document.getElementById('rd-Eauncat').textContent = Ea_uncat.toFixed(2) + ' eV';
+  document.getElementById('rd-Eacat').textContent = Ea_cat.toFixed(2) + ' eV';
+
+  let enhStr;
+  if (logEnhance < 4) {
+    enhStr = enhance.toFixed(1) + 'x';
+  } else {
+    enhStr = '10^' + logEnhance.toFixed(1);
+  }
+  document.getElementById('rd-enhance').textContent = enhStr;
+
+  // Challenge check: rate enhancement ~ 10^6
+  const s = document.getElementById('ch11-status');
+  if (s) {
+    s.textContent = 'E_a,cat = ' + Ea_cat.toFixed(2) + ' eV → rate enhancement = ' + enhStr;
+    s.className = 'challenge-status';
+    if (Math.abs(logEnhance - 6) < 0.3) {
+      s.textContent = '10^6 달성! E_a,cat = ' + Ea_cat.toFixed(2) + ' eV에서 rate enhancement ≈ 10^' + logEnhance.toFixed(1);
+      s.className = 'challenge-status success';
+      showToast('도전 과제 완료! rate enhancement ≈ 10⁶');
+    }
+  }
+}
+
+// ============================================================
+// FIGURE 1.2: Rate Enhancement vs Barrier Reduction
+// ============================================================
+function fig12Data(Tsel) {
+  const refTemps = [300, 500, 800];
+  const N = 200;
+  const traces = [];
+
+  refTemps.forEach(Tr => {
+    const xs = [], ys = [];
+    for (let i = 0; i < N; i++) {
+      const dEa = i / (N - 1) * 1.5;
+      const logRE = Math.log10(rateEnhancement(dEa, Tr));
+      xs.push(dEa);
+      ys.push(logRE);
+    }
+    const isSelected = Math.abs(Tr - Tsel) < 15;
+    traces.push({
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      name: Tr + ' K',
+      line: {
+        color: isSelected ? '#000' : '#cccccc',
+        width: isSelected ? 2.5 : 1.2
+      },
+      hovertemplate: 'ΔEa=%{x:.2f} eV<br>log₁₀(enhancement)=%{y:.1f}<extra>' + Tr + ' K</extra>'
+    });
+  });
+
+  // Extra trace for T not in refTemps
+  if (!refTemps.some(r => Math.abs(r - Tsel) < 15)) {
+    const xs = [], ys = [];
+    for (let i = 0; i < N; i++) {
+      const dEa = i / (N - 1) * 1.5;
+      const logRE = Math.log10(rateEnhancement(dEa, Tsel));
+      xs.push(dEa);
+      ys.push(logRE);
+    }
+    traces.push({
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      name: Tsel + ' K',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'ΔEa=%{x:.2f} eV<br>log₁₀(enhancement)=%{y:.1f}<extra>' + Tsel + ' K</extra>'
+    });
+  }
+
+  const layoutExtras = {
+    xaxis: { title: 'ΔE_a (eV)', range: [0, 1.5] },
+    yaxis: { title: 'log₁₀(Rate Enhancement)', range: [0, 30] },
+    showlegend: true,
+    legend: { x: 0.05, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  };
+
+  return { traces, layoutExtras };
+}
+
+function buildFig12() {
+  const T = 500;
+  const { traces, layoutExtras } = fig12Data(T);
+  Plotly.newPlot('fig12', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout12(T);
+}
+
+function updateFig12(T) {
+  const { traces, layoutExtras } = fig12Data(T);
+  Plotly.react('fig12', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout12(T);
+}
+
+function updateReadout12(T) {
+  const fmt = (dEa) => {
+    const logRE = Math.log10(rateEnhancement(dEa, T));
+    if (logRE < 4) return rateEnhancement(dEa, T).toFixed(1) + 'x';
+    return '10^' + logRE.toFixed(1);
+  };
+  document.getElementById('rd-re02').textContent = fmt(0.2);
+  document.getElementById('rd-re05').textContent = fmt(0.5);
+  document.getElementById('rd-re10').textContent = fmt(1.0);
+}
+
+// ============================================================
+// FIGURE 1.3: TOF Bar Chart
+// ============================================================
+function buildFig13() {
+  const reactions = [
+    { name: 'CO Oxidation', tof: 100, type: 'thermal' },
+    { name: 'HER', tof: 100, type: 'electro' },
+    { name: 'WGS', tof: 50, type: 'thermal' },
+    { name: 'NH₃ Synthesis', tof: 10, type: 'thermal' },
+    { name: 'Ethylene Epoxidation', tof: 10, type: 'thermal' },
+    { name: 'FTS', tof: 5, type: 'thermal' },
+    { name: 'Methanol Synthesis', tof: 5, type: 'thermal' },
+    { name: 'CH₄ Combustion', tof: 1, type: 'thermal' }
+  ];
+
+  const colors = reactions.map(r => r.type === 'electro' ? '#2980b9' : '#000');
+
+  const trace = {
+    type: 'bar',
+    x: reactions.map(r => Math.log10(r.tof)),
+    y: reactions.map(r => r.name),
+    orientation: 'h',
+    marker: { color: colors },
+    text: reactions.map(r => '~' + r.tof + ' s⁻¹'),
+    textposition: 'outside',
+    textfont: { size: 11, color: '#666', family: 'Inter, sans-serif' },
+    hovertemplate: '%{y}<br>TOF ≈ %{text}<br>log₁₀(TOF) = %{x:.1f}<extra></extra>'
+  };
+
+  const layout = mergeLayout({
+    xaxis: { title: 'log₁₀(TOF / s⁻¹)', range: [-0.3, 2.8] },
+    yaxis: { automargin: true },
+    margin: { t: 20, r: 80, b: 50, l: 160 },
+    showlegend: false
+  });
+
+  Plotly.newPlot('fig13', [trace], layout, plotlyCfg);
+}
+
+// ============================================================
+// FIGURE 1.4: Surface Fraction vs Particle Size
+// ============================================================
+function fig14Data(d_atom) {
+  const N = 200;
+  const xs = [], ys = [];
+  for (let i = 0; i < N; i++) {
+    const d = 1 + i / (N - 1) * 19; // 1 to 20 nm
+    xs.push(d);
+    ys.push(surfaceFraction(d, d_atom));
+  }
+
+  const traces = [
+    {
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'd=%{x:.1f} nm<br>f_surf=%{y:.3f}<extra></extra>',
+      showlegend: false
+    }
+  ];
+
+  const layoutExtras = {
+    xaxis: { title: 'Particle Diameter (nm)', range: [1, 20] },
+    yaxis: { title: 'Surface Fraction', range: [0, 1] },
+    showlegend: false
+  };
+
+  return { traces, layoutExtras };
+}
+
+function buildFig14() {
+  const d_atom = 0.28;
+  const { traces, layoutExtras } = fig14Data(d_atom);
+  Plotly.newPlot('fig14', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout14(d_atom);
+}
+
+function updateFig14(d_atom) {
+  const { traces, layoutExtras } = fig14Data(d_atom);
+  Plotly.react('fig14', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout14(d_atom);
+}
+
+function updateReadout14(d_atom) {
+  document.getElementById('rd-f2').textContent = (surfaceFraction(2, d_atom) * 100).toFixed(0) + '%';
+  document.getElementById('rd-f5').textContent = (surfaceFraction(5, d_atom) * 100).toFixed(0) + '%';
+  document.getElementById('rd-f10').textContent = (surfaceFraction(10, d_atom) * 100).toFixed(0) + '%';
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 1.1
+  document.getElementById('pes-Ea').addEventListener('input', () => {
+    const Ea = parseFloat(document.getElementById('pes-Ea').value);
+    const dE = parseFloat(document.getElementById('pes-dE').value);
+    document.getElementById('pes-Ea-val').textContent = Ea.toFixed(2) + ' eV';
+    throttledDraw('pes', () => updateFig11(Ea, dE));
+  });
+  document.getElementById('pes-dE').addEventListener('input', () => {
+    const Ea = parseFloat(document.getElementById('pes-Ea').value);
+    const dE = parseFloat(document.getElementById('pes-dE').value);
+    document.getElementById('pes-dE-val').textContent = dE.toFixed(2) + ' eV';
+    throttledDraw('pes', () => updateFig11(Ea, dE));
+  });
+
+  // Fig 1.2
+  document.getElementById('re-T').addEventListener('input', () => {
+    const T = parseFloat(document.getElementById('re-T').value);
+    document.getElementById('re-T-val').textContent = T + ' K';
+    throttledDraw('re', () => updateFig12(T));
+  });
+
+  // Fig 1.4
+  document.getElementById('sf-datom').addEventListener('input', () => {
+    const d_atom = parseFloat(document.getElementById('sf-datom').value);
+    document.getElementById('sf-datom-val').textContent = d_atom.toFixed(2) + ' nm';
+    throttledDraw('sf', () => updateFig14(d_atom));
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig11();
+  buildFig12();
+  buildFig13();
+  buildFig14();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

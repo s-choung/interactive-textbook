@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Volcano Curves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "—"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '▶'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Volcano Curves &amp; Activity Maps</a>
+    <ul class="nav-links">
+      <li><a href="#s61">6.1 Sabatier</a></li>
+      <li><a href="#s62">6.2 Volcano</a></li>
+      <li><a href="#s63">6.3 2D Maps</a></li>
+      <li><a href="#s64">6.4 Selectivity</a></li>
+    </ul>
+    <span class="nav-badge">Norskov Ch.6</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">Volcano Curves</h1>
+  <p class="hero-subtitle">이 챕터는 Ch.3(표면 평형), Ch.4(속도론), Ch.5(scaling)를 하나로 합칩니다. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+  <div class="hero-chips">
+    <span class="chip">Sabatier Principle</span>
+    <span class="chip">Volcano Plot</span>
+    <span class="chip">Activity Map</span>
+    <span class="chip">Selectivity</span>
+    <span class="chip">Optimal Catalyst</span>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6.1: The Sabatier Principle -->
+<!-- ============================================================ -->
+<section id="s61" class="section">
+  <p class="section-label">Section 6.1</p>
+  <h2 class="section-title">The Sabatier Principle</h2>
+
+  <div class="section-body">
+    <p>최적의 촉매는 반응물을 너무 강하게도, 너무 약하게도 결합하지 않습니다. 너무 강하면(poisoning) 생성물이 표면에서 떠나지 못하고, 너무 약하면(no adsorption) 반응이 시작되지 않습니다. 이 "Goldilocks" 조건이 화산형 곡선의 정점입니다.</p>
+    <p>Sabatier 원리는 촉매 설계의 가장 근본적인 가이드라인으로, 하나의 descriptor(결합 에너지)만으로 촉매 활성의 전체 경향을 예측할 수 있게 합니다.</p>
+  </div>
+
+  <div class="eq-block">
+    $$\text{TOF}_{\text{opt}} \text{ at } \Delta E^* \text{ where } \frac{d(\ln\text{TOF})}{d\Delta E} = 0$$
+  </div>
+
+  <ul class="concept-list">
+    <li>Left leg = surface poisoned (too strong binding) — 생성물이 탈착되지 못해 활성 사이트가 차단됩니다</li>
+    <li>Right leg = no coverage (too weak binding) — 반응물이 흡착되지 않아 반응이 일어나지 않습니다</li>
+    <li>Peak = optimal binding — 흡착과 탈착의 균형이 최적인 지점</li>
+    <li>촉매 설계의 목표: 정점의 금속을 찾거나, 합금으로 결합 에너지를 정점에 맞추기</li>
+  </ul>
+
+  <!-- Figure 6.1: Sabatier Concept -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 6.1</span>
+      <span class="figure-title">Sabatier Principle — Conceptual</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig61" class="plotly-container"></div>
+
+      <div class="highlight" style="margin-top: var(--spacing-24);">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">왼쪽과 오른쪽의 rate-limiting step이 다르기 때문에 두 직선의 기울기가 다릅니다. 교차점이 Sabatier optimum입니다. 왼쪽에서는 탈착(desorption)이, 오른쪽에서는 해리 흡착(dissociative adsorption)이 율속 단계입니다.</div>
+      </div>
+
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 결합 에너지와 무관하게 barrier가 일정하다면?</div>
+          <div class="whatif-hint">화산이 생기지 않고 평평한 선이 됩니다. BEP 관계(barrier와 반응 에너지의 상관관계)가 있어야만 화산 곡선이 나타납니다. 이것이 Ch.5에서 배운 scaling relation이 왜 중요한지를 보여줍니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 모든 금속이 정점에 있다면?</div>
+          <div class="whatif-hint">더 이상 촉매 개선이 불가능해집니다. 현실에서는 정점 근처의 금속이 드물기 때문에 촉매 설계가 도전적입니다. 합금, 표면 구조 변형 등으로 정점에 가까운 촉매를 만드는 것이 연구의 핵심입니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6.2: Constructing the Volcano -->
+<!-- ============================================================ -->
+<section id="s62" class="section">
+  <p class="section-label">Section 6.2</p>
+  <h2 class="section-title">Constructing the Volcano</h2>
+
+  <div class="section-body">
+    <p>Ch.4의 rate expression과 Ch.5의 BEP 관계를 합치면 TOF를 결합 에너지의 함수로 계산할 수 있습니다. 핵심 모델은 두 가지 경쟁 과정을 고려합니다.</p>
+    <p>해리 흡착(weak-binding side의 RDS): $E_{a,diss} = \alpha\,\Delta E + \beta$. 결합이 약할수록 해리 barrier가 높아집니다.</p>
+    <p>생성물 탈착(strong-binding side의 RDS): $E_{a,des} = -\Delta E$. 결합이 강할수록 탈착 barrier가 높아집니다.</p>
+    <p>전체 TOF는 두 과정 중 더 느린 것에 의해 결정됩니다.</p>
+  </div>
+
+  <div class="eq-block">
+    $$E_{a,diss} = \alpha\,\Delta E + \beta$$
+  </div>
+  <div class="eq-block">
+    $$E_{a,des} = -\Delta E$$
+  </div>
+  <div class="eq-block">
+    $$\text{TOF} = \frac{1}{r_{diss}^{-1} + r_{des}^{-1}}$$
+  </div>
+
+  <details class="derivation">
+    <summary>유도 과정 보기</summary>
+    <div class="deriv-body">
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">1</span>
+          <div class="deriv-step-text">BEP 관계로 해리 흡착 barrier를 표현합니다: $E_{a,diss} = \alpha\,\Delta E + \beta$. 여기서 $\alpha$는 BEP 기울기, $\beta$는 절편입니다.</div>
+        </div>
+        <div class="deriv-meaning">결합이 약할수록($\Delta E$가 양수) barrier가 높아집니다.</div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">2</span>
+          <div class="deriv-step-text">탈착 barrier는 흡착 에너지의 크기와 같습니다: $E_{a,des} = -\Delta E$ (when $\Delta E < 0$).</div>
+        </div>
+        <div class="deriv-meaning">결합이 강할수록($\Delta E$가 음수, 절대값 큼) 탈착이 어렵습니다.</div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">3</span>
+          <div class="deriv-step-text">각 과정의 속도를 Arrhenius로 표현합니다: $r_{diss} = \exp(-E_{a,diss}/k_BT)$, $r_{des} = \exp(-E_{a,des}/k_BT)$.</div>
+        </div>
+        <div class="deriv-meaning">Boltzmann factor가 각 과정의 상대 속도를 결정합니다.</div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">4</span>
+          <div class="deriv-step-text">두 과정이 직렬(series)로 작동하므로 전체 TOF = $1/(1/r_{diss} + 1/r_{des})$. 더 느린 과정이 율속입니다.</div>
+        </div>
+        <div class="deriv-meaning">이것은 전기 회로의 직렬 저항과 동일한 논리입니다.</div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Figure 6.2: 1D Volcano Plot -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 6.2</span>
+      <span class="figure-title">1D Volcano Plot</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch62')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch62">
+      <div class="challenge-goal">목표: α와 T를 조절해서 Pt가 정점에 오도록 만들어보세요</div>
+      <div class="challenge-desc">Pt의 결합 에너지는 약 −0.5 eV입니다. BEP 기울기(α)와 온도(T)를 조절하면 화산의 정점 위치가 바뀝니다. Pt가 정점 금속이 되는 조건을 찾아보세요.</div>
+      <div class="challenge-status" id="ch62-status">현재: 슬라이더를 조작해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig62" class="plotly-container"></div>
+
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">BEP slope α</span>
+          <input type="range" id="v-alpha" min="0.50" max="1.00" value="0.87" step="0.01">
+          <span class="control-value" id="v-alpha-val">0.87</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">BEP intercept β</span>
+          <input type="range" id="v-beta" min="0.50" max="2.50" value="1.50" step="0.05">
+          <span class="control-value" id="v-beta-val">1.50 eV</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Temperature T</span>
+          <input type="range" id="v-T" min="300" max="800" value="500" step="10">
+          <span class="control-value" id="v-T-val">500 K</span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">Optimal ΔE*</span>
+          <span class="readout-val" id="rd-optdE">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Peak log₁₀(TOF)</span>
+          <span class="readout-val" id="rd-peakTOF">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Best Metal</span>
+          <span class="readout-val" id="rd-bestMetal">—</span>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#c0392b;"></div>r<sub>diss</sub> (dissociation)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2980b9;"></div>r<sub>des</sub> (desorption)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#000; height:3px;"></div>TOF (overall)</div>
+      </div>
+
+      <div class="highlight" style="margin-top: var(--spacing-24);">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">화산의 왼쪽(강한 결합)에서는 탈착이 율속이고, 오른쪽(약한 결합)에서는 해리 흡착이 율속입니다. 두 직선이 교차하는 곳이 최적 촉매의 위치입니다. 금속 점의 세로 위치가 그 금속의 예측 활성입니다.</div>
+      </div>
+
+      <button class="explore-toggle" onclick="toggleExplore('ex62')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex62">
+        <ol class="explore-steps">
+          <li>기본값(α=0.87, β=1.50, T=500K)에서 정점 금속을 확인하세요. 어떤 금속이 가장 높은 TOF를 보이나요?</li>
+          <li>T를 300K에서 800K까지 올려보세요. 화산이 "넓어지고 낮아지는" 것을 관찰하세요.</li>
+          <li>α를 0.5로 낮춰보세요. 왼쪽 기울기가 완만해져 해리 흡착 쪽 직선이 변합니다.</li>
+          <li>β를 2.5로 올려보세요. 전체 화산이 왼쪽으로 이동합니다. 어떤 금속이 항상 정점 근처에 있나요?</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 온도를 올리면 kBT가 커져 Boltzmann factor의 차이가 줄어들고, 화산이 평평해집니다. 이는 더 많은 금속이 "reasonable" 촉매가 됨을 의미합니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 6.2 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: 화산 곡선의 온도를 올리면 어떻게 변하나요?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz62')">A) 높아진다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz62')">B) 넓어지고 낮아진다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz62')">C) 변하지 않는다</button>
+    </div>
+    <div class="quiz-explain" id="quiz62">온도가 올라가면 $k_BT$가 커져 Boltzmann factor 차이가 줄어듭니다. 해리와 탈착의 속도 차이가 작아지므로 화산이 넓고 낮아집니다. 이는 고온에서 더 다양한 금속이 활성을 보이는 이유입니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6.3: 2D Activity Maps -->
+<!-- ============================================================ -->
+<section id="s63" class="section">
+  <p class="section-label">Section 6.3</p>
+  <h2 class="section-title">2D Activity Maps</h2>
+
+  <div class="section-body">
+    <p>실제 반응은 두 개 이상의 descriptor가 필요할 수 있습니다. 예를 들어, $\Delta E_C$와 $\Delta E_O$가 독립적인 경우입니다. 2D 화산은 heatmap으로 표현되며, 금속의 위치가 활성을 결정합니다.</p>
+    <p>이 접근법은 현대 computational catalysis에서 가장 널리 쓰이는 screening 전략입니다. DFT로 두 descriptor를 계산하고, 이 맵에서 위치를 확인하면 됩니다.</p>
+  </div>
+
+  <div class="eq-block">
+    $$\text{TOF}(\Delta E_1, \Delta E_2) = f(\text{BEP}_1, \text{BEP}_2, \text{Langmuir})$$
+  </div>
+
+  <!-- Figure 6.3: 2D Volcano Heatmap -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 6.3</span>
+      <span class="figure-title">2D Volcano Heatmap</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig63" class="plotly-container" style="min-height:440px;"></div>
+
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Temperature T</span>
+          <input type="range" id="hm-T2" min="300" max="800" value="500" step="10">
+          <span class="control-value" id="hm-T2-val">500 K</span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">Optimal (ΔE₁*, ΔE₂*)</span>
+          <span class="readout-val" id="rd-opt2d">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Best Metal</span>
+          <span class="readout-val" id="rd-bestMetal2d">—</span>
+        </div>
+      </div>
+
+      <div class="highlight" style="margin-top: var(--spacing-24);">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">실제 촉매 screening에서 DFT로 $\Delta E_1$, $\Delta E_2$를 계산하고 이 맵에서 위치를 확인합니다. 정점(붉은 영역)에 가까울수록 좋은 촉매입니다. 합금을 만들면 순수 금속 사이의 중간 위치에 놓일 수 있어, descriptor 공간에서의 촉매 설계가 가능합니다.</div>
+      </div>
+
+      <button class="explore-toggle" onclick="toggleExplore('ex63')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex63">
+        <ol class="explore-steps">
+          <li>기본 온도(500K)에서 정점(가장 붉은 영역)의 좌표를 확인하세요.</li>
+          <li>T를 800K까지 올려보세요. 정점이 이동하는지 관찰하세요. 붉은 영역이 넓어지나요?</li>
+          <li>어떤 금속이 정점 근처에 있나요? Pt, Pd, Rh의 위치를 비교해보세요.</li>
+          <li>Au, Ag 같은 귀금속은 왜 활성이 낮은지 맵에서 확인하세요.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 2D volcano map은 단일 descriptor로 설명할 수 없는 반응에서 핵심 도구입니다. 두 descriptor의 독립적 변화가 활성을 결정하며, 합금 설계로 최적 영역에 접근할 수 있습니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6.4: Selectivity -->
+<!-- ============================================================ -->
+<section id="s64" class="section">
+  <p class="section-label">Section 6.4</p>
+  <h2 class="section-title">Selectivity</h2>
+
+  <div class="section-body">
+    <p>두 가지 생성물 A, B가 경쟁할 때, 각 경로의 rate 비율이 선택성을 결정합니다. Volcano 위의 위치에 따라 어떤 생성물이 우세한지 달라집니다.</p>
+    <p>선택성은 활성만큼이나 중요합니다. 아무리 빠른 촉매라도 원하지 않는 생성물을 만든다면 쓸모가 없습니다. 두 경로의 BEP 파라미터 차이가 선택성의 원천입니다.</p>
+  </div>
+
+  <div class="eq-block">
+    $$S_A = \frac{r_A}{r_A + r_B}$$
+  </div>
+
+  <!-- Figure 6.4: Selectivity Map -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 6.4</span>
+      <span class="figure-title">Selectivity Map</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch64')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch64">
+      <div class="challenge-goal">목표: Δα를 조절해서 Pt에서 S<sub>A</sub> &gt; 0.9가 되도록 해보세요</div>
+      <div class="challenge-desc">Pt의 결합 에너지는 약 −0.5 eV입니다. BEP 기울기 차이(Δα)와 절편 차이(Δβ)를 조절하면 선택성 곡선이 바뀝니다. Pt에서 원하는 생성물 A의 선택성이 90%를 넘도록 해보세요.</div>
+      <div class="challenge-status" id="ch64-status">현재: 슬라이더를 조작해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig64-volcano" class="plotly-container" style="min-height:300px;"></div>
+      <div id="fig64-sel" class="plotly-container" style="min-height:300px; margin-top:16px;"></div>
+
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Δα = α<sub>A</sub> − α<sub>B</sub></span>
+          <input type="range" id="sel-da" min="-0.30" max="0.30" value="0.12" step="0.01">
+          <span class="control-value" id="sel-da-val">0.12</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Δβ = β<sub>A</sub> − β<sub>B</sub></span>
+          <input type="range" id="sel-db" min="-0.50" max="0.50" value="0.30" step="0.05">
+          <span class="control-value" id="sel-db-val">0.30 eV</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Temperature T</span>
+          <input type="range" id="sel-T" min="300" max="800" value="500" step="10">
+          <span class="control-value" id="sel-T-val">500 K</span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">S<sub>A</sub> at Pt (ΔE=−0.5)</span>
+          <span class="readout-val" id="rd-saPt">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Crossover ΔE (S<sub>A</sub>=0.5)</span>
+          <span class="readout-val" id="rd-crossover">—</span>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#c0392b;"></div>TOF<sub>A</sub> (desired)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2980b9;"></div>TOF<sub>B</sub> (side product)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#000; height:3px;"></div>Selectivity S<sub>A</sub></div>
+      </div>
+
+      <div class="highlight" style="margin-top: var(--spacing-24);">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">BEP 파라미터(α, β)가 다른 두 경로는 결합 에너지에 따라 선택성이 달라집니다. 흥미로운 것은 activity와 selectivity 사이에 tradeoff가 존재한다는 점입니다. 가장 활성이 높은 촉매가 항상 가장 선택적이지는 않습니다.</div>
+      </div>
+
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 두 경로의 BEP가 동일하다면?</div>
+          <div class="whatif-hint">$S_A = 0.5$ everywhere. 결합 에너지를 바꿔도 선택성이 변하지 않습니다. BEP 차이가 선택성의 원천이며, α가 같으면 ΔE에 무관한 일정한 선택성이 됩니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 온도를 극단적으로 올리면?</div>
+          <div class="whatif-hint">고온에서는 $k_BT$가 커져 Boltzmann factor 차이가 작아집니다. 선택성이 0.5에 수렴하여 두 생성물이 비슷한 비율로 생성됩니다. 선택성을 높이려면 적절한 저온이 유리합니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+
+      <button class="explore-toggle" onclick="toggleExplore('ex64')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex64">
+        <ol class="explore-steps">
+          <li>기본값(Δα=0.12, Δβ=0.30, T=500K)에서 crossover 위치(S<sub>A</sub>=0.5)를 확인하세요.</li>
+          <li>Δα를 0.25로 증가시키세요. Crossover가 어떻게 이동하나요?</li>
+          <li>T를 300K로 낮추면 선택성 곡선이 얼마나 급격해지는지 확인하세요.</li>
+          <li>Volcano plot에서 activity와 selectivity의 tradeoff를 관찰하세요. 가장 빠른 촉매가 가장 선택적인가요?</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> Activity와 selectivity의 tradeoff는 촉매 설계에서 가장 중요한 고려사항 중 하나입니다. 최적 촉매는 충분한 활성과 높은 선택성을 동시에 달성하는 점입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 6.4 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: 두 경로의 α가 같고 β만 다를 때, 선택성은 ΔE에 의존하나요?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz64')">A) 예, ΔE에 따라 변한다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz64')">B) 아니오, 항상 일정하다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz64')">C) 온도에만 의존한다</button>
+    </div>
+    <div class="quiz-explain" id="quiz64">α가 같으면 ΔE 변화가 두 경로에 동일하게 적용되므로 TOF의 비율이 ΔE에 무관합니다. $S_A = r_A/(r_A+r_B) = 1/(1 + r_B/r_A)$에서 $r_B/r_A = \exp((\beta_A - \beta_B)/(k_BT))$로 ΔE가 사라집니다. β 차이만이 온도에 의존하는 일정한 선택성을 결정합니다.</div>
+  </div>
+
+  <!-- Bonus Quiz -->
+  <div class="quiz-block" style="margin-top:20px; max-width:600px;">
+    <div class="quiz-q">Q: 화산 곡선에서 합금 촉매의 장점은 무엇인가요?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz65')">A) 항상 순수 금속보다 활성이 높다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz65')">B) 결합 에너지를 정점에 가깝게 조절할 수 있다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz65')">C) BEP 관계를 변경할 수 있다</button>
+    </div>
+    <div class="quiz-explain" id="quiz65">합금은 두 (혹은 그 이상) 금속의 중간 결합 에너지를 가질 수 있어, 순수 금속으로는 도달할 수 없는 화산 정점 근처의 위치에 촉매를 배치할 수 있습니다. BEP 관계 자체는 반응의 고유 성질이므로 합금으로 변경되지 않습니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TAKEAWAYS -->
+<!-- ============================================================ -->
+<section class="takeaways section">
+  <p class="section-label">Key Takeaways</p>
+  <h2 class="section-title">Chapter 6 핵심 메시지</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">∧</div>
+      <div class="takeaway-title">Volcano = BEP + Coverage</div>
+      <div class="takeaway-body">화산 곡선은 scaling relation(Ch.5)과 surface coverage(Ch.3)의 결합입니다. 하나의 descriptor로 촉매 활성을 예측하는 가장 강력한 도구입니다.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">T</div>
+      <div class="takeaway-title">온도는 화산을 넓힌다</div>
+      <div class="takeaway-body">온도가 올라가면 $k_BT$가 커져 Boltzmann factor 차이가 줄어듭니다. 화산이 넓고 낮아져 — 더 많은 금속이 "reasonable" catalyst가 됩니다.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">2D</div>
+      <div class="takeaway-title">Multiple Descriptors</div>
+      <div class="takeaway-body">실제 반응은 한 descriptor로 부족할 수 있습니다. 2D volcano map + DFT screening이 현대 computational catalysis의 핵심 전략입니다.</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Norskov, Bligaard, Kleis — <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 6</span>
+    <span class="footer-text">움직이는 교과서 · Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+const kB = 8.617e-5; // eV/K
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function safeExp(x) {
+  return Math.exp(Math.max(-500, Math.min(500, x)));
+}
+
+// ============================================================
+// VOLCANO CORE MODEL
+// ============================================================
+function volcanoRate(dE, alpha, beta, T) {
+  const Ea_diss = Math.max(0, alpha * dE + beta);
+  const Ea_des = Math.max(0, -dE);
+  const r_diss = safeExp(-Ea_diss / (kB * T));
+  const r_des = safeExp(-Ea_des / (kB * T));
+  return 1 / (1 / r_diss + 1 / r_des);
+}
+
+function logVolcanoRate(dE, alpha, beta, T) {
+  const r = volcanoRate(dE, alpha, beta, T);
+  return r > 0 ? Math.log10(r) : -30;
+}
+
+function findVolcanoPeak(alpha, beta, T) {
+  var best_dE = -2, best_r = 0;
+  for (var i = 0; i <= 500; i++) {
+    var dE = -2.5 + i * 3.5 / 500;
+    var r = volcanoRate(dE, alpha, beta, T);
+    if (r > best_r) { best_r = r; best_dE = dE; }
+  }
+  return { dE: best_dE, rate: best_r };
+}
+
+// Metal data
+const volcanoMetals = [
+  {name:'Ru', dE:-1.8}, {name:'Fe', dE:-1.4}, {name:'Rh', dE:-1.0},
+  {name:'Co', dE:-0.8}, {name:'Ni', dE:-0.6}, {name:'Pd', dE:-0.3},
+  {name:'Pt', dE:-0.5}, {name:'Cu', dE:0.0},  {name:'Ag', dE:0.5},
+  {name:'Au', dE:0.8}
+];
+
+const metals2D = [
+  {name:'Ru', dE1:-1.8, dE2:-2.0}, {name:'Fe', dE1:-1.4, dE2:-1.5},
+  {name:'Rh', dE1:-1.0, dE2:-1.3}, {name:'Pt', dE1:-0.5, dE2:-0.8},
+  {name:'Pd', dE1:-0.3, dE2:-0.7}, {name:'Cu', dE1:0.0, dE2:-0.2},
+  {name:'Ag', dE1:0.5, dE2:0.3},   {name:'Au', dE1:0.8, dE2:0.6}
+];
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  var result = Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis),
+    font: Object.assign({}, baseLayout.font, extra.font)
+  });
+  if (extra.yaxis2) {
+    result.yaxis2 = extra.yaxis2;
+  }
+  return result;
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  var t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  var opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(function(o) {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+var rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(function() { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// FIGURE 6.1: Sabatier Concept (static illustration)
+// ============================================================
+function buildFig61() {
+  var N = 200;
+  var alpha = 0.87, beta = 1.5;
+  var xs_diss = [], ys_diss = [];
+  var xs_des = [], ys_des = [];
+
+  for (var i = 0; i < N; i++) {
+    var dE = -2.0 + i / (N - 1) * 3.0;
+    // Dissociation limited: activity decreases as dE increases (weak binding)
+    var log_r_diss = -Math.max(0, alpha * dE + beta) / (kB * 500);
+    // Desorption limited: activity decreases as dE decreases (strong binding)
+    var log_r_des = -Math.max(0, -dE) / (kB * 500);
+    // Convert to log10
+    xs_diss.push(dE); ys_diss.push(log_r_diss / Math.log(10));
+    xs_des.push(dE); ys_des.push(log_r_des / Math.log(10));
+  }
+
+  // TOF
+  var xs_tof = [], ys_tof = [];
+  for (var i = 0; i < N; i++) {
+    var dE = -2.0 + i / (N - 1) * 3.0;
+    var r = volcanoRate(dE, alpha, beta, 500);
+    xs_tof.push(dE);
+    ys_tof.push(r > 0 ? Math.log10(r) : -30);
+  }
+
+  // Find y range
+  var yMin = -20, yMax = 2;
+
+  var traceDiss = {
+    x: xs_diss, y: ys_diss.map(function(v){ return Math.max(v, yMin); }),
+    type: 'scatter', mode: 'lines',
+    name: 'r_diss (dissociation)',
+    line: { color: '#c0392b', width: 2, dash: 'dash' },
+    hovertemplate: 'ΔE=%{x:.2f} eV<br>log₁₀(r_diss)=%{y:.1f}<extra></extra>'
+  };
+  var traceDes = {
+    x: xs_des, y: ys_des.map(function(v){ return Math.max(v, yMin); }),
+    type: 'scatter', mode: 'lines',
+    name: 'r_des (desorption)',
+    line: { color: '#2980b9', width: 2, dash: 'dash' },
+    hovertemplate: 'ΔE=%{x:.2f} eV<br>log₁₀(r_des)=%{y:.1f}<extra></extra>'
+  };
+  var traceTOF = {
+    x: xs_tof, y: ys_tof.map(function(v){ return Math.max(v, yMin); }),
+    type: 'scatter', mode: 'lines',
+    name: 'TOF',
+    line: { color: '#000', width: 3 },
+    hovertemplate: 'ΔE=%{x:.2f} eV<br>log₁₀(TOF)=%{y:.1f}<extra></extra>'
+  };
+
+  // Peak annotation
+  var peak = findVolcanoPeak(alpha, beta, 500);
+  var peakLog = peak.rate > 0 ? Math.log10(peak.rate) : -30;
+
+  var layout = mergeLayout({
+    xaxis: { title: 'ΔE (eV)', range: [-2.0, 1.0] },
+    yaxis: { title: 'log₁₀(rate)', range: [yMin, yMax] },
+    showlegend: false,
+    annotations: [
+      { x: -1.8, y: yMin + 3, text: 'Left: surface<br>poisoned', showarrow: false, font: { size: 11, color: '#c0392b' } },
+      { x: 0.7, y: yMin + 3, text: 'Right: no<br>reactant', showarrow: false, font: { size: 11, color: '#2980b9' } },
+      { x: peak.dE, y: peakLog + 1.5, text: 'Peak: optimal', showarrow: true, arrowhead: 2, arrowcolor: '#000', ax: 0, ay: -30, font: { size: 12, color: '#000', weight: 600 } }
+    ]
+  });
+
+  Plotly.newPlot('fig61', [traceDiss, traceDes, traceTOF], layout, plotlyCfg);
+}
+
+// ============================================================
+// FIGURE 6.2: 1D Volcano Plot (interactive)
+// ============================================================
+function fig62Data(alpha, beta, T) {
+  var N = 300;
+  var xs = [], ys_diss = [], ys_des = [], ys_tof = [];
+
+  for (var i = 0; i < N; i++) {
+    var dE = -2.5 + i / (N - 1) * 3.5;
+    xs.push(dE);
+
+    var Ea_diss = Math.max(0, alpha * dE + beta);
+    var Ea_des = Math.max(0, -dE);
+    var r_diss = safeExp(-Ea_diss / (kB * T));
+    var r_des = safeExp(-Ea_des / (kB * T));
+    var tof = 1 / (1 / r_diss + 1 / r_des);
+
+    ys_diss.push(r_diss > 0 ? Math.log10(r_diss) : -30);
+    ys_des.push(r_des > 0 ? Math.log10(r_des) : -30);
+    ys_tof.push(tof > 0 ? Math.log10(tof) : -30);
+  }
+
+  // Metal points
+  var metalX = [], metalY = [], metalText = [];
+  volcanoMetals.forEach(function(m) {
+    var r = volcanoRate(m.dE, alpha, beta, T);
+    metalX.push(m.dE);
+    metalY.push(r > 0 ? Math.log10(r) : -30);
+    metalText.push(m.name);
+  });
+
+  // Find peak and best metal
+  var peak = findVolcanoPeak(alpha, beta, T);
+  var peakLog = peak.rate > 0 ? Math.log10(peak.rate) : -30;
+  var bestMetal = volcanoMetals[0], bestDist = 999;
+  volcanoMetals.forEach(function(m) {
+    var d = Math.abs(m.dE - peak.dE);
+    if (d < bestDist) { bestDist = d; bestMetal = m; }
+  });
+
+  var yMin = -25;
+
+  var traces = [
+    {
+      x: xs, y: ys_diss.map(function(v){ return Math.max(v, yMin); }),
+      type: 'scatter', mode: 'lines',
+      name: 'r_diss',
+      line: { color: '#c0392b', width: 2, dash: 'dash' },
+      hovertemplate: 'ΔE=%{x:.2f} eV<br>log₁₀(r_diss)=%{y:.1f}<extra></extra>'
+    },
+    {
+      x: xs, y: ys_des.map(function(v){ return Math.max(v, yMin); }),
+      type: 'scatter', mode: 'lines',
+      name: 'r_des',
+      line: { color: '#2980b9', width: 2, dash: 'dash' },
+      hovertemplate: 'ΔE=%{x:.2f} eV<br>log₁₀(r_des)=%{y:.1f}<extra></extra>'
+    },
+    {
+      x: xs, y: ys_tof.map(function(v){ return Math.max(v, yMin); }),
+      type: 'scatter', mode: 'lines',
+      name: 'TOF',
+      line: { color: '#000', width: 3 },
+      hovertemplate: 'ΔE=%{x:.2f} eV<br>log₁₀(TOF)=%{y:.1f}<extra></extra>'
+    },
+    {
+      x: metalX, y: metalY.map(function(v){ return Math.max(v, yMin); }),
+      type: 'scatter', mode: 'markers+text',
+      name: 'Metals',
+      marker: { color: '#000', size: 9, line: { color: '#fff', width: 1.5 } },
+      text: metalText,
+      textposition: 'top center',
+      textfont: { size: 10, color: '#666' },
+      hovertemplate: '%{text}<br>ΔE=%{x:.2f} eV<br>log₁₀(TOF)=%{y:.1f}<extra></extra>'
+    }
+  ];
+
+  var layoutExtras = {
+    xaxis: { title: 'ΔE (eV)', range: [-2.5, 1.0] },
+    yaxis: { title: 'log₁₀(TOF)', range: [yMin, peakLog + 3] },
+    showlegend: false
+  };
+
+  return { traces: traces, layoutExtras: layoutExtras, peak: peak, peakLog: peakLog, bestMetal: bestMetal };
+}
+
+function buildFig62() {
+  var d = fig62Data(0.87, 1.50, 500);
+  Plotly.newPlot('fig62', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout62(d.peak, d.peakLog, d.bestMetal);
+}
+
+function updateFig62(alpha, beta, T) {
+  var d = fig62Data(alpha, beta, T);
+  Plotly.react('fig62', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout62(d.peak, d.peakLog, d.bestMetal);
+
+  // Challenge: Pt at peak
+  var ptDist = Math.abs(-0.5 - d.peak.dE);
+  var s = document.getElementById('ch62-status');
+  if (s) {
+    if (ptDist < 0.15) {
+      s.textContent = 'Pt가 정점 근처에 있습니다! (ΔE*=' + d.peak.dE.toFixed(2) + ' eV, Pt=−0.5 eV)';
+      s.className = 'challenge-status success';
+      showToast('도전 성공! Pt가 화산 정점에 도달했습니다!');
+    } else {
+      s.textContent = '현재: 정점 ΔE*=' + d.peak.dE.toFixed(2) + ' eV (Pt까지 ' + ptDist.toFixed(2) + ' eV 차이)';
+      s.className = 'challenge-status';
+    }
+  }
+}
+
+function updateReadout62(peak, peakLog, bestMetal) {
+  document.getElementById('rd-optdE').textContent = peak.dE.toFixed(2) + ' eV';
+  document.getElementById('rd-peakTOF').textContent = peakLog.toFixed(1);
+  document.getElementById('rd-bestMetal').textContent = bestMetal.name;
+}
+
+// ============================================================
+// FIGURE 6.3: 2D Volcano Heatmap
+// ============================================================
+function fig63Data(T) {
+  var alpha = 0.87, beta = 1.5;
+  var N = 60;
+  var dE1arr = [], dE2arr = [];
+
+  for (var i = 0; i < N; i++) {
+    dE1arr.push(-2.5 + i * 3.5 / (N - 1));
+    dE2arr.push(-2.5 + i * 3.5 / (N - 1));
+  }
+
+  // Build z matrix: TOF(dE1, dE2) = volcanoRate(dE1) * volcanoRate(dE2)
+  var z = [];
+  var globalMax = -999, opt_dE1 = 0, opt_dE2 = 0;
+
+  for (var j = 0; j < N; j++) {
+    var row = [];
+    for (var i = 0; i < N; i++) {
+      var r1 = volcanoRate(dE1arr[i], alpha, beta, T);
+      var r2 = volcanoRate(dE2arr[j], alpha, beta, T);
+      var combined = r1 * r2;
+      var logVal = combined > 0 ? Math.log10(combined) : -60;
+      row.push(logVal);
+      if (logVal > globalMax) {
+        globalMax = logVal;
+        opt_dE1 = dE1arr[i];
+        opt_dE2 = dE2arr[j];
+      }
+    }
+    z.push(row);
+  }
+
+  // Find best metal
+  var bestMetal = metals2D[0], bestTOF = -999;
+  var metalTofs = [];
+  metals2D.forEach(function(m) {
+    var r1 = volcanoRate(m.dE1, alpha, beta, T);
+    var r2 = volcanoRate(m.dE2, alpha, beta, T);
+    var lt = (r1 * r2 > 0) ? Math.log10(r1 * r2) : -60;
+    metalTofs.push(lt);
+    if (lt > bestTOF) { bestTOF = lt; bestMetal = m; }
+  });
+
+  var heatmap = {
+    type: 'heatmap',
+    x: dE1arr, y: dE2arr, z: z,
+    colorscale: [
+      [0, 'rgb(33,102,172)'],
+      [0.5, 'rgb(247,247,247)'],
+      [1, 'rgb(178,24,43)']
+    ],
+    colorbar: { title: { text: 'log₁₀(TOF)', side: 'right' }, thickness: 14, len: 0.9 },
+    zmin: globalMax - 30,
+    zmax: globalMax,
+    hovertemplate: 'ΔE₁=%{x:.2f} eV<br>ΔE₂=%{y:.2f} eV<br>log₁₀(TOF)=%{z:.1f}<extra></extra>'
+  };
+
+  var metalScatter = {
+    type: 'scatter',
+    x: metals2D.map(function(m){ return m.dE1; }),
+    y: metals2D.map(function(m){ return m.dE2; }),
+    mode: 'markers+text',
+    marker: { color: '#000', size: 10, line: { color: '#fff', width: 2 } },
+    text: metals2D.map(function(m){ return m.name; }),
+    textposition: 'top right',
+    textfont: { size: 11, color: '#000', weight: 600 },
+    hovertemplate: '%{text}<br>ΔE₁=%{x:.2f}<br>ΔE₂=%{y:.2f}<extra></extra>',
+    showlegend: false
+  };
+
+  var layoutExtras = {
+    xaxis: { title: 'ΔE₁ (eV)', range: [-2.5, 1.0] },
+    yaxis: { title: 'ΔE₂ (eV)', range: [-2.5, 1.0] },
+    margin: { t: 20, r: 80, b: 50, l: 60 }
+  };
+
+  return { traces: [heatmap, metalScatter], layoutExtras: layoutExtras, opt_dE1: opt_dE1, opt_dE2: opt_dE2, bestMetal: bestMetal };
+}
+
+function buildFig63() {
+  var d = fig63Data(500);
+  Plotly.newPlot('fig63', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout63(d);
+}
+
+function updateFig63(T) {
+  var d = fig63Data(T);
+  Plotly.react('fig63', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout63(d);
+}
+
+function updateReadout63(d) {
+  document.getElementById('rd-opt2d').textContent = '(' + d.opt_dE1.toFixed(2) + ', ' + d.opt_dE2.toFixed(2) + ') eV';
+  document.getElementById('rd-bestMetal2d').textContent = d.bestMetal.name;
+}
+
+// ============================================================
+// FIGURE 6.4: Selectivity
+// ============================================================
+function fig64Data(dAlpha, dBeta, T) {
+  var alpha_A = 0.87, beta_A = 1.50;
+  var alpha_B = alpha_A - dAlpha;
+  var beta_B = beta_A - dBeta;
+
+  var N = 300;
+  var xs = [], ys_tofA = [], ys_tofB = [], ys_sel = [];
+  var crossover = null;
+
+  for (var i = 0; i < N; i++) {
+    var dE = -2.5 + i / (N - 1) * 3.5;
+    xs.push(dE);
+
+    var rA = volcanoRate(dE, alpha_A, beta_A, T);
+    var rB = volcanoRate(dE, alpha_B, beta_B, T);
+
+    ys_tofA.push(rA > 0 ? Math.log10(rA) : -30);
+    ys_tofB.push(rB > 0 ? Math.log10(rB) : -30);
+
+    var sa = (rA + rB) > 0 ? rA / (rA + rB) : 0.5;
+    ys_sel.push(sa);
+
+    // Find crossover
+    if (i > 0 && crossover === null) {
+      if ((ys_sel[i - 1] - 0.5) * (ys_sel[i] - 0.5) <= 0) {
+        crossover = dE;
+      }
+    }
+  }
+
+  // Metal points on selectivity
+  var metalX = [], metalSelY = [], metalText = [];
+  volcanoMetals.forEach(function(m) {
+    var rA = volcanoRate(m.dE, alpha_A, beta_A, T);
+    var rB = volcanoRate(m.dE, alpha_B, beta_B, T);
+    metalX.push(m.dE);
+    metalSelY.push((rA + rB) > 0 ? rA / (rA + rB) : 0.5);
+    metalText.push(m.name);
+  });
+
+  // S_A at Pt
+  var rA_Pt = volcanoRate(-0.5, alpha_A, beta_A, T);
+  var rB_Pt = volcanoRate(-0.5, alpha_B, beta_B, T);
+  var saPt = (rA_Pt + rB_Pt) > 0 ? rA_Pt / (rA_Pt + rB_Pt) : 0.5;
+
+  // Volcano traces
+  var yMin = -25;
+  var volcanoTraces = [
+    {
+      x: xs, y: ys_tofA.map(function(v){ return Math.max(v, yMin); }),
+      type: 'scatter', mode: 'lines',
+      name: 'TOF_A',
+      line: { color: '#c0392b', width: 2.5 },
+      hovertemplate: 'ΔE=%{x:.2f}<br>log₁₀(TOF_A)=%{y:.1f}<extra></extra>'
+    },
+    {
+      x: xs, y: ys_tofB.map(function(v){ return Math.max(v, yMin); }),
+      type: 'scatter', mode: 'lines',
+      name: 'TOF_B',
+      line: { color: '#2980b9', width: 2.5 },
+      hovertemplate: 'ΔE=%{x:.2f}<br>log₁₀(TOF_B)=%{y:.1f}<extra></extra>'
+    }
+  ];
+
+  // Find y range for volcano
+  var peakA = findVolcanoPeak(alpha_A, beta_A, T);
+  var peakB = findVolcanoPeak(alpha_B, beta_B, T);
+  var maxPeakLog = Math.max(
+    peakA.rate > 0 ? Math.log10(peakA.rate) : -30,
+    peakB.rate > 0 ? Math.log10(peakB.rate) : -30
+  );
+
+  var volcanoLayout = {
+    xaxis: { title: 'ΔE (eV)', range: [-2.5, 1.0] },
+    yaxis: { title: 'log₁₀(TOF)', range: [yMin, maxPeakLog + 3] },
+    showlegend: false
+  };
+
+  // Selectivity traces
+  var selTraces = [
+    {
+      x: xs, y: ys_sel,
+      type: 'scatter', mode: 'lines',
+      name: 'S_A',
+      line: { color: '#000', width: 3 },
+      hovertemplate: 'ΔE=%{x:.2f}<br>S_A=%{y:.3f}<extra></extra>'
+    },
+    {
+      x: metalX, y: metalSelY,
+      type: 'scatter', mode: 'markers+text',
+      name: 'Metals',
+      marker: { color: '#000', size: 8, line: { color: '#fff', width: 1.5 } },
+      text: metalText,
+      textposition: 'top center',
+      textfont: { size: 10, color: '#666' },
+      hovertemplate: '%{text}<br>ΔE=%{x:.2f}<br>S_A=%{y:.3f}<extra></extra>'
+    }
+  ];
+
+  var selLayout = {
+    xaxis: { title: 'ΔE (eV)', range: [-2.5, 1.0] },
+    yaxis: { title: 'Selectivity S_A', range: [0, 1] },
+    showlegend: false,
+    shapes: [{
+      type: 'line', x0: -2.5, x1: 1.0, y0: 0.5, y1: 0.5,
+      xref: 'x', yref: 'y',
+      line: { color: '#bbb', width: 1.5, dash: 'dash' }
+    }]
+  };
+
+  return {
+    volcanoTraces: volcanoTraces, volcanoLayout: volcanoLayout,
+    selTraces: selTraces, selLayout: selLayout,
+    saPt: saPt, crossover: crossover
+  };
+}
+
+function buildFig64() {
+  var d = fig64Data(0.12, 0.30, 500);
+  Plotly.newPlot('fig64-volcano', d.volcanoTraces, mergeLayout(d.volcanoLayout), plotlyCfg);
+  Plotly.newPlot('fig64-sel', d.selTraces, mergeLayout(d.selLayout), plotlyCfg);
+  updateReadout64(d);
+}
+
+function updateFig64(dAlpha, dBeta, T) {
+  var d = fig64Data(dAlpha, dBeta, T);
+  Plotly.react('fig64-volcano', d.volcanoTraces, mergeLayout(d.volcanoLayout), plotlyCfg);
+  Plotly.react('fig64-sel', d.selTraces, mergeLayout(d.selLayout), plotlyCfg);
+  updateReadout64(d);
+
+  // Challenge: S_A at Pt > 0.9
+  var s = document.getElementById('ch64-status');
+  if (s) {
+    if (d.saPt > 0.9) {
+      s.textContent = 'S_A at Pt = ' + d.saPt.toFixed(3) + ' > 0.9 — 도전 성공!';
+      s.className = 'challenge-status success';
+      showToast('도전 성공! Pt에서 선택성 90% 이상 달성!');
+    } else {
+      s.textContent = '현재: S_A at Pt = ' + d.saPt.toFixed(3) + ' (목표: > 0.9)';
+      s.className = 'challenge-status';
+    }
+  }
+}
+
+function updateReadout64(d) {
+  document.getElementById('rd-saPt').textContent = d.saPt.toFixed(3);
+  document.getElementById('rd-crossover').textContent = d.crossover !== null ? d.crossover.toFixed(2) + ' eV' : 'N/A';
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 6.2 sliders
+  document.getElementById('v-alpha').addEventListener('input', function() {
+    var alpha = parseFloat(document.getElementById('v-alpha').value);
+    var beta = parseFloat(document.getElementById('v-beta').value);
+    var T = parseFloat(document.getElementById('v-T').value);
+    document.getElementById('v-alpha-val').textContent = alpha.toFixed(2);
+    throttledDraw('v62', function() { updateFig62(alpha, beta, T); });
+  });
+  document.getElementById('v-beta').addEventListener('input', function() {
+    var alpha = parseFloat(document.getElementById('v-alpha').value);
+    var beta = parseFloat(document.getElementById('v-beta').value);
+    var T = parseFloat(document.getElementById('v-T').value);
+    document.getElementById('v-beta-val').textContent = beta.toFixed(2) + ' eV';
+    throttledDraw('v62', function() { updateFig62(alpha, beta, T); });
+  });
+  document.getElementById('v-T').addEventListener('input', function() {
+    var alpha = parseFloat(document.getElementById('v-alpha').value);
+    var beta = parseFloat(document.getElementById('v-beta').value);
+    var T = parseFloat(document.getElementById('v-T').value);
+    document.getElementById('v-T-val').textContent = T + ' K';
+    throttledDraw('v62', function() { updateFig62(alpha, beta, T); });
+  });
+
+  // Fig 6.3 slider
+  document.getElementById('hm-T2').addEventListener('input', function() {
+    var T = parseFloat(document.getElementById('hm-T2').value);
+    document.getElementById('hm-T2-val').textContent = T + ' K';
+    throttledDraw('v63', function() { updateFig63(T); });
+  });
+
+  // Fig 6.4 sliders
+  document.getElementById('sel-da').addEventListener('input', function() {
+    var da = parseFloat(document.getElementById('sel-da').value);
+    var db = parseFloat(document.getElementById('sel-db').value);
+    var T = parseFloat(document.getElementById('sel-T').value);
+    document.getElementById('sel-da-val').textContent = da.toFixed(2);
+    throttledDraw('v64', function() { updateFig64(da, db, T); });
+  });
+  document.getElementById('sel-db').addEventListener('input', function() {
+    var da = parseFloat(document.getElementById('sel-da').value);
+    var db = parseFloat(document.getElementById('sel-db').value);
+    var T = parseFloat(document.getElementById('sel-T').value);
+    document.getElementById('sel-db-val').textContent = db.toFixed(2) + ' eV';
+    throttledDraw('v64', function() { updateFig64(da, db, T); });
+  });
+  document.getElementById('sel-T').addEventListener('input', function() {
+    var da = parseFloat(document.getElementById('sel-da').value);
+    var db = parseFloat(document.getElementById('sel-db').value);
+    var T = parseFloat(document.getElementById('sel-T').value);
+    document.getElementById('sel-T-val').textContent = T + ' K';
+    throttledDraw('v64', function() { updateFig64(da, db, T); });
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig61();
+  buildFig62();
+  buildFig63();
+  buildFig64();
+  setupSliders();
+}
+
+// Scroll reveal
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(function(s) { observer.observe(s); });
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.add('visible'); });
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

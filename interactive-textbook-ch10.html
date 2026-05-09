@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Computational Catalyst Screening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "—"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '▶'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Computational Screening</a>
+    <ul class="nav-links">
+      <li><a href="#s101">10.1 Workflow</a></li>
+      <li><a href="#s102">10.2 Descriptors</a></li>
+      <li><a href="#s103">10.3 Pareto</a></li>
+      <li><a href="#s104">10.4 Success</a></li>
+    </ul>
+    <span class="nav-badge">Norskov Ch.10</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">Computational Screening</h1>
+  <p class="hero-subtitle">Norskov, <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 10. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+  <div class="hero-chips">
+    <span class="chip">High-Throughput DFT</span>
+    <span class="chip">Descriptor Space</span>
+    <span class="chip">Pareto Front</span>
+    <span class="chip">Stability Filter</span>
+    <span class="chip">Catalyst Discovery</span>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 10.1: The Screening Workflow -->
+<!-- ============================================================ -->
+<section id="s101" class="section">
+  <p class="section-label">Section 10.1</p>
+  <h2 class="section-title">The Screening Workflow</h2>
+  <div class="section-body">
+    <p>Computational catalyst screening은 수천에서 수만 개의 후보 물질을 체계적으로 걸러내는 과정입니다. 각 후보에 대해 descriptor를 계산하고, activity filter, stability filter, selectivity filter를 순차적으로 적용하여 최종 실험 대상을 선별합니다.</p>
+    <p>이 접근법의 핵심은 모든 후보를 실험하는 것이 아니라, 물리 기반 필터로 탐색 공간을 극적으로 줄이는 것입니다. 전체 계산 비용은 후보 수와 DFT 계산당 소요 시간의 곱에 비례합니다.</p>
+  </div>
+
+  <div class="eq-block">$$\text{Cost} \propto N_{\text{candidates}} \times t_{\text{DFT/candidate}}$$</div>
+
+  <ul class="concept-list">
+    <li>수만 개 후보에서 출발하여 각 필터 단계마다 약 10%만 통과시킵니다</li>
+    <li>Stability filter: 열역학적으로 안정한 물질만 선별 ($\Delta H_f < 0$)</li>
+    <li>Activity filter: descriptor가 최적값 근처인 물질만 선별</li>
+    <li>Selectivity filter: 원하는 생성물 선택성이 높은 물질만 선별</li>
+    <li>최종 1-3개 후보만이 실험 검증 단계로 진입합니다</li>
+  </ul>
+
+  <!-- FIGURE 10.1 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 10.1</span>
+      <span class="figure-title">Screening Funnel</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig101" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Pass rate per filter</span>
+          <input type="range" id="f101-pass" min="5" max="50" value="10" step="1">
+          <span class="control-value" id="f101-pass-val">10%</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">Total DFT calcs</span>
+          <span class="readout-val" id="rd-dft">11,111</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Compute time</span>
+          <span class="readout-val" id="rd-cpu">111,110 CPU-hr</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Final candidates</span>
+          <span class="readout-val" id="rd-final">1</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Overall pass</span>
+          <span class="readout-val" id="rd-overall">0.01%</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Funnel Power</div>
+        <div class="highlight-body">10% pass rate x 4 filters = 0.01% overall. 10,000 후보 중 1개만 살아남습니다. 이것이 high-throughput screening의 힘입니다.</div>
+      </div>
+
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 pass rate가 50%라면?</div>
+          <div class="whatif-hint">최종 후보 625개 - 실험이 불가능한 숫자입니다. 엄격한 물리 기반 필터가 screening을 실용적으로 만듭니다. 슬라이더를 50%로 올려서 직접 확인해보세요.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 DFT 대신 ML surrogate를 쓴다면?</div>
+          <div class="whatif-hint">계산당 시간이 10 CPU-hr에서 0.001초로 줄어듭니다. 후보 수를 10만 개 이상으로 늘릴 수 있고, 더 넓은 조성 공간을 탐색할 수 있습니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+
+      <button class="explore-toggle" onclick="toggleExplore('ex101')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex101">
+        <ol class="explore-steps">
+          <li>Pass rate를 10%로 설정하세요. 10,000개 초기 후보가 각 단계를 거치며 급격히 줄어드는 것을 관찰합니다.</li>
+          <li>Pass rate를 30%로 올려보세요. 최종 후보가 81개로 늘어나며, 여전히 실험 가능한 범위입니다.</li>
+          <li>Pass rate를 50%까지 올리면 625개가 됩니다. 필터가 느슨하면 screening의 의미가 사라집니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 필터 하나의 pass rate를 10%에서 20%로 바꾸면, 최종 후보는 1개에서 16개로 16배 증가합니다. 각 필터의 엄격도가 결과에 기하급수적 영향을 미칩니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 10.2: Descriptor Space & Constraints -->
+<!-- ============================================================ -->
+<section id="s102" class="section">
+  <p class="section-label">Section 10.2</p>
+  <h2 class="section-title">Descriptor Space &amp; Constraints</h2>
+  <div class="section-body">
+    <p>촉매 screening의 핵심 아이디어는 1-2개의 descriptor만으로 촉매의 활성을 예측할 수 있다는 것입니다. Scaling relation 덕분에 수십 개의 에너지 값이 서로 선형적으로 연결되어 있으므로, 독립적인 descriptor는 소수에 불과합니다.</p>
+    <p>2D descriptor space에서 activity constraint와 stability constraint를 동시에 적용하면, 두 조건을 모두 만족하는 좁은 영역만 남습니다. 이 영역 안에 위치한 물질만이 유망한 후보입니다.</p>
+  </div>
+
+  <div class="eq-block">$$\text{Activity constraint: } |\Delta E - \Delta E^*| < \delta$$</div>
+
+  <ul class="concept-list">
+    <li>$\Delta E^*$: volcano 정상에 해당하는 최적 binding energy</li>
+    <li>$\delta$: activity window — 이 값이 작을수록 엄격한 필터</li>
+    <li>Stability constraint: $\Delta H_f < 0$ (열역학적 안정성)</li>
+    <li>실제 screening에서는 cost, toxicity 등 추가 제약도 적용합니다</li>
+  </ul>
+
+  <!-- FIGURE 10.2 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 10.2</span>
+      <span class="figure-title">2D Descriptor Space with Constraints</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch102')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch102">
+      <div class="challenge-goal">목표: 정확히 5개 후보만 남도록 activity window를 조절하세요</div>
+      <div class="challenge-desc">Activity window (delta)를 조절하여 activity + stability 조건을 모두 통과하는 후보가 정확히 5개가 되게 만들어보세요.</div>
+      <div class="challenge-status" id="ch102-status">현재: 슬라이더를 조작해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig102" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Activity window &delta;</span>
+          <input type="range" id="f102-delta" min="10" max="50" value="20" step="1">
+          <span class="control-value" id="f102-delta-val">0.20 eV</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Stability threshold</span>
+          <input type="range" id="f102-stab" min="-20" max="0" value="-5" step="1">
+          <span class="control-value" id="f102-stab-val">-0.50 eV</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">Total candidates</span>
+          <span class="readout-val" id="rd-total">50</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Passed activity</span>
+          <span class="readout-val" id="rd-act">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Passed both</span>
+          <span class="readout-val" id="rd-both">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">% Passed</span>
+          <span class="readout-val" id="rd-pct">—</span>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#000"></div>Passed both</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c0392b"></div>Failed activity</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ccc"></div>Failed stability</div>
+      </div>
+
+      <button class="explore-toggle" onclick="toggleExplore('ex102')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex102">
+        <ol class="explore-steps">
+          <li>delta = 0.50 eV (wide window): 많은 후보가 activity 조건을 통과합니다. 하지만 너무 느슨한 기준입니다.</li>
+          <li>delta = 0.10 eV (narrow window): 극소수만 통과합니다. Volcano 정상 근처의 정밀한 binding energy를 가진 물질만 선별됩니다.</li>
+          <li>Stability threshold를 변경해보세요. 안정성 조건을 추가하면 후보가 더 줄어듭니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 좋은 descriptor window는 충분히 좁아서 noise를 제거하면서도, 충분히 넓어서 유망한 후보를 놓치지 않아야 합니다. 이 균형이 screening 성공의 핵심입니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 10.3: Pareto Front — Activity vs Stability -->
+<!-- ============================================================ -->
+<section id="s103" class="section">
+  <p class="section-label">Section 10.3</p>
+  <h2 class="section-title">Pareto Front — Activity vs Stability</h2>
+  <div class="section-body">
+    <p>실제 촉매 screening은 multi-objective optimization 문제입니다. 활성이 높은 촉매가 반드시 안정하지는 않으며, 안정한 촉매가 반드시 활성이 높지도 않습니다. 두 목적함수를 동시에 최적화해야 합니다.</p>
+    <p>Pareto front는 이 tradeoff의 경계를 정의합니다. Front 위의 점은 다른 어떤 점에 의해서도 동시에 지배되지 않는 non-dominated solution입니다. Front 안쪽의 점은 반드시 두 목적 모두에서 더 나은 대안이 존재합니다.</p>
+  </div>
+
+  <div class="eq-block">$$\text{Pareto optimal if } \nexists\, x': f_1(x') > f_1(x) \text{ AND } f_2(x') > f_2(x)$$</div>
+
+  <ul class="concept-list">
+    <li>Pareto front 위의 촉매만이 의미 있는 후보입니다</li>
+    <li>"Knee" point: activity와 stability의 tradeoff가 가장 균형 잡힌 지점</li>
+    <li>실험적 불확실성(noise)이 크면 Pareto front가 변동합니다</li>
+  </ul>
+
+  <!-- FIGURE 10.3 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 10.3</span>
+      <span class="figure-title">Pareto Front Scatter</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig103" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Noise level</span>
+          <input type="range" id="f103-noise" min="10" max="100" value="30" step="5">
+          <span class="control-value" id="f103-noise-val">0.30</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">On Pareto front</span>
+          <span class="readout-val" id="rd-pareto-n">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Best activity</span>
+          <span class="readout-val" id="rd-best-act">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Best stability</span>
+          <span class="readout-val" id="rd-best-stab">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Knee point</span>
+          <span class="readout-val" id="rd-knee">—</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Pareto Dominance</div>
+        <div class="highlight-body">Pareto front 위의 점들만이 의미 있는 후보입니다. Front 안쪽(dominated) 영역의 촉매는 반드시 더 나은 대안이 존재합니다.</div>
+      </div>
+
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 activity와 stability가 완전히 반비례하면?</div>
+          <div class="whatif-hint">Pareto front가 직선이 됩니다. 둘 다 좋은 촉매는 원리적으로 불가능하며, 이것이 fundamental tradeoff입니다. 실제로는 scaling relation이 이 tradeoff를 부과합니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 noise가 매우 크면?</div>
+          <div class="whatif-hint">Pareto front가 불안정해지고, 어떤 물질이 진짜 최적인지 판단하기 어려워집니다. DFT 정확도와 실험 재현성이 screening 신뢰도의 한계를 결정합니다. 슬라이더를 1.0으로 올려 확인하세요.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+
+      <button class="explore-toggle" onclick="toggleExplore('ex103')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex103">
+        <ol class="explore-steps">
+          <li>Noise = 0.10: 깔끔한 Pareto front가 형성됩니다. 비교적 적은 수의 점이 front 위에 있습니다.</li>
+          <li>Noise = 0.50: scatter가 넓어지면서 Pareto front에 더 많은 점이 올라갑니다.</li>
+          <li>Noise = 1.00: 거의 모든 점이 Pareto front 근처에 있어, 실질적인 구별이 어렵습니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 실험적 불확실성이 클수록 Pareto front가 의미를 잃습니다. 정확한 DFT 계산과 신뢰할 수 있는 descriptor가 screening 성공의 전제조건입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ 10.2 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: Pareto front 위의 점이란?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz102')">A) 모든 목표에서 최고인 점</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz102')">B) 어떤 다른 점에도 동시에 지배되지 않는 점</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz102')">C) 평균적으로 가장 좋은 점</button>
+    </div>
+    <div class="quiz-explain" id="quiz102">Pareto optimal이란 두 목적함수 모두에서 동시에 더 나은 대안이 존재하지 않는다는 뜻입니다. 한 목적에서 최고일 필요는 없으며, 평균과도 무관합니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 10.4: Success Stories -->
+<!-- ============================================================ -->
+<section id="s104" class="section">
+  <p class="section-label">Section 10.4</p>
+  <h2 class="section-title">Success Stories</h2>
+  <div class="section-body">
+    <p>Computational screening의 실제 성공 사례들은 이 방법론이 단순한 이론이 아닌 실험적으로 검증된 도구임을 보여줍니다. 각 사례에서 핵심 descriptor를 정의하고, DFT 계산으로 후보를 선별한 뒤, 실험으로 검증하는 과정을 거쳤습니다.</p>
+    <p>주목할 점은 computation에서 실험 검증까지의 사이클이 점점 짧아지고 있다는 것입니다. 초기에는 10년 가까이 걸렸지만, 최근에는 3-5년으로 단축되었습니다.</p>
+  </div>
+
+  <ul class="concept-list">
+    <li>Pt<sub>3</sub>Ni / ORR: d-band center를 descriptor로 사용, 순수 Pt 대비 10배 높은 활성 확인</li>
+    <li>MoS<sub>2</sub> / HER: $\Delta G_H$ descriptor, 기존 귀금속 대안으로 발견</li>
+    <li>PtRu / DMFC: CO tolerance descriptor, methanol 연료전지 상용화 성공</li>
+    <li>NiFe / OER: $\Delta G_{O} - \Delta G_{OH}$ descriptor, 알칼리 전해조 촉매</li>
+  </ul>
+
+  <!-- FIGURE 10.4 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 10.4</span>
+      <span class="figure-title">Screening Timeline — Discovery to Application</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig104" class="plotly-container"></div>
+      <div class="highlight">
+        <div class="highlight-title">Accelerating Discovery</div>
+        <div class="highlight-body">Computation에서 experiment 사이클이 점점 짧아지고 있습니다. 2000년대 초 10년에서 최근 3-5년으로 단축되었으며, 머신러닝이 이 시간을 더 줄일 것입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ 10.4 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: Descriptor-based screening의 가장 큰 가정은?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz104')">A) DFT가 정확하다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz104')">B) 활성이 1-2개 descriptor에 의존한다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz104')">C) 실험이 불필요하다</button>
+    </div>
+    <div class="quiz-explain" id="quiz104">Descriptor-based screening은 scaling relation이 성립한다고 가정합니다. 즉, 수십 개의 에너지 값이 1-2개의 독립 변수에 의해 결정된다는 것입니다. DFT 정확도는 별개의 문제이고, 실험 검증은 항상 필요합니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TAKEAWAYS -->
+<!-- ============================================================ -->
+<section class="takeaways section">
+  <p class="section-label">Key Takeaways</p>
+  <h2 class="section-title">Chapter 10 핵심 메시지</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">10<sup style="font-size:24px">4</sup></div>
+      <div class="takeaway-title">후보에서 시작</div>
+      <div class="takeaway-body">수만 개의 가능한 조합에서 출발하여 체계적으로 걸러냅니다. 직관이 아닌 물리 기반 필터가 탐색 공간을 1000배 줄입니다.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">&rarr;</div>
+      <div class="takeaway-title">Pareto가 답이다</div>
+      <div class="takeaway-body">활성과 안정성이 동시에 최적인 촉매는 없을 수 있습니다. Pareto front가 실현 가능한 최선의 tradeoff를 보여줍니다.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">3yr</div>
+      <div class="takeaway-title">Computation &rarr; Experiment</div>
+      <div class="takeaway-body">계산 예측에서 실험 검증까지의 시간이 10년에서 3년으로 줄고 있습니다. 머신러닝이 이 시간을 더 줄일 것입니다.</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Norskov, Bligaard, Kleis — <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 10</span>
+    <span class="footer-text">움직이는 교과서 · Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+const kB = 8.617e-5; // eV/K
+const h  = 4.136e-15; // eV·s
+const c  = 2.998e10;  // cm/s
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function safeExp(x) {
+  return Math.exp(Math.max(-500, Math.min(500, x)));
+}
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  return Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis),
+    font: Object.assign({}, baseLayout.font, extra.font)
+  });
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+const rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(() => { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// SEEDED RANDOM (reproducible candidate positions)
+// ============================================================
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+// ============================================================
+// FIGURE 10.1: Screening Funnel
+// ============================================================
+function fig101Data(passRate) {
+  const pct = passRate / 100;
+  const stages = ['Initial', 'Stability', 'Activity', 'Selectivity', 'Experiment'];
+  const counts = [10000];
+  for (let i = 1; i < 5; i++) {
+    counts.push(Math.max(1, Math.round(counts[i - 1] * pct)));
+  }
+  // Total DFT calcs = sum of all candidates evaluated at each stage
+  const totalDFT = counts.reduce((a, b) => a + b, 0);
+  const cpuHr = totalDFT * 10; // 10 CPU-hr per calc
+  const overallPct = (counts[4] / counts[0] * 100);
+
+  const colors = ['#000', '#666', '#8f8f8f', '#bbb', '#c0392b'];
+
+  const traces = [{
+    type: 'bar',
+    x: counts,
+    y: stages,
+    orientation: 'h',
+    marker: { color: colors },
+    text: counts.map(c => c.toLocaleString()),
+    textposition: 'outside',
+    textfont: { family: 'Inter, sans-serif', size: 13, color: '#000' },
+    hovertemplate: '%{y}: %{x:,} candidates<extra></extra>'
+  }];
+
+  const layoutExtras = {
+    xaxis: {
+      title: 'Number of candidates',
+      type: 'log',
+      range: [Math.log10(0.5), Math.log10(20000)],
+      dtick: 1
+    },
+    yaxis: {
+      autorange: 'reversed',
+      tickfont: { size: 13 }
+    },
+    margin: { t: 20, r: 80, b: 50, l: 90 }
+  };
+
+  return { traces, layoutExtras, totalDFT, cpuHr, finalCount: counts[4], overallPct };
+}
+
+function buildFig101() {
+  const { traces, layoutExtras, totalDFT, cpuHr, finalCount, overallPct } = fig101Data(10);
+  Plotly.newPlot('fig101', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout101(totalDFT, cpuHr, finalCount, overallPct);
+}
+
+function updateFig101(passRate) {
+  const { traces, layoutExtras, totalDFT, cpuHr, finalCount, overallPct } = fig101Data(passRate);
+  Plotly.react('fig101', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout101(totalDFT, cpuHr, finalCount, overallPct);
+}
+
+function updateReadout101(totalDFT, cpuHr, finalCount, overallPct) {
+  document.getElementById('rd-dft').textContent = totalDFT.toLocaleString();
+  document.getElementById('rd-cpu').textContent = cpuHr.toLocaleString() + ' CPU-hr';
+  document.getElementById('rd-final').textContent = finalCount.toLocaleString();
+  document.getElementById('rd-overall').textContent = overallPct < 0.01 ? overallPct.toExponential(1) + '%' : overallPct.toFixed(2) + '%';
+}
+
+// ============================================================
+// FIGURE 10.2: 2D Descriptor Space with Constraints
+// ============================================================
+// Generate 50 stable candidate materials
+const candidateLabels = [
+  'PtNi','PdCu','RuCo','IrFe','RhMo','NiZn','CuAu','AgPd','PtRu','CoFe',
+  '','','','','','','','','','',
+  '','','','','','','','','','',
+  '','','','','','','','','','',
+  '','','','','','','','','',''
+];
+
+let candidatePositions = [];
+(function generateCandidates() {
+  const rng = seededRandom(42);
+  candidatePositions = [];
+  for (let i = 0; i < 50; i++) {
+    candidatePositions.push({
+      x: -3 + rng() * 4,
+      y: -3 + rng() * 4,
+      label: candidateLabels[i]
+    });
+  }
+})();
+
+// Volcano activity model for 2D: peak at (-1, -1), Gaussian falloff
+function activityScore2D(x, y) {
+  const dx = x - (-1.0);
+  const dy = y - (-1.0);
+  return Math.exp(-(dx * dx + dy * dy) / 0.8);
+}
+
+function fig102Data(delta, stabThresh) {
+  // delta in eV, stabThresh in eV
+  // Optimum at (-1, -1)
+  const optX = -1.0, optY = -1.0;
+
+  // Heatmap
+  const nx = 60, ny = 60;
+  const xArr = [];
+  const yArr = [];
+  for (let i = 0; i < nx; i++) xArr.push(-3 + i * 4 / (nx - 1));
+  for (let j = 0; j < ny; j++) yArr.push(-3 + j * 4 / (ny - 1));
+
+  const z = [];
+  for (let j = 0; j < ny; j++) {
+    const row = [];
+    for (let i = 0; i < nx; i++) {
+      row.push(activityScore2D(xArr[i], yArr[j]));
+    }
+    z.push(row);
+  }
+
+  // Classify candidates
+  const passed = [], failedAct = [], failedStab = [];
+  let passActCount = 0;
+
+  candidatePositions.forEach((c, idx) => {
+    const dist = Math.sqrt((c.x - optX) * (c.x - optX) + (c.y - optY) * (c.y - optY));
+    const passActivity = dist < delta;
+    // Stability: candidate is stable if its position is below the diagonal
+    // Using formation energy proxy: more negative x+y = more stable
+    const formEnergy = (c.x + c.y) / 2; // proxy
+    const passStability = formEnergy < stabThresh;
+
+    if (passActivity) passActCount++;
+
+    if (passActivity && passStability) {
+      passed.push({ ...c, idx });
+    } else if (!passActivity) {
+      failedAct.push({ ...c, idx });
+    } else {
+      failedStab.push({ ...c, idx });
+    }
+  });
+
+  // Traces
+  const traces = [];
+
+  // Heatmap
+  traces.push({
+    type: 'heatmap',
+    x: xArr, y: yArr, z: z,
+    colorscale: [
+      [0, '#fafafa'],
+      [0.5, '#e5e7eb'],
+      [1, '#666']
+    ],
+    showscale: false,
+    hoverinfo: 'skip',
+    opacity: 0.5
+  });
+
+  // Activity window circle (approximated as a shape, but we use a scatter trace)
+  const circleN = 100;
+  const cx = [], cy = [];
+  for (let i = 0; i <= circleN; i++) {
+    const angle = 2 * Math.PI * i / circleN;
+    cx.push(optX + delta * Math.cos(angle));
+    cy.push(optY + delta * Math.sin(angle));
+  }
+  traces.push({
+    type: 'scatter', mode: 'lines',
+    x: cx, y: cy,
+    line: { color: '#000', width: 1.5, dash: 'dash' },
+    showlegend: false,
+    hoverinfo: 'skip'
+  });
+
+  // Stability boundary: horizontal line at y where (x+y)/2 = stabThresh => y = 2*stabThresh - x
+  // Represented as a line from x=-3 to x=1
+  traces.push({
+    type: 'scatter', mode: 'lines',
+    x: [-3, 1],
+    y: [2 * stabThresh - (-3), 2 * stabThresh - 1],
+    line: { color: '#8f8f8f', width: 1.5, dash: 'dot' },
+    showlegend: false,
+    hoverinfo: 'skip'
+  });
+
+  // Failed activity (red)
+  traces.push({
+    type: 'scatter', mode: 'markers+text',
+    x: failedAct.map(c => c.x),
+    y: failedAct.map(c => c.y),
+    text: failedAct.map(c => c.label),
+    textposition: 'top center',
+    textfont: { size: 10, color: '#c0392b' },
+    marker: { color: '#c0392b', size: 8, opacity: 0.6 },
+    showlegend: false,
+    hovertemplate: '%{text}<br>E1=%{x:.2f} eV<br>E2=%{y:.2f} eV<extra>Failed activity</extra>'
+  });
+
+  // Failed stability (gray)
+  traces.push({
+    type: 'scatter', mode: 'markers+text',
+    x: failedStab.map(c => c.x),
+    y: failedStab.map(c => c.y),
+    text: failedStab.map(c => c.label),
+    textposition: 'top center',
+    textfont: { size: 10, color: '#ccc' },
+    marker: { color: '#ccc', size: 8 },
+    showlegend: false,
+    hovertemplate: '%{text}<br>E1=%{x:.2f} eV<br>E2=%{y:.2f} eV<extra>Failed stability</extra>'
+  });
+
+  // Passed both (black)
+  traces.push({
+    type: 'scatter', mode: 'markers+text',
+    x: passed.map(c => c.x),
+    y: passed.map(c => c.y),
+    text: passed.map(c => c.label),
+    textposition: 'top center',
+    textfont: { size: 11, color: '#000', weight: 600 },
+    marker: { color: '#000', size: 10, line: { color: '#fff', width: 1.5 } },
+    showlegend: false,
+    hovertemplate: '%{text}<br>E1=%{x:.2f} eV<br>E2=%{y:.2f} eV<extra>Passed!</extra>'
+  });
+
+  const layoutExtras = {
+    xaxis: { title: 'ΔE₁ (eV)', range: [-3, 1] },
+    yaxis: { title: 'ΔE₂ (eV)', range: [-3, 1] },
+    margin: { t: 20, r: 20, b: 50, l: 60 }
+  };
+
+  return {
+    traces, layoutExtras,
+    total: 50,
+    passedAct: passActCount,
+    passedBoth: passed.length,
+    pct: (passed.length / 50 * 100).toFixed(1)
+  };
+}
+
+function buildFig102() {
+  const delta = 0.20 * (50 / 10); // scale: slider 20 => 0.20 * 5 = 1.0
+  const { traces, layoutExtras, total, passedAct, passedBoth, pct } = fig102Data(20 / 10, -0.5);
+  Plotly.newPlot('fig102', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout102(total, passedAct, passedBoth, pct);
+}
+
+function updateFig102(deltaSlider, stabSlider) {
+  const delta = deltaSlider / 10; // slider 10-50 => 1.0-5.0 mapped to 0.1-0.5 in concept, but for geometry use as radius
+  const stabThresh = stabSlider / 10; // slider -20..0 => -2.0..0.0
+  const { traces, layoutExtras, total, passedAct, passedBoth, pct } = fig102Data(delta, stabThresh);
+  Plotly.react('fig102', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout102(total, passedAct, passedBoth, pct);
+
+  // Challenge check
+  const s = document.getElementById('ch102-status');
+  if (s) {
+    s.textContent = '현재: ' + passedBoth + '개 후보 통과';
+    s.className = 'challenge-status';
+    if (passedBoth === 5) {
+      s.textContent = '정확히 5개! delta=' + delta.toFixed(2) + ' eV에서 목표 달성!';
+      s.className = 'challenge-status success';
+      showToast('도전 과제 달성! 정확히 5개 후보를 선별했습니다!');
+    }
+  }
+}
+
+function updateReadout102(total, passedAct, passedBoth, pct) {
+  document.getElementById('rd-total').textContent = total;
+  document.getElementById('rd-act').textContent = passedAct;
+  document.getElementById('rd-both').textContent = passedBoth;
+  document.getElementById('rd-pct').textContent = pct + '%';
+}
+
+// ============================================================
+// FIGURE 10.3: Pareto Front
+// ============================================================
+const PARETO_LABELS = [
+  'PtNi','PdCu','RuCo','IrFe','RhMo','NiZn','CuAu','AgPd','PtRu','CoFe',
+  'PdAu','RhNi','IrCo','PtCu','RuFe','NiMo','CuZn','AgRu','PdFe','CoMo',
+  'PtFe','RuNi','IrMo','PdZn','RhCu','NiAu','CuCo','AgFe','PtMo','CoZn',
+  'PdRu','RhFe','IrNi','PtZn','RuAu','NiCu','CuFe','AgCo','PdMo','CoAu'
+];
+
+function fig103Data(noiseLevelInt) {
+  const noise = noiseLevelInt / 100;
+  const rng = seededRandom(123);
+  const candidates = [];
+
+  for (let i = 0; i < 40; i++) {
+    // Stability: random from -3 to 0
+    const stab = -3 + rng() * 3;
+    // Activity: volcano-like with noise. More stable = less active (tradeoff with noise)
+    const baseActivity = -2 * (stab + 1.5) * (stab + 1.5) + 4; // peak at stab=-1.5
+    const act = baseActivity + (rng() - 0.5) * 2 * noise * 5;
+    candidates.push({
+      stability: stab,
+      activity: clamp(act, -5, 5),
+      label: PARETO_LABELS[i]
+    });
+  }
+
+  // Find Pareto front (maximize both: more negative stability = more stable = better,
+  // higher activity = better)
+  // Convention: we want MORE NEGATIVE stability (more stable) and HIGHER activity
+  // Pareto: a dominates b if a.stab <= b.stab AND a.act >= b.act (with at least one strict)
+  // Sort by stability ascending (most negative first)
+  const sorted = candidates.slice().sort((a, b) => a.stability - b.stability);
+
+  const paretoIndices = new Set();
+  // For each candidate, check if any other dominates it
+  candidates.forEach((ci, i) => {
+    let dominated = false;
+    for (let j = 0; j < candidates.length; j++) {
+      if (i === j) continue;
+      const cj = candidates[j];
+      // cj dominates ci if cj has better or equal in both and strictly better in at least one
+      if (cj.stability <= ci.stability && cj.activity >= ci.activity &&
+          (cj.stability < ci.stability || cj.activity > ci.activity)) {
+        dominated = true;
+        break;
+      }
+    }
+    if (!dominated) paretoIndices.add(i);
+  });
+
+  // Pareto front line
+  const paretoPoints = [];
+  paretoIndices.forEach(i => paretoPoints.push(candidates[i]));
+  paretoPoints.sort((a, b) => a.stability - b.stability);
+
+  // Find knee point (closest to utopia: most negative stability + highest activity)
+  const utopiaStab = Math.min(...paretoPoints.map(p => p.stability));
+  const utopiaAct = Math.max(...paretoPoints.map(p => p.activity));
+  const stabRange = Math.max(...paretoPoints.map(p => p.stability)) - utopiaStab || 1;
+  const actRange = utopiaAct - Math.min(...paretoPoints.map(p => p.activity)) || 1;
+
+  let kneeIdx = 0, minDist = Infinity;
+  paretoPoints.forEach((p, i) => {
+    const d = Math.sqrt(
+      Math.pow((p.stability - utopiaStab) / stabRange, 2) +
+      Math.pow((utopiaAct - p.activity) / actRange, 2)
+    );
+    if (d < minDist) { minDist = d; kneeIdx = i; }
+  });
+  const knee = paretoPoints[kneeIdx];
+
+  // Non-pareto points
+  const nonPareto = candidates.filter((_, i) => !paretoIndices.has(i));
+  const paretoList = candidates.filter((_, i) => paretoIndices.has(i));
+
+  // Traces
+  const traces = [];
+
+  // Non-pareto (gray)
+  traces.push({
+    type: 'scatter', mode: 'markers',
+    x: nonPareto.map(c => c.stability),
+    y: nonPareto.map(c => c.activity),
+    text: nonPareto.map(c => c.label),
+    marker: { color: '#ccc', size: 8 },
+    showlegend: false,
+    hovertemplate: '%{text}<br>Stability=%{x:.2f} eV<br>Activity=%{y:.2f}<extra>Dominated</extra>'
+  });
+
+  // Pareto points (red)
+  traces.push({
+    type: 'scatter', mode: 'markers+text',
+    x: paretoList.map(c => c.stability),
+    y: paretoList.map(c => c.activity),
+    text: paretoList.map(c => c.label),
+    textposition: 'top right',
+    textfont: { size: 10, color: '#c0392b' },
+    marker: { color: '#c0392b', size: 10, line: { color: '#fff', width: 1.5 } },
+    showlegend: false,
+    hovertemplate: '%{text}<br>Stability=%{x:.2f} eV<br>Activity=%{y:.2f}<extra>Pareto optimal</extra>'
+  });
+
+  // Pareto front line
+  traces.push({
+    type: 'scatter', mode: 'lines',
+    x: paretoPoints.map(p => p.stability),
+    y: paretoPoints.map(p => p.activity),
+    line: { color: '#000', width: 2.5 },
+    showlegend: false,
+    hoverinfo: 'skip'
+  });
+
+  // Knee point
+  traces.push({
+    type: 'scatter', mode: 'markers+text',
+    x: [knee.stability],
+    y: [knee.activity],
+    text: ['Knee'],
+    textposition: 'bottom left',
+    textfont: { size: 11, color: '#000', weight: 700 },
+    marker: { color: '#000', size: 14, symbol: 'diamond', line: { color: '#fff', width: 2 } },
+    showlegend: false,
+    hovertemplate: 'Knee point<br>Stability=%{x:.2f} eV<br>Activity=%{y:.2f}<extra></extra>'
+  });
+
+  const layoutExtras = {
+    xaxis: { title: 'Stability (ΔH_formation, eV)', range: [-3.2, 0.2] },
+    yaxis: { title: 'Activity (log₁₀ TOF)', range: [-6, 6] },
+    margin: { t: 20, r: 20, b: 50, l: 60 }
+  };
+
+  const bestAct = paretoList.reduce((best, c) => c.activity > best.activity ? c : best, paretoList[0]);
+  const bestStab = paretoList.reduce((best, c) => c.stability < best.stability ? c : best, paretoList[0]);
+
+  return {
+    traces, layoutExtras,
+    nPareto: paretoList.length,
+    bestAct: bestAct.label,
+    bestStab: bestStab.label,
+    kneeLabel: knee.label
+  };
+}
+
+function buildFig103() {
+  const { traces, layoutExtras, nPareto, bestAct, bestStab, kneeLabel } = fig103Data(30);
+  Plotly.newPlot('fig103', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout103(nPareto, bestAct, bestStab, kneeLabel);
+}
+
+function updateFig103(noiseLevelInt) {
+  const { traces, layoutExtras, nPareto, bestAct, bestStab, kneeLabel } = fig103Data(noiseLevelInt);
+  Plotly.react('fig103', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout103(nPareto, bestAct, bestStab, kneeLabel);
+}
+
+function updateReadout103(nPareto, bestAct, bestStab, kneeLabel) {
+  document.getElementById('rd-pareto-n').textContent = nPareto;
+  document.getElementById('rd-best-act').textContent = bestAct;
+  document.getElementById('rd-best-stab').textContent = bestStab;
+  document.getElementById('rd-knee').textContent = kneeLabel;
+}
+
+// ============================================================
+// FIGURE 10.4: Screening Timeline
+// ============================================================
+function buildFig104() {
+  const stages = ['Computation', 'Synthesis', 'Testing', 'Optimization', 'Application'];
+  const stageX = [0, 1, 2, 3, 4];
+
+  const systems = [
+    { name: 'PtRu / DMFC', years: [2000, 2003, 2008, 2012, 2015], color: '#000', status: 'Commercial' },
+    { name: 'Pt₃Ni / ORR', years: [2004, 2007, 2010, 2015, null], color: '#666', status: 'Ongoing' },
+    { name: 'MoS₂ / HER', years: [2005, 2010, 2013, 2017, null], color: '#8f8f8f', status: 'Ongoing' },
+    { name: 'NiFe / OER', years: [2011, 2014, 2016, null, null], color: '#c0392b', status: 'Ongoing' }
+  ];
+
+  const traces = [];
+
+  systems.forEach((sys, row) => {
+    const xs = [], ys = [], texts = [];
+    const validYears = sys.years.filter(y => y !== null);
+    const validStages = stages.slice(0, validYears.length);
+
+    validYears.forEach((yr, i) => {
+      xs.push(yr);
+      ys.push(sys.name);
+      texts.push(validStages[i] + ' (' + yr + ')');
+    });
+
+    // Line
+    traces.push({
+      type: 'scatter', mode: 'lines',
+      x: xs, y: ys,
+      line: { color: sys.color, width: 3 },
+      showlegend: false,
+      hoverinfo: 'skip'
+    });
+
+    // Markers
+    traces.push({
+      type: 'scatter', mode: 'markers+text',
+      x: xs, y: ys,
+      text: xs.map(yr => String(yr)),
+      textposition: 'top center',
+      textfont: { size: 10, color: sys.color },
+      marker: { color: sys.color, size: 10, line: { color: '#fff', width: 1.5 } },
+      showlegend: false,
+      hovertemplate: sys.name + '<br>%{text}<extra></extra>',
+      customdata: texts
+    });
+
+    // Status annotation (ongoing or commercial) at the rightmost point
+    const lastYear = validYears[validYears.length - 1];
+    if (sys.status === 'Ongoing') {
+      // Add a dashed extension
+      traces.push({
+        type: 'scatter', mode: 'lines',
+        x: [lastYear, lastYear + 3],
+        y: [sys.name, sys.name],
+        line: { color: sys.color, width: 2, dash: 'dot' },
+        showlegend: false,
+        hoverinfo: 'skip'
+      });
+    }
+  });
+
+  const layoutExtras = {
+    xaxis: {
+      title: 'Year',
+      range: [1998, 2022],
+      dtick: 5,
+      gridcolor: '#e5e7eb'
+    },
+    yaxis: {
+      tickfont: { size: 13 },
+      gridcolor: '#e5e7eb'
+    },
+    margin: { t: 20, r: 40, b: 50, l: 120 }
+  };
+
+  Plotly.newPlot('fig104', traces, mergeLayout(layoutExtras), plotlyCfg);
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 10.1: pass rate
+  document.getElementById('f101-pass').addEventListener('input', function() {
+    const val = parseFloat(this.value);
+    document.getElementById('f101-pass-val').textContent = val + '%';
+    throttledDraw('f101', function() { updateFig101(val); });
+  });
+
+  // Fig 10.2: delta + stability
+  document.getElementById('f102-delta').addEventListener('input', function() {
+    const dVal = parseFloat(this.value);
+    const sVal = parseFloat(document.getElementById('f102-stab').value);
+    document.getElementById('f102-delta-val').textContent = (dVal / 100).toFixed(2) + ' eV';
+    throttledDraw('f102', function() { updateFig102(dVal / 10, sVal); });
+  });
+  document.getElementById('f102-stab').addEventListener('input', function() {
+    const dVal = parseFloat(document.getElementById('f102-delta').value);
+    const sVal = parseFloat(this.value);
+    document.getElementById('f102-stab-val').textContent = (sVal / 10).toFixed(2) + ' eV';
+    throttledDraw('f102', function() { updateFig102(dVal / 10, sVal); });
+  });
+
+  // Fig 10.3: noise
+  document.getElementById('f103-noise').addEventListener('input', function() {
+    const val = parseFloat(this.value);
+    document.getElementById('f103-noise-val').textContent = (val / 100).toFixed(2);
+    throttledDraw('f103', function() { updateFig103(val); });
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig101();
+  buildFig102();
+  buildFig103();
+  buildFig104();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(function(s) { observer.observe(s); });
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.add('visible'); });
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

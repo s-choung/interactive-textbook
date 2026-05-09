@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Free Energy Diagrams & Microkinetics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "—"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '▶'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Free Energy Diagrams</a>
+    <ul class="nav-links">
+      <li><a href="#s81">8.1 FED</a></li>
+      <li><a href="#s82">8.2 Microkinetics</a></li>
+      <li><a href="#s83">8.3 DRC</a></li>
+      <li><a href="#s84">8.4 Optimal</a></li>
+    </ul>
+    <span class="nav-badge">Norskov Ch.8</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">Free Energy Diagrams</h1>
+  <p class="hero-subtitle">Norskov, <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 8. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+  <div class="hero-chips">
+    <span class="chip">Free Energy</span>
+    <span class="chip">Microkinetic Model</span>
+    <span class="chip">Degree of Rate Control</span>
+    <span class="chip">Steady State</span>
+    <span class="chip">Operating Conditions</span>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 8.1: Free Energy Diagrams -->
+<!-- ============================================================ -->
+<section id="s81" class="section">
+  <p class="section-label">Section 8.1</p>
+  <h2 class="section-title">Free Energy Diagrams (FED)</h2>
+  <div class="section-body">
+    <p>DFT가 계산하는 에너지는 0 K에서의 potential energy ($\Delta H$)입니다. 하지만 실제 촉매 반응은 수백 K 이상에서 일어나기 때문에 entropy 기여를 반드시 고려해야 합니다. Free energy diagram은 operating 조건에서의 진짜 열역학적 driving force를 보여줍니다.</p>
+    <p>기체 분자는 병진/회전 자유도가 크기 때문에 높은 entropy를 가집니다. 표면에 흡착되면 이 자유도를 잃어 entropy가 감소합니다. 따라서 온도가 올라가면 $-T\Delta S$ 항이 흡착 중간체를 상대적으로 불안정하게 만듭니다.</p>
+  </div>
+
+  <div class="eq-block">$$\Delta G_i(T) = \Delta H_i - T\Delta S_i$$</div>
+
+  <ul class="concept-list">
+    <li>Potential energy (0 K, DFT) $\rightarrow$ Free energy at operating $T$: $\Delta G = \Delta H - T\Delta S$</li>
+    <li>Gas-phase molecules: 높은 entropy $\rightarrow$ 고온에서 $-T\Delta S$가 기체 상태를 안정화</li>
+    <li>Surface intermediates: entropy 손실 $\rightarrow$ 고온에서 상대적으로 불안정</li>
+    <li>Potential-determining step: $\Delta G$가 가장 큰 (가장 불리한) 단계</li>
+  </ul>
+
+  <!-- Figure 8.1 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 8.1</span>
+      <span class="figure-title">Free Energy Diagram &mdash; 3-Step Reaction</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch81')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch81">
+      <div class="challenge-goal">목표: 온도를 조절해서 potential-determining step을 바꿔보세요</div>
+      <div class="challenge-desc">dH1을 조절하면 흡착 단계의 에너지가 바뀝니다. 특정 온도에서 rate-limiting step이 Step 1 (흡착)에서 Step 3 (탈착)으로 전환되는 조건을 찾아보세요.</div>
+      <div class="challenge-status" id="ch81-status">현재: 슬라이더를 조작해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig81" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Temperature</span>
+          <input type="range" id="fed-T" min="200" max="800" value="500" step="10">
+          <span class="control-value" id="fed-T-val">500 K</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">dH<sub>1</sub> (adsorption)</span>
+          <input type="range" id="fed-dH1" min="-150" max="0" value="-80" step="5">
+          <span class="control-value" id="fed-dH1-val">-0.80 eV</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">dH<sub>2</sub> (surface rxn)</span>
+          <input type="range" id="fed-dH2" min="-50" max="50" value="20" step="5">
+          <span class="control-value" id="fed-dH2-val">+0.20 eV</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">ΔG_max</span>
+          <span class="readout-val" id="rd-dgmax">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">PDS</span>
+          <span class="readout-val" id="rd-pds">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">T_onset</span>
+          <span class="readout-val" id="rd-tonset">&mdash;</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Entropy가 FED를 바꾼다</div>
+        <div class="highlight-body">온도가 올라가면 entropy 항($-T\Delta S$)이 기체 상태를 안정화시킵니다. 흡착 중간체는 상대적으로 불안정해지며, 이로 인해 potential-determining step이 바뀔 수 있습니다.</div>
+      </div>
+
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 모든 ΔS = 0이라면?</div>
+          <div class="whatif-hint">FED가 온도에 무관해집니다. ΔG = ΔH가 되어 0 K DFT 에너지가 곧 free energy입니다. 하지만 실제 기체 분자의 entropy는 매우 크기 때문에 이 가정은 현실과 맞지 않습니다. Entropy를 무시하면 반응 조건 예측이 크게 빗나갑니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 표면 반응의 ΔS가 0이 아니라면?</div>
+          <div class="whatif-hint">표면에서 표면으로의 반응(A* → B*)도 진동 entropy가 바뀔 수 있습니다. 하지만 그 크기는 기체 → 표면 전환에 비해 매우 작아서, 보통 0으로 근사합니다. 정밀한 모델에서는 phonon DOS로 계산합니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+
+      <button class="explore-toggle" onclick="toggleExplore('ex81')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex81">
+        <ol class="explore-steps">
+          <li>T = 300 K로 설정한 뒤 ΔH (dashed)와 ΔG (solid) 곡선의 차이를 관찰하세요. 차이가 작을 것입니다.</li>
+          <li>T = 700 K로 올려보세요. ΔG 곡선에서 흡착 중간체(A*, B*)의 에너지 레벨이 어떻게 변하나요?</li>
+          <li>어느 step의 ΔG가 가장 큰지 확인하세요 — 그것이 potential-determining step입니다.</li>
+          <li>dH1을 바꿔서 rate-limiting step이 전환되는 조건을 찾아보세요.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 같은 촉매라도 operating 온도에 따라 rate-limiting step이 바뀔 수 있습니다. 이것이 DFT만으로 촉매를 설계할 수 없는 근본적 이유입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 8.1 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: 온도가 올라가면 FED에서 흡착 중간체는?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz81')">A) 안정해진다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz81')">B) 불안정해진다</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz81')">C) 변하지 않는다</button>
+    </div>
+    <div class="quiz-explain" id="quiz81">흡착 시 기체의 entropy를 잃으므로 $\Delta S_{\text{ads}} < 0$입니다. 따라서 $-T\Delta S_{\text{ads}} > 0$이 되어 온도가 올라갈수록 흡착 상태의 free energy가 증가(불안정)합니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 8.2: Microkinetic Modeling -->
+<!-- ============================================================ -->
+<section id="s82" class="section">
+  <p class="section-label">Section 8.2</p>
+  <h2 class="section-title">Microkinetic Modeling</h2>
+  <div class="section-body">
+    <p>Microkinetic model은 개별 elementary step의 rate를 모두 고려하여 전체 반응 속도를 계산합니다. 핵심은 steady-state approximation입니다: 반응이 정상 상태에 도달하면 모든 중간체의 coverage가 시간에 대해 일정해집니다 ($d\theta/dt = 0$).</p>
+    <p>3-step 반응 A + * → A* → B* → B + *에서, 각 step의 forward/reverse rate를 transition state theory로 계산하고 site conservation ($\theta_* + \theta_A + \theta_B = 1$)을 적용하면 coverage와 turnover frequency를 구할 수 있습니다.</p>
+  </div>
+
+  <div class="eq-block">$$\frac{d\theta_A}{dt} = r_1 - r_2 = 0 \quad (\text{steady state})$$</div>
+
+  <details class="derivation">
+    <summary>유도 과정 보기</summary>
+    <div class="deriv-body">
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">1</span>
+          <div class="deriv-step-text">Step 1 (흡착): $r_1 = k_1 \cdot p \cdot \theta_* - k_{-1} \cdot \theta_A$, 여기서 $k_1 = \frac{k_BT}{h}$, $k_{-1} = \frac{k_BT}{h}\exp(-|\Delta H_{\text{ads}}|/k_BT)$</div>
+        </div>
+        <div class="deriv-meaning">흡착은 barrierless, 탈착 barrier = $|\Delta H_{\text{ads}}|$</div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">2</span>
+          <div class="deriv-step-text">Step 2 (표면 반응): $r_2 = k_2 \cdot \theta_A - k_{-2} \cdot \theta_B$, 여기서 $k_2 = \frac{k_BT}{h}\exp(-E_{a,\text{rxn}}/k_BT)$</div>
+        </div>
+        <div class="deriv-meaning">Surface reaction의 activation energy $E_{a,\text{rxn}}$이 barrier</div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">3</span>
+          <div class="deriv-step-text">Step 3 (탈착): $r_3 = k_3 \cdot \theta_B - k_{-3} \cdot p_B \cdot \theta_*$, 여기서 $k_3 = \frac{k_BT}{h}\exp(-E_{a,\text{des}}/k_BT)$</div>
+        </div>
+        <div class="deriv-meaning">Product 탈착. $p_B$는 product partial pressure</div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">4</span>
+          <div class="deriv-step-text">Steady state: $r_1 = r_2 = r_3$ + site conservation $\theta_* + \theta_A + \theta_B = 1$로 연립하여 풀면 각 coverage를 얻음</div>
+        </div>
+        <div class="deriv-meaning">3개 방정식, 3개 미지수 ($\theta_*$, $\theta_A$, $\theta_B$)</div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Figure 8.2 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 8.2</span>
+      <span class="figure-title">Steady-State Coverages vs Temperature</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig82" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">ΔH<sub>ads</sub></span>
+          <input type="range" id="mk-dHads" min="-150" max="0" value="-80" step="5">
+          <span class="control-value" id="mk-dHads-val">-0.80 eV</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">E<sub>a,rxn</sub></span>
+          <input type="range" id="mk-Ea" min="30" max="150" value="80" step="5">
+          <span class="control-value" id="mk-Ea-val">0.80 eV</span>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#000;"></div>θ* (empty sites)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c0392b;"></div>θ<sub>A</sub></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2980b9;"></div>θ<sub>B</sub></div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">θ_A (500K)</span>
+          <span class="readout-val" id="rd-thA82">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">θ_B (500K)</span>
+          <span class="readout-val" id="rd-thB82">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">θ* (500K)</span>
+          <span class="readout-val" id="rd-thStar82">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">TOF (500K)</span>
+          <span class="readout-val" id="rd-tof82">&mdash;</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Coverage regime 전환</div>
+        <div class="highlight-body">낮은 T: 표면이 A*로 덮임 (rate limited by surface reaction). 높은 T: 표면이 비어 있음 (rate limited by adsorption). 온도에 따라 rate-limiting step이 자연스럽게 바뀝니다.</div>
+      </div>
+      <button class="explore-toggle" onclick="toggleExplore('ex82')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex82">
+        <ol class="explore-steps">
+          <li>ΔH_ads = -0.80 eV, E_a = 0.80 eV 기본값에서 T = 300 K 근처의 coverage를 확인하세요. θ_A가 거의 1에 가까울 것입니다.</li>
+          <li>T = 700 K 근처를 보세요. θ*가 지배적으로 바뀌었나요?</li>
+          <li>Coverage 전환 온도 (θ_A와 θ*가 교차하는 점)를 찾아보세요. 이것이 regime change point입니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> Microkinetic model은 coverage를 '가정'하지 않고 '계산'합니다. Langmuir isotherm의 한계를 넘어서는 방법입니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 8.3: Degree of Rate Control -->
+<!-- ============================================================ -->
+<section id="s83" class="section">
+  <p class="section-label">Section 8.3</p>
+  <h2 class="section-title">Degree of Rate Control (DRC)</h2>
+  <div class="section-body">
+    <p>어떤 elementary step을 개선해야 전체 반응 속도가 가장 많이 올라갈까요? Degree of rate control ($X_{RC,i}$)이 이 질문에 정량적으로 답합니다. 각 step의 barrier를 조금 낮추었을 때 전체 rate가 얼마나 변하는지를 측정합니다.</p>
+    <p>$X_{RC,i} = 1$이면 step $i$가 완전히 rate를 제어합니다. 모든 $X_i$의 합은 항상 1이며, 실제로는 여러 step이 rate control을 "공유"하는 경우가 흔합니다.</p>
+  </div>
+
+  <div class="eq-block">$$X_{RC,i} = \frac{\partial \ln r}{\partial \left(-\Delta G_i^\ddagger / k_BT\right)}$$</div>
+
+  <ul class="concept-list">
+    <li>$X_i = 1$: step $i$가 rate를 완전히 지배 (rate-determining step)</li>
+    <li>$X_i = 0$: step $i$를 개선해도 전체 rate에 영향 없음</li>
+    <li>$\sum_i X_i = 1$: 모든 DRC의 합은 항상 1 (simple mechanism)</li>
+    <li>촉매 설계 전략: DRC가 가장 큰 step의 barrier를 낮추는 것이 가장 효율적</li>
+  </ul>
+
+  <!-- Figure 8.3 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 8.3</span>
+      <span class="figure-title">Degree of Rate Control &mdash; Bar Chart</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch83')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch83">
+      <div class="challenge-goal">목표: T를 바꿔서 rate-determining step이 전환되는 온도를 찾아보세요</div>
+      <div class="challenge-desc">낮은 온도에서는 surface reaction (Step 2)이 rate-determining입니다. 온도를 올려서 adsorption (Step 1)이 rate-determining이 되는 전환점을 찾으세요.</div>
+      <div class="challenge-status" id="ch83-status">현재: 슬라이더를 조작해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig83" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Temperature</span>
+          <input type="range" id="drc-T" min="300" max="800" value="500" step="10">
+          <span class="control-value" id="drc-T-val">500 K</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">ΔH<sub>ads</sub></span>
+          <input type="range" id="drc-dHads" min="-150" max="0" value="-80" step="5">
+          <span class="control-value" id="drc-dHads-val">-0.80 eV</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">X1 (ads)</span>
+          <span class="readout-val" id="rd-x1">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">X2 (rxn)</span>
+          <span class="readout-val" id="rd-x2">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">X3 (des)</span>
+          <span class="readout-val" id="rd-x3">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Sum</span>
+          <span class="readout-val" id="rd-xsum">&mdash;</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">DRC는 촉매 설계의 나침반</div>
+        <div class="highlight-body">DRC가 1인 step이 rate-determining step (RDS)입니다. 하지만 실제로는 0.6/0.3/0.1처럼 여러 step이 rate control을 "공유"할 수도 있습니다. DRC가 가장 큰 step을 개선하는 것이 가장 효율적인 전략입니다.</div>
+      </div>
+
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 모든 X_i = 1/3이라면?</div>
+          <div class="whatif-hint">모든 step이 동등하게 rate를 제어합니다. 어떤 step을 개선해도 효과가 같으므로, 가장 쉬운(cheapest) step을 개선하면 됩니다. 하지만 실제 반응에서 이런 균등 분배는 매우 드뭅니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 X_3 (탈착)이 1이라면?</div>
+          <div class="whatif-hint">Product가 표면에서 떠나지 못해 site를 차지하고 있습니다 (product poisoning). 이 경우 product의 binding energy를 약하게 만들어야 합니다. 이것이 heterogeneous catalysis에서 "not too strong, not too weak" 원리의 본질입니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 8.3 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: Degree of rate control ($X_{RC,i}$)의 합은?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz83')">A) 항상 0</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz83')">B) 항상 1</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz83')">C) Step 수와 같다</button>
+    </div>
+    <div class="quiz-explain" id="quiz83">Simple mechanism에서 $\sum_i X_{RC,i} = 1$입니다. 이는 전체 rate가 개별 step들의 "기여"로 완전히 분해됨을 의미합니다. DRC는 rate에 대한 일종의 sensitivity analysis입니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 8.4: Optimal Catalyst from Microkinetics -->
+<!-- ============================================================ -->
+<section id="s84" class="section">
+  <p class="section-label">Section 8.4</p>
+  <h2 class="section-title">Optimal Catalyst from Microkinetics</h2>
+  <div class="section-body">
+    <p>Microkinetic model을 다양한 $\Delta E_{\text{ads}}$ 값에 대해 풀면, Sabatier volcano와 유사한 곡선이 자연스럽게 나타납니다. 단순 volcano 모델(BEP + Langmuir)과 microkinetic volcano는 질적으로 같은 결론을 줍니다: 최적 촉매는 "not too strong, not too weak"입니다.</p>
+    <p>두 모델의 peak 위치가 거의 동일하다는 사실은 descriptor-based catalyst screening의 정당성을 보여줍니다. 정교한 microkinetic model 없이도 간단한 scaling relation만으로 좋은 촉매 후보를 찾을 수 있습니다.</p>
+  </div>
+
+  <!-- Figure 8.4 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 8.4</span>
+      <span class="figure-title">Microkinetic Volcano vs Simple Volcano</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig84" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Temperature</span>
+          <input type="range" id="vol-T" min="300" max="800" value="500" step="10">
+          <span class="control-value" id="vol-T-val">500 K</span>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#000;"></div>Microkinetic volcano</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ccc;"></div>Simple volcano</div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">Optimal ΔE (simple)</span>
+          <span class="readout-val" id="rd-optSimple">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Optimal ΔE (micro)</span>
+          <span class="readout-val" id="rd-optMicro">&mdash;</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Difference</span>
+          <span class="readout-val" id="rd-optDiff">&mdash;</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Simple = Microkinetic</div>
+        <div class="highlight-body">Simple volcano와 microkinetic model의 최적 ΔE가 거의 동일합니다. 이것이 descriptor-based design이 유효한 이유입니다. 절대 rate는 다르지만, 최적 촉매를 찾는 데는 단순 모델로 충분합니다.</div>
+      </div>
+      <button class="explore-toggle" onclick="toggleExplore('ex84')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex84">
+        <ol class="explore-steps">
+          <li>두 곡선의 peak 위치를 비교하세요. 거의 같은 ΔE에서 최대 rate를 보입니다.</li>
+          <li>Left leg (strong binding)과 right leg (weak binding)의 기울기 차이를 관찰하세요.</li>
+          <li>T를 300 K에서 800 K로 바꿔보세요. Peak 위치가 어떻게 이동하나요?</li>
+          <li>두 곡선의 절대 높이(log TOF) 차이도 확인해보세요. Microkinetic이 더 정확한 rate를 줍니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> Descriptor-based screening의 성공은 "우연"이 아닙니다. 단순 모델이 정교한 모델과 같은 최적 조건을 예측하는 것은 Sabatier 원리의 근본적 타당성을 보여줍니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TAKEAWAYS -->
+<!-- ============================================================ -->
+<section class="takeaways section">
+  <p class="section-label">Key Takeaways</p>
+  <h2 class="section-title">Chapter 8 핵심 메시지</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">ΔG</div>
+      <div class="takeaway-title">Free Energy가 진짜다</div>
+      <div class="takeaway-body">0 K의 DFT 에너지(ΔH)가 아닌 operating 조건의 ΔG가 실제 반응을 지배합니다. Entropy 무시 불가.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">X<sub>i</sub></div>
+      <div class="takeaway-title">Degree of Rate Control</div>
+      <div class="takeaway-body">어떤 step을 개선해야 전체 rate가 가장 올라가는지. 촉매 개발의 가장 효율적인 전략 도구.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">=</div>
+      <div class="takeaway-title">Simple = Microkinetic</div>
+      <div class="takeaway-body">단순 volcano와 정교한 microkinetic model이 같은 최적 촉매를 예측합니다. 이것이 descriptor-based screening의 정당성.</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Norskov, Bligaard, Kleis &mdash; <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 8</span>
+    <span class="footer-text">움직이는 교과서 · Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+const kB = 8.617e-5; // eV/K
+const h_planck = 4.136e-15; // eV·s
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function safeExp(x) {
+  return Math.exp(Math.max(-500, Math.min(500, x)));
+}
+
+function tstRate(T, Ea) {
+  return (kB * T / h_planck) * safeExp(-Math.max(0, Ea) / (kB * T));
+}
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  const merged = Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis || {}),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis || {}),
+    font: Object.assign({}, baseLayout.font, extra.font || {})
+  });
+  if (extra.yaxis2) merged.yaxis2 = extra.yaxis2;
+  if (extra.shapes) merged.shapes = extra.shapes;
+  if (extra.annotations) merged.annotations = extra.annotations;
+  if (extra.showlegend !== undefined) merged.showlegend = extra.showlegend;
+  if (extra.legend) merged.legend = extra.legend;
+  if (extra.barmode) merged.barmode = extra.barmode;
+  return merged;
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+const rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(() => { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// MICROKINETIC SOLVER
+// ============================================================
+// 3-step: A(g) + * -> A* -> B* -> B(g) + *
+// Returns { thA, thB, thStar, tof }
+function solveMicrokinetics(T, dH_ads, Ea_rxn, p, pB) {
+  if (p === undefined) p = 1;
+  if (pB === undefined) pB = 0.01;
+
+  const dH_rxn = 0.3; // eV, A* -> B* reaction enthalpy
+
+  // Rate constants via TST
+  const k1f  = tstRate(T, 0);                // adsorption (barrierless)
+  const k1r  = tstRate(T, -dH_ads);           // desorption barrier = |dH_ads|
+  const k2f  = tstRate(T, Ea_rxn);             // surface rxn forward
+  const k2r  = tstRate(T, Ea_rxn + dH_rxn);   // surface rxn reverse (microscopic reversibility)
+
+  // Step 3: B* -> B(g). Desorption of B.
+  // dH_des_B = total cycle closure: overall dH = dH_ads + dH_rxn + dH_des_B = dH_overall
+  // Fix dH_overall = -0.5 eV (exothermic overall)
+  const dH_overall = -0.5;
+  const dH_des_B = dH_overall - dH_ads - dH_rxn; // desorption enthalpy of B
+  const Ea_des_B = Math.max(0, -dH_des_B);  // barrier for desorption
+  const Ea_ads_B = Math.max(0, dH_des_B);   // barrier for re-adsorption of B
+
+  const k3f  = tstRate(T, Ea_des_B);
+  const k3r  = tstRate(T, Ea_ads_B);
+
+  // Steady state: r1 = r2 = r3
+  // r1 = k1f * p * thStar - k1r * thA
+  // r2 = k2f * thA - k2r * thB
+  // r3 = k3f * thB - k3r * pB * thStar
+  // thStar + thA + thB = 1
+
+  // From r1=r2 and r2=r3, express thA, thB in terms of thStar, then use site conservation.
+  // Iterative Newton method for robustness:
+
+  // Initial guess
+  let thA = 0.3, thB = 0.1, thStar = 0.6;
+
+  // Newton iteration (simplified: iterate to steady state)
+  for (let iter = 0; iter < 200; iter++) {
+    // From steady state r1 = r2:
+    // k1f * p * thStar - k1r * thA = k2f * thA - k2r * thB
+    // => thA * (k1r + k2f) = k1f * p * thStar + k2r * thB
+    // => thA = (k1f * p * thStar + k2r * thB) / (k1r + k2f)
+
+    // From r2 = r3:
+    // k2f * thA - k2r * thB = k3f * thB - k3r * pB * thStar
+    // => thB * (k2r + k3f) = k2f * thA + k3r * pB * thStar
+    // => thB = (k2f * thA + k3r * pB * thStar) / (k2r + k3f)
+
+    // Iterate: guess thStar -> compute thA, thB -> normalize
+
+    const thA_new = (k1f * p * thStar + k2r * thB) / (k1r + k2f);
+    const thB_new = (k2f * thA_new + k3r * pB * thStar) / (k2r + k3f);
+    const total = thStar + thA_new + thB_new;
+
+    thA = thA_new / total;
+    thB = thB_new / total;
+    thStar = 1 - thA - thB;
+
+    // Clamp for safety
+    thA = clamp(thA, 0, 1);
+    thB = clamp(thB, 0, 1);
+    thStar = clamp(1 - thA - thB, 0, 1);
+  }
+
+  // TOF = net rate of any step (they're equal at SS)
+  const tof = k2f * thA - k2r * thB;
+
+  return { thA, thB, thStar, tof: Math.max(0, tof), k1f, k1r, k2f, k2r, k3f, k3r };
+}
+
+// ============================================================
+// FIGURE 8.1: Free Energy Diagram
+// ============================================================
+function fig81Data(T, dH1, dH2) {
+  const dS1 = -0.002; // eV/K (lose gas entropy on adsorption)
+  const dS2 = 0;       // surface -> surface (no significant entropy change)
+  const dH_overall = -1.0; // fixed overall reaction enthalpy
+  const dH3 = dH_overall - dH1 - dH2;
+  const dS3 = 0.002;  // gain gas entropy on desorption
+
+  // Energy levels (cumulative):
+  // Level 0: Gas (reference = 0)
+  // Level 1: A* (after step 1)
+  // Level 2: B* (after step 2)
+  // Level 3: Product (after step 3) = dH_overall
+
+  // Enthalpy levels
+  const H = [0, dH1, dH1 + dH2, dH_overall];
+
+  // Free energy levels
+  const dG1 = dH1 - T * dS1;
+  const dG2 = dH2 - T * dS2;
+  const dG3 = dH3 - T * dS3;
+  const G = [0, dG1, dG1 + dG2, dG1 + dG2 + dG3];
+
+  // Step-wise ΔG for each step
+  const stepDG = [dG1, dG2, dG3];
+
+  // Potential-determining step: step with highest (most positive) ΔG
+  let pdsIdx = 0;
+  let dgMax = stepDG[0];
+  for (let i = 1; i < 3; i++) {
+    if (stepDG[i] > dgMax) { dgMax = stepDG[i]; pdsIdx = i; }
+  }
+
+  // T_onset: temperature where dgMax = 0.5 eV (approximate by scanning)
+  let tOnset = null;
+  for (let Tscan = 200; Tscan <= 1200; Tscan += 5) {
+    const dG1s = dH1 - Tscan * dS1;
+    const dG2s = dH2 - Tscan * dS2;
+    const dG3s = dH3 - Tscan * dS3;
+    const sG = [dG1s, dG2s, dG3s];
+    const maxG = Math.max(...sG);
+    if (maxG <= 0.5) { tOnset = Tscan; break; }
+  }
+
+  const labels = ['Gas', 'A*', 'B*', 'Product'];
+
+  // Build step-function x,y for H and G
+  const xH = [], yH = [], xG = [], yG = [];
+  const segWidth = 1;
+  const gapWidth = 0.3;
+  for (let i = 0; i < 4; i++) {
+    const x0 = i * (segWidth + gapWidth);
+    const x1 = x0 + segWidth;
+    xH.push(x0, x1);
+    yH.push(H[i], H[i]);
+    xG.push(x0, x1);
+    yG.push(G[i], G[i]);
+    // Connector line to next level
+    if (i < 3) {
+      xH.push(x1, x1 + gapWidth);
+      yH.push(H[i], H[i + 1]);
+      xG.push(x1, x1 + gapWidth);
+      yG.push(G[i], G[i + 1]);
+    }
+  }
+
+  // Annotation positions (center of each plateau)
+  const annots = labels.map((lbl, i) => ({
+    x: i * (segWidth + gapWidth) + segWidth / 2,
+    y: Math.min(G[i], H[i]) - 0.12,
+    xref: 'x', yref: 'y',
+    text: lbl,
+    showarrow: false,
+    font: { size: 11, color: '#666' }
+  }));
+
+  const traces = [
+    {
+      x: xH, y: yH,
+      type: 'scatter', mode: 'lines',
+      name: 'ΔH (T=0K)',
+      line: { color: '#ccc', width: 2, dash: 'dash' },
+      hovertemplate: 'ΔH=%{y:.3f} eV<extra>Enthalpy</extra>'
+    },
+    {
+      x: xG, y: yG,
+      type: 'scatter', mode: 'lines',
+      name: 'ΔG (T=' + T + 'K)',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'ΔG=%{y:.3f} eV<extra>Free Energy</extra>'
+    }
+  ];
+
+  const layoutExtras = {
+    xaxis: {
+      title: 'Reaction Coordinate',
+      showticklabels: false,
+      range: [-0.2, 4 * (segWidth + gapWidth)]
+    },
+    yaxis: {
+      title: 'Energy (eV)',
+      range: [Math.min(...H, ...G) - 0.3, Math.max(...H, ...G) + 0.3]
+    },
+    showlegend: true,
+    legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 },
+    annotations: annots
+  };
+
+  return { traces, layoutExtras, dgMax, pdsIdx, tOnset, stepDG };
+}
+
+function buildFig81() {
+  const T = 500, dH1 = -0.80, dH2 = 0.20;
+  const { traces, layoutExtras, dgMax, pdsIdx, tOnset } = fig81Data(T, dH1, dH2);
+  Plotly.newPlot('fig81', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout81(dgMax, pdsIdx, tOnset);
+}
+
+function updateFig81(T, dH1, dH2) {
+  const { traces, layoutExtras, dgMax, pdsIdx, tOnset } = fig81Data(T, dH1, dH2);
+  Plotly.react('fig81', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout81(dgMax, pdsIdx, tOnset);
+
+  // Challenge check: PDS changed
+  const s = document.getElementById('ch81-status');
+  if (s) {
+    const stepNames = ['Adsorption', 'Surface Rxn', 'Desorption'];
+    s.textContent = 'PDS: ' + stepNames[pdsIdx] + ' (ΔG = ' + dgMax.toFixed(3) + ' eV)';
+  }
+}
+
+function updateReadout81(dgMax, pdsIdx, tOnset) {
+  const stepNames = ['Step 1', 'Step 2', 'Step 3'];
+  document.getElementById('rd-dgmax').textContent = dgMax.toFixed(3) + ' eV';
+  document.getElementById('rd-pds').textContent = stepNames[pdsIdx];
+  document.getElementById('rd-tonset').textContent = tOnset ? tOnset + ' K' : '> 1200 K';
+}
+
+// ============================================================
+// FIGURE 8.2: Steady-State Coverages vs Temperature
+// ============================================================
+function fig82Data(dH_ads, Ea_rxn) {
+  const N = 150;
+  const Tarr = [], thA_arr = [], thB_arr = [], thStar_arr = [];
+
+  for (let i = 0; i < N; i++) {
+    const T = 200 + i / (N - 1) * 800;
+    Tarr.push(T);
+    const { thA, thB, thStar } = solveMicrokinetics(T, dH_ads, Ea_rxn);
+    thA_arr.push(thA);
+    thB_arr.push(thB);
+    thStar_arr.push(thStar);
+  }
+
+  const traces = [
+    {
+      x: Tarr, y: thStar_arr,
+      type: 'scatter', mode: 'lines',
+      name: 'θ*',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'T=%{x:.0f} K<br>θ*=%{y:.3f}<extra></extra>'
+    },
+    {
+      x: Tarr, y: thA_arr,
+      type: 'scatter', mode: 'lines',
+      name: 'θ_A',
+      line: { color: '#c0392b', width: 2.5 },
+      hovertemplate: 'T=%{x:.0f} K<br>θ_A=%{y:.3f}<extra></extra>'
+    },
+    {
+      x: Tarr, y: thB_arr,
+      type: 'scatter', mode: 'lines',
+      name: 'θ_B',
+      line: { color: '#2980b9', width: 2.5 },
+      hovertemplate: 'T=%{x:.0f} K<br>θ_B=%{y:.3f}<extra></extra>'
+    }
+  ];
+
+  const layoutExtras = {
+    xaxis: { title: 'Temperature (K)', range: [200, 1000] },
+    yaxis: { title: 'Coverage', range: [0, 1] },
+    showlegend: true,
+    legend: { x: 0.65, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  };
+
+  // Values at T=500K for readout
+  const ref = solveMicrokinetics(500, dH_ads, Ea_rxn);
+
+  return { traces, layoutExtras, ref };
+}
+
+function buildFig82() {
+  const dH_ads = -0.80, Ea_rxn = 0.80;
+  const { traces, layoutExtras, ref } = fig82Data(dH_ads, Ea_rxn);
+  Plotly.newPlot('fig82', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout82(ref);
+}
+
+function updateFig82(dH_ads, Ea_rxn) {
+  const { traces, layoutExtras, ref } = fig82Data(dH_ads, Ea_rxn);
+  Plotly.react('fig82', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout82(ref);
+}
+
+function updateReadout82(ref) {
+  document.getElementById('rd-thA82').textContent = ref.thA.toFixed(3);
+  document.getElementById('rd-thB82').textContent = ref.thB.toFixed(3);
+  document.getElementById('rd-thStar82').textContent = ref.thStar.toFixed(3);
+  const tofStr = ref.tof > 0.01 ? ref.tof.toFixed(2) : ref.tof.toExponential(2);
+  document.getElementById('rd-tof82').textContent = tofStr + ' s⁻¹';
+}
+
+// ============================================================
+// FIGURE 8.3: Degree of Rate Control (DRC) Bar Chart
+// ============================================================
+function computeDRC(T, dH_ads, Ea_rxn) {
+  const delta = 0.001; // small perturbation in eV
+
+  // Base rate
+  const base = solveMicrokinetics(T, dH_ads, Ea_rxn);
+  const r0 = Math.max(base.tof, 1e-30);
+  const lnr0 = Math.log(r0);
+
+  // Perturb step 1: lower adsorption barrier (make adsorption easier)
+  // Step 1 barrier is 0 (barrierless adsorption). Perturb desorption barrier instead.
+  // DRC for step 1: perturb the transition state of step 1
+  // Effectively: make dH_ads slightly more negative (lower TS for adsorption direction)
+  const r1p = solveMicrokinetics(T, dH_ads - delta, Ea_rxn).tof;
+  const r1m = solveMicrokinetics(T, dH_ads + delta, Ea_rxn).tof;
+  const X1 = (Math.log(Math.max(r1p, 1e-30)) - Math.log(Math.max(r1m, 1e-30))) / (2 * delta / (kB * T));
+
+  // Perturb step 2: lower Ea_rxn
+  const r2p = solveMicrokinetics(T, dH_ads, Ea_rxn - delta).tof;
+  const r2m = solveMicrokinetics(T, dH_ads, Ea_rxn + delta).tof;
+  const X2 = (Math.log(Math.max(r2p, 1e-30)) - Math.log(Math.max(r2m, 1e-30))) / (2 * delta / (kB * T));
+
+  // Step 3 DRC from sum rule: X3 = 1 - X1 - X2
+  const X3 = Math.max(0, 1 - X1 - X2);
+
+  // Normalize to sum = 1 for display robustness
+  const total = X1 + X2 + X3;
+  const nX1 = total > 0 ? X1 / total : 1/3;
+  const nX2 = total > 0 ? X2 / total : 1/3;
+  const nX3 = total > 0 ? X3 / total : 1/3;
+
+  return { X1: nX1, X2: nX2, X3: nX3 };
+}
+
+function fig83Data(T, dH_ads) {
+  const Ea_rxn = 0.80;
+  const { X1, X2, X3 } = computeDRC(T, dH_ads, Ea_rxn);
+
+  const traces = [{
+    type: 'bar',
+    x: [X1, X2, X3],
+    y: ['Step 1: Adsorption', 'Step 2: Surface Rxn', 'Step 3: Desorption'],
+    orientation: 'h',
+    marker: { color: ['#000', '#c0392b', '#2980b9'] },
+    text: [X1.toFixed(3), X2.toFixed(3), X3.toFixed(3)],
+    textposition: 'outside',
+    textfont: { size: 12, color: '#000' },
+    hovertemplate: '%{y}<br>X_RC = %{x:.3f}<extra></extra>'
+  }];
+
+  const layoutExtras = {
+    xaxis: { title: 'Degree of Rate Control (X_RC)', range: [0, 1.15] },
+    yaxis: { automargin: true },
+    margin: { t: 20, r: 60, b: 50, l: 160 },
+    showlegend: false
+  };
+
+  return { traces, layoutExtras, X1, X2, X3 };
+}
+
+function buildFig83() {
+  const T = 500, dH_ads = -0.80;
+  const { traces, layoutExtras, X1, X2, X3 } = fig83Data(T, dH_ads);
+  Plotly.newPlot('fig83', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout83(X1, X2, X3, T);
+}
+
+function updateFig83(T, dH_ads) {
+  const { traces, layoutExtras, X1, X2, X3 } = fig83Data(T, dH_ads);
+  Plotly.react('fig83', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout83(X1, X2, X3, T);
+}
+
+function updateReadout83(X1, X2, X3, T) {
+  document.getElementById('rd-x1').textContent = X1.toFixed(3);
+  document.getElementById('rd-x2').textContent = X2.toFixed(3);
+  document.getElementById('rd-x3').textContent = X3.toFixed(3);
+  document.getElementById('rd-xsum').textContent = (X1 + X2 + X3).toFixed(3);
+
+  // Challenge: detect RDS transition
+  const s = document.getElementById('ch83-status');
+  if (s) {
+    if (X1 > 0.5) {
+      s.textContent = 'Adsorption이 RDS! (X1 = ' + X1.toFixed(2) + ')';
+      if (T >= 500) {
+        s.className = 'challenge-status success';
+        showToast('RDS 전환 발견! 높은 온도에서 adsorption이 rate-limiting이 됩니다.');
+      }
+    } else if (X2 > 0.5) {
+      s.textContent = 'Surface reaction이 RDS (X2 = ' + X2.toFixed(2) + ')';
+      s.className = 'challenge-status';
+    } else {
+      s.textContent = 'Rate control 공유 중 (X1=' + X1.toFixed(2) + ', X2=' + X2.toFixed(2) + ')';
+      s.className = 'challenge-status';
+    }
+  }
+}
+
+// ============================================================
+// FIGURE 8.4: Microkinetic Volcano vs Simple Volcano
+// ============================================================
+function fig84Data(T) {
+  const N = 120;
+  const dEarr = [], logTOF_micro = [], logTOF_simple = [];
+
+  // BEP parameters for simple volcano
+  const alpha = 0.8, beta = 1.2; // Ea = alpha * dE + beta
+
+  for (let i = 0; i < N; i++) {
+    const dE = -2.0 + i / (N - 1) * 3.0;
+    dEarr.push(dE);
+
+    // Microkinetic: full model
+    const Ea_rxn_micro = clamp(alpha * (-dE) + beta * 0.5, 0.1, 3.0);
+    const mk = solveMicrokinetics(T, dE, Ea_rxn_micro);
+    const logTof = mk.tof > 0 ? Math.log10(Math.max(mk.tof, 1e-20)) : -20;
+    logTOF_micro.push(logTof);
+
+    // Simple volcano: rate = min(k_forward, k_reverse) type model
+    // Left leg: strong binding, rate limited by desorption
+    // Right leg: weak binding, rate limited by adsorption
+    const Ea_f = clamp(alpha * (-dE) + beta * 0.5, 0, 5);
+    const Ea_r = clamp(Ea_f + dE + 0.5, 0, 5);
+    const r_f = tstRate(T, Ea_f);
+    const r_r = tstRate(T, Ea_r);
+    const r_simple = Math.min(r_f, r_r);
+    const logSimple = r_simple > 0 ? Math.log10(Math.max(r_simple, 1e-20)) : -20;
+    logTOF_simple.push(logSimple);
+  }
+
+  // Find optima
+  let maxMicro = -Infinity, optMicro = 0;
+  let maxSimple = -Infinity, optSimple = 0;
+  for (let i = 0; i < N; i++) {
+    if (logTOF_micro[i] > maxMicro) { maxMicro = logTOF_micro[i]; optMicro = dEarr[i]; }
+    if (logTOF_simple[i] > maxSimple) { maxSimple = logTOF_simple[i]; optSimple = dEarr[i]; }
+  }
+
+  const traces = [
+    {
+      x: dEarr, y: logTOF_simple,
+      type: 'scatter', mode: 'lines',
+      name: 'Simple volcano',
+      line: { color: '#ccc', width: 2, dash: 'dash' },
+      hovertemplate: 'ΔE=%{x:.2f} eV<br>log₁₀(TOF)=%{y:.1f}<extra>Simple</extra>'
+    },
+    {
+      x: dEarr, y: logTOF_micro,
+      type: 'scatter', mode: 'lines',
+      name: 'Microkinetic',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'ΔE=%{x:.2f} eV<br>log₁₀(TOF)=%{y:.1f}<extra>Microkinetic</extra>'
+    }
+  ];
+
+  // Clamp y range for display
+  const allY = logTOF_micro.concat(logTOF_simple).filter(v => v > -18);
+  const yMin = allY.length > 0 ? Math.min(...allY) - 1 : -20;
+  const yMax = allY.length > 0 ? Math.max(...allY) + 1 : 5;
+
+  const layoutExtras = {
+    xaxis: { title: 'ΔE_ads (eV)', range: [-2, 1] },
+    yaxis: { title: 'log₁₀(TOF)', range: [Math.max(yMin, -18), Math.min(yMax, 15)] },
+    showlegend: true,
+    legend: { x: 0.02, y: 0.02, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  };
+
+  return { traces, layoutExtras, optSimple, optMicro };
+}
+
+function buildFig84() {
+  const T = 500;
+  const { traces, layoutExtras, optSimple, optMicro } = fig84Data(T);
+  Plotly.newPlot('fig84', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout84(optSimple, optMicro);
+}
+
+function updateFig84(T) {
+  const { traces, layoutExtras, optSimple, optMicro } = fig84Data(T);
+  Plotly.react('fig84', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout84(optSimple, optMicro);
+}
+
+function updateReadout84(optSimple, optMicro) {
+  document.getElementById('rd-optSimple').textContent = optSimple.toFixed(2) + ' eV';
+  document.getElementById('rd-optMicro').textContent = optMicro.toFixed(2) + ' eV';
+  document.getElementById('rd-optDiff').textContent = Math.abs(optSimple - optMicro).toFixed(2) + ' eV';
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 8.1 sliders
+  document.getElementById('fed-T').addEventListener('input', function() {
+    const T = parseFloat(this.value);
+    const dH1 = parseFloat(document.getElementById('fed-dH1').value) / 100;
+    const dH2 = parseFloat(document.getElementById('fed-dH2').value) / 100;
+    document.getElementById('fed-T-val').textContent = T + ' K';
+    throttledDraw('fed', () => updateFig81(T, dH1, dH2));
+  });
+  document.getElementById('fed-dH1').addEventListener('input', function() {
+    const T = parseFloat(document.getElementById('fed-T').value);
+    const dH1 = parseFloat(this.value) / 100;
+    const dH2 = parseFloat(document.getElementById('fed-dH2').value) / 100;
+    document.getElementById('fed-dH1-val').textContent = (dH1 >= 0 ? '+' : '') + dH1.toFixed(2) + ' eV';
+    throttledDraw('fed', () => updateFig81(T, dH1, dH2));
+  });
+  document.getElementById('fed-dH2').addEventListener('input', function() {
+    const T = parseFloat(document.getElementById('fed-T').value);
+    const dH1 = parseFloat(document.getElementById('fed-dH1').value) / 100;
+    const dH2 = parseFloat(this.value) / 100;
+    document.getElementById('fed-dH2-val').textContent = (dH2 >= 0 ? '+' : '') + dH2.toFixed(2) + ' eV';
+    throttledDraw('fed', () => updateFig81(T, dH1, dH2));
+  });
+
+  // Fig 8.2 sliders
+  document.getElementById('mk-dHads').addEventListener('input', function() {
+    const dH_ads = parseFloat(this.value) / 100;
+    const Ea_rxn = parseFloat(document.getElementById('mk-Ea').value) / 100;
+    document.getElementById('mk-dHads-val').textContent = (dH_ads >= 0 ? '+' : '') + dH_ads.toFixed(2) + ' eV';
+    throttledDraw('mk', () => updateFig82(dH_ads, Ea_rxn));
+  });
+  document.getElementById('mk-Ea').addEventListener('input', function() {
+    const dH_ads = parseFloat(document.getElementById('mk-dHads').value) / 100;
+    const Ea_rxn = parseFloat(this.value) / 100;
+    document.getElementById('mk-Ea-val').textContent = Ea_rxn.toFixed(2) + ' eV';
+    throttledDraw('mk', () => updateFig82(dH_ads, Ea_rxn));
+  });
+
+  // Fig 8.3 sliders
+  document.getElementById('drc-T').addEventListener('input', function() {
+    const T = parseFloat(this.value);
+    const dH_ads = parseFloat(document.getElementById('drc-dHads').value) / 100;
+    document.getElementById('drc-T-val').textContent = T + ' K';
+    throttledDraw('drc', () => updateFig83(T, dH_ads));
+  });
+  document.getElementById('drc-dHads').addEventListener('input', function() {
+    const T = parseFloat(document.getElementById('drc-T').value);
+    const dH_ads = parseFloat(this.value) / 100;
+    document.getElementById('drc-dHads-val').textContent = (dH_ads >= 0 ? '+' : '') + dH_ads.toFixed(2) + ' eV';
+    throttledDraw('drc', () => updateFig83(T, dH_ads));
+  });
+
+  // Fig 8.4 slider
+  document.getElementById('vol-T').addEventListener('input', function() {
+    const T = parseFloat(this.value);
+    document.getElementById('vol-T-val').textContent = T + ' K';
+    throttledDraw('vol', () => updateFig84(T));
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig81();
+  buildFig82();
+  buildFig83();
+  buildFig84();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

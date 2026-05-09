@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Surface Structure &amp; Energetics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "—"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '▶'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TOGGLE BUTTON GROUP */
+.toggle-group { display: flex; gap: 6px; flex-wrap: wrap; margin-top: var(--spacing-8); }
+.toggle-btn {
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  padding: 6px 14px; border-radius: 9999px;
+  border: 1px solid var(--color-fog-border);
+  background: #fff; color: var(--color-graphite);
+  cursor: pointer; transition: all 0.15s;
+}
+.toggle-btn:hover { border-color: #000; color: #000; }
+.toggle-btn.active { background: #000; color: #fff; border-color: #000; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Surface Structure &amp; Energetics</a>
+    <ul class="nav-links">
+      <li><a href="#s21">2.1 Crystal</a></li>
+      <li><a href="#s22">2.2 Sites</a></li>
+      <li><a href="#s23">2.3 Trends</a></li>
+      <li><a href="#s24">2.4 Coverage</a></li>
+    </ul>
+    <span class="nav-badge">Norskov Ch.2</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">Surface Structure &amp; Energetics</h1>
+  <p class="hero-subtitle">Norskov, <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 2. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+  <div class="hero-chips">
+    <span class="chip">FCC Surfaces</span>
+    <span class="chip">Adsorption Sites</span>
+    <span class="chip">Binding Energy</span>
+    <span class="chip">Miller Indices</span>
+    <span class="chip">Coverage Effects</span>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2.1: Crystal Surface Structure -->
+<!-- ============================================================ -->
+<section id="s21" class="section">
+  <p class="section-label">Section 2.1</p>
+  <h2 class="section-title">Crystal Surface Structure</h2>
+  <div class="section-body">
+    <p>불균일 촉매에서 가장 많이 사용되는 금속은 FCC(face-centered cubic) 구조를 가집니다 — Pt, Pd, Cu, Au, Ag, Ni, Rh, Ir 등이 여기에 해당합니다. 이 금속들의 표면은 Miller index로 구분되며, 각 면의 원자 배열이 촉매 활성에 직접적인 영향을 줍니다.</p>
+    <p>표면 원자의 coordination number(배위수)는 bulk 내부(12)보다 항상 낮습니다. 이 '불포화'가 바로 분자를 결합시키는 구동력이며, coordination number가 낮을수록 결합이 강해집니다.</p>
+  </div>
+
+  <ul class="concept-list">
+    <li>(111): close-packed, 표면 원자 coordination number = 9, 가장 안정한 면</li>
+    <li>(100): square arrangement, coordination number = 8</li>
+    <li>(110): rectangular rows, coordination number = 7</li>
+    <li>(211): stepped surface — terrace + step edge, step atom coordination = 7</li>
+  </ul>
+
+  <div class="eq-block">
+    $$\text{Coordination number: (111) = 9, \; (100) = 8, \; step edge = 7, \; bulk = 12}$$
+  </div>
+
+  <!-- Figure 2.1 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 2.1</span>
+      <span class="figure-title">Surface Atom Visualization</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch21')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch21">
+      <div class="challenge-goal">목표: 각 표면을 전환하며 coordination number와 packing density의 관계를 확인하세요</div>
+      <div class="challenge-desc">(111)이 가장 높은 packing density를 가지고, (211)의 step site가 가장 낮은 coordination을 가집니다. 4개 면을 모두 확인해보세요.</div>
+      <div class="challenge-status" id="ch21-status">현재: 버튼을 눌러 표면을 전환해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig21" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Surface</span>
+          <div class="toggle-group" id="surface-toggle">
+            <button class="toggle-btn active" onclick="switchSurface('111')">(111)</button>
+            <button class="toggle-btn" onclick="switchSurface('100')">(100)</button>
+            <button class="toggle-btn" onclick="switchSurface('110')">(110)</button>
+            <button class="toggle-btn" onclick="switchSurface('211')">(211)</button>
+          </div>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">Surface</span>
+          <span class="readout-val" id="rd-surface">(111)</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Coord. Number</span>
+          <span class="readout-val" id="rd-coord">9</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Rel. Surface Energy</span>
+          <span class="readout-val" id="rd-surfE">1.00</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Packing Density</span>
+          <span class="readout-val" id="rd-packing">High</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">Coordination number가 낮을수록(step, edge) 결합이 강해집니다 — d-band center가 올라가기 때문입니다.</div>
+      </div>
+      <button class="explore-toggle" onclick="toggleExplore('ex21')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex21">
+        <ol class="explore-steps">
+          <li>(111) 면을 선택하고 hexagonal close-packed 배열을 확인하세요. Coordination number = 9.</li>
+          <li>(100)으로 전환하면 square 배열이 나타납니다. Coordination이 8로 줄어듭니다.</li>
+          <li>(110)은 row 형태이며, 원자 간 간격이 방향에 따라 다릅니다.</li>
+          <li>(211)에서 terrace와 step edge를 구분해보세요. Step atom은 특히 반응성이 높습니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 실제 촉매 nanoparticle은 여러 면이 동시에 노출됩니다. Edge와 step site의 비율이 particle 크기에 따라 달라지며, 이것이 size-dependent activity의 원인입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 2.1 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: FCC 금속에서 가장 안정한 (가장 낮은 surface energy) 면은?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz21')">A) (100)</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz21')">B) (111)</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz21')">C) (211)</button>
+    </div>
+    <div class="quiz-explain" id="quiz21">(111)은 close-packed 면으로 coordination number가 9로 가장 높고, 표면 에너지가 가장 낮아 열역학적으로 가장 안정합니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2.2: Adsorption Sites -->
+<!-- ============================================================ -->
+<section id="s22" class="section">
+  <p class="section-label">Section 2.2</p>
+  <h2 class="section-title">Adsorption Sites</h2>
+  <div class="section-body">
+    <p>(111) 표면에는 네 가지 주요 흡착 사이트가 존재합니다: top, bridge, fcc-hollow, hcp-hollow. 각 사이트는 분자와의 coordination 수가 다르기 때문에 결합 에너지도 다릅니다.</p>
+    <p>흡착 에너지(adsorption energy)는 slab+adsorbate 시스템의 에너지에서 깨끗한 slab과 기체상 분자의 에너지를 빼서 계산합니다.</p>
+  </div>
+
+  <div class="eq-block">
+    $$\Delta E_{ads} = E_{slab+adsorbate} - E_{slab} - E_{gas}$$
+  </div>
+
+  <ul class="concept-list">
+    <li>Top site: 분자가 표면 원자 1개 바로 위에 결합 (coordination = 1)</li>
+    <li>Bridge site: 인접한 2개 표면 원자 사이에 결합 (coordination = 2)</li>
+    <li>FCC-hollow: 3개 표면 원자로 둘러싸인 자리, 아래에 subsurface atom 없음 (coordination = 3)</li>
+    <li>HCP-hollow: 3개 표면 원자로 둘러싸인 자리, 바로 아래에 subsurface atom 존재 (coordination = 3)</li>
+  </ul>
+
+  <!-- Figure 2.2 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 2.2</span>
+      <span class="figure-title">Binding Energy by Site Type</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig22" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Adsorbate</span>
+          <div class="toggle-group" id="adsorbate-toggle">
+            <button class="toggle-btn active" onclick="switchAdsorbate('CO')">CO</button>
+            <button class="toggle-btn" onclick="switchAdsorbate('O')">O</button>
+            <button class="toggle-btn" onclick="switchAdsorbate('H')">H</button>
+            <button class="toggle-btn" onclick="switchAdsorbate('N')">N</button>
+          </div>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">Adsorbate</span>
+          <span class="readout-val" id="rd-ads">CO</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Preferred Site</span>
+          <span class="readout-val" id="rd-prefsite">fcc-hollow</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">dE Preferred</span>
+          <span class="readout-val" id="rd-prefE">-1.80 eV</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">2nd Best</span>
+          <span class="readout-val" id="rd-2nd">hcp-hollow</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">O와 N은 hollow site를 강하게 선호하는 반면, CO는 top site도 충분히 안정합니다. 이는 분자의 결합 orbital 대칭성과 관련이 있습니다.</div>
+      </div>
+
+      <!-- What-If -->
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 모든 site에서 ΔE가 같다면?</div>
+          <div class="whatif-hint">분자가 표면에서 자유롭게 이동할 수 있어 높은 mobility를 보이게 됩니다. 실제로 이런 상황에 가까운 것이 physisorption(물리 흡착)으로, van der Waals 결합만으로 약하게 흡착된 경우입니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+
+      <!-- Quiz 2.2 -->
+      <div class="quiz-block" style="margin-top:20px; max-width:600px;">
+        <div class="quiz-q">Q: O 원자가 fcc-hollow을 선호하는 이유는?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz22')">A) 크기가 맞아서</button>
+          <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz22')">B) coordination이 최대여서</button>
+          <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz22')">C) 전기적 인력</button>
+        </div>
+        <div class="quiz-explain" id="quiz22">O 원자는 3개의 표면 원자와 동시에 결합하는 hollow site에서 coordination이 최대가 되어 가장 강한 결합을 형성합니다. O의 p-orbital이 3개 금속 원자의 d-orbital과 동시에 겹칠 수 있기 때문입니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2.3: Adsorption Energy Trends -->
+<!-- ============================================================ -->
+<section id="s23" class="section">
+  <p class="section-label">Section 2.3</p>
+  <h2 class="section-title">Adsorption Energy Trends</h2>
+  <div class="section-body">
+    <p>d-block 전이 금속의 흡착 에너지는 주기율표에서 뚜렷한 패턴을 보입니다. 왼쪽(early transition metals)은 결합이 강하고, 오른쪽(late transition metals)은 약합니다. 이 trend는 d-band model로 설명되며, d-band center ($\varepsilon_d$)가 Fermi level에 가까울수록 결합이 강해집니다.</p>
+    <p>같은 group 내에서는 3d &lt; 4d &lt; 5d 순으로 결합이 약해지는 경향이 있으며, 이는 relativistic effect와 d-orbital의 확장(diffuseness)에 기인합니다.</p>
+  </div>
+
+  <div class="eq-block">
+    $$\Delta E_{ads} \propto \varepsilon_d - \varepsilon_F$$
+  </div>
+
+  <ul class="concept-list">
+    <li>Early TM (Ti, Zr, Hf): d-band가 거의 비어 있어 매우 강하게 결합 — 산화물이 형성될 정도</li>
+    <li>Late TM (Cu, Ag, Au): d-band가 거의 채워져 있어 약하게 결합 — noble metals</li>
+    <li>Pt, Pd, Rh, Ir: 중간 영역으로 촉매에 가장 적합한 결합 세기</li>
+  </ul>
+
+  <!-- Figure 2.3 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 2.3</span>
+      <span class="figure-title">Periodic Table Heatmap — Adsorption Energy</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig23" class="plotly-container" style="min-height: 320px;"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Adsorbate</span>
+          <div class="toggle-group" id="pt-adsorbate-toggle">
+            <button class="toggle-btn active" onclick="switchPTAdsorbate('O')">O</button>
+            <button class="toggle-btn" onclick="switchPTAdsorbate('N')">N</button>
+            <button class="toggle-btn" onclick="switchPTAdsorbate('C')">C</button>
+            <button class="toggle-btn" onclick="switchPTAdsorbate('H')">H</button>
+          </div>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">Adsorbate</span>
+          <span class="readout-val" id="rd-pt-ads">O</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Selected Metal</span>
+          <span class="readout-val" id="rd-pt-metal">Pt</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">dE (eV)</span>
+          <span class="readout-val" id="rd-pt-dE">-0.80</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">vs Pt</span>
+          <span class="readout-val" id="rd-pt-rel">0.00</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">Early TM(Ti, Zr)은 산소를 너무 강하게 잡아 oxide가 되고, Late TM(Au, Ag)은 너무 약하게 잡아 반응이 안 됩니다. 최적 촉매는 중간 영역의 금속입니다.</div>
+      </div>
+      <button class="explore-toggle" onclick="toggleExplore('ex23')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex23">
+        <ol class="explore-steps">
+          <li>Pt, Pd의 위치를 확인하세요 — 중간 영역에 있어 촉매로 적합합니다.</li>
+          <li>Fe, Co를 비교하세요 — Fe가 더 강하게 결합합니다.</li>
+          <li>같은 group을 수직으로 비교하세요 (예: Ni → Pd → Pt) — 아래로 갈수록 약해지는 trend를 확인할 수 있습니다.</li>
+          <li>Noble metals (Cu, Ag, Au)는 오른쪽 아래에 위치하며, 가장 약한 결합을 보입니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> 이 trend는 Sabatier principle의 출발점입니다 — 너무 강한 결합도, 너무 약한 결합도 좋지 않고, 최적의 중간 세기가 존재합니다. Chapter 6의 volcano curve로 이어집니다.</div>
+      </div>
+
+      <!-- What-If -->
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 d-band이 완전히 비어 있다면?</div>
+          <div class="whatif-hint">모든 anti-bonding state가 비어 있어 adsorbate와의 결합이 극도로 강해집니다. 실제로 Sc, Ti 같은 early TM에서 이런 현상이 나타나며, 표면이 산화물로 덮여 금속 촉매로 사용하기 어렵습니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 d-band이 완전히 차 있다면?</div>
+          <div class="whatif-hint">Anti-bonding state가 모두 차 있어 net bonding이 거의 0이 됩니다. Cu, Ag, Au(d10 configuration)가 이 극한에 가깝고, 반응성이 낮아 noble metals로 불립니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2.4: Coverage-Dependent Adsorption -->
+<!-- ============================================================ -->
+<section id="s24" class="section">
+  <p class="section-label">Section 2.4</p>
+  <h2 class="section-title">Coverage-Dependent Adsorption</h2>
+  <div class="section-body">
+    <p>실제 촉매 표면에서는 흡착 분자가 하나가 아닙니다. Coverage($\theta$)가 올라갈수록 이웃한 흡착 분자끼리의 lateral interaction이 중요해집니다. 대부분의 경우 이 상호작용은 repulsive(반발적)이어서, coverage가 높아지면 결합 에너지가 약해집니다.</p>
+    <p>이를 선형 모델로 표현하면, lateral interaction coefficient $\alpha_{lat}$가 양수일 때 repulsive interaction을 나타냅니다.</p>
+  </div>
+
+  <div class="eq-block">
+    $$\Delta E(\theta) = \Delta E_0 + \alpha_{lat}\,\theta$$
+  </div>
+
+  <ul class="concept-list">
+    <li>$\alpha_{lat} > 0$: repulsive interaction (일반적) — coverage 증가 시 결합 약화</li>
+    <li>$\alpha_{lat} < 0$: attractive interaction (드물지만 존재) — island formation 유발</li>
+    <li>$\alpha_{lat} = 0$: Langmuir 모델 — coverage에 무관한 일정 결합 에너지</li>
+  </ul>
+
+  <!-- Figure 2.4 -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 2.4</span>
+      <span class="figure-title">Adsorption Energy vs Coverage</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch24')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch24">
+      <div class="challenge-goal">목표: ΔE(θ=0.5) = -0.5 eV가 되는 α 값을 찾아보세요</div>
+      <div class="challenge-desc">ΔE₀와 α 슬라이더를 조절해서 θ=0.5에서 정확히 -0.5 eV가 되도록 만들어보세요. 힌트: ΔE₀ + α·0.5 = -0.5 eV를 만족하는 조합을 찾으면 됩니다.</div>
+      <div class="challenge-status" id="ch24-status">현재: 슬라이더를 조작해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig24" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">ΔE<sub>0</sub></span>
+          <input type="range" id="cov-dE0" min="-200" max="0" value="-150" step="5">
+          <span class="control-value" id="cov-dE0-val">-1.50 eV</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">α<sub>lat</sub></span>
+          <input type="range" id="cov-alpha" min="0" max="150" value="50" step="5">
+          <span class="control-value" id="cov-alpha-val">0.50 eV</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">dE at θ=0</span>
+          <span class="readout-val" id="rd-dE0">-1.50 eV</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">dE at θ=0.25</span>
+          <span class="readout-val" id="rd-dE025">-1.38 eV</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">dE at θ=0.5</span>
+          <span class="readout-val" id="rd-dE05">-1.25 eV</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">dE at θ=1.0</span>
+          <span class="readout-val" id="rd-dE10">-1.00 eV</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">θ = 1에서 ΔE가 0에 가까우면, full monolayer가 불안정합니다 — 자발적 탈착이 시작됩니다. 이것이 TPD(Temperature Programmed Desorption) 실험에서 피크가 넓어지는 이유입니다.</div>
+      </div>
+
+      <!-- What-If -->
+      <div class="whatif-grid">
+        <div class="whatif-card" onclick="revealWhatif(this)">
+          <div class="whatif-q">만약 α &lt; 0 (인력적 interaction)이라면?</div>
+          <div class="whatif-hint">Coverage가 높을수록 오히려 더 안정해집니다. 이 경우 adsorbate가 서로 끌어당겨 island를 형성하는 자기 조직화(self-organization)가 일어납니다. 실제로 CO/Pt(111)에서 낮은 coverage에서 island 형성이 관찰됩니다.</div>
+          <div class="whatif-arrow">클릭해서 확인 →</div>
+        </div>
+      </div>
+
+      <button class="explore-toggle" onclick="toggleExplore('ex24')">Step-by-step 탐색 ▾</button>
+      <div class="explore-panel" id="ex24">
+        <ol class="explore-steps">
+          <li>α = 0으로 설정하세요 — 수평선이 됩니다. Coverage에 무관한 Langmuir 모델입니다.</li>
+          <li>α = 0.5 eV로 올리세요 — 기울기가 생기며 coverage가 높을수록 결합이 약해집니다.</li>
+          <li>α = 1.5 eV로 극단적으로 올려보세요 — θ = 1에서 ΔE가 거의 0이 됩니다.</li>
+          <li>ΔE₀를 -0.5 eV, α를 1.0 eV로 설정하세요 — θ = 0.5에서 ΔE = 0이 됩니다. 이 이상의 coverage는 열역학적으로 불가능합니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> Lateral interaction은 TPD peak의 모양, 반응 속도의 coverage 의존성, 그리고 표면 상 분리(phase separation) 현상을 결정하는 핵심 파라미터입니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 2.4 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: (111) 표면의 coordination number는?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz24')">A) 7</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz24')">B) 9</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz24')">C) 12</button>
+    </div>
+    <div class="quiz-explain" id="quiz24">FCC(111) 표면의 원자는 같은 layer에 6개, 아래 layer에 3개의 이웃을 가져 총 coordination number = 9입니다. Bulk 원자의 12보다 3개가 적습니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TAKEAWAYS -->
+<!-- ============================================================ -->
+<section class="takeaways section">
+  <p class="section-label">Key Takeaways</p>
+  <h2 class="section-title">Chapter 2 핵심 메시지</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">9</div>
+      <div class="takeaway-title">Coordination Number</div>
+      <div class="takeaway-body">FCC(111) 표면 원자의 배위수. Bulk(12)보다 3개 적어 — 이 '불포화'가 분자를 결합시키는 구동력.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">α</div>
+      <div class="takeaway-title">Lateral Interactions</div>
+      <div class="takeaway-body">흡착 분자끼리의 상호작용. θ가 올라가면 보통 결합이 약해져 — TPD 실험에서 피크가 넓어지는 이유.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">→</div>
+      <div class="takeaway-title">Early vs Late TM</div>
+      <div class="takeaway-body">주기율표 왼쪽(early)은 너무 강하고, 오른쪽(late)은 너무 약하고. 최적 촉매는 중간 — Sabatier로 이어지는 패턴의 시작.</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Norskov, Bligaard, Kleis — <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 2</span>
+    <span class="footer-text">움직이는 교과서 · Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+const kB = 8.617e-5; // eV/K
+const h  = 4.136e-15; // eV·s
+const c  = 2.998e10;  // cm/s
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function safeExp(x) {
+  return Math.exp(Math.max(-500, Math.min(500, x)));
+}
+
+function lateralAdsorption(dE0, alpha, theta) { return dE0 + alpha * theta; }
+function surfaceFraction(d_nm, d_atom) { return Math.min(1, 6*d_atom/d_nm); }
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  return Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis),
+    font: Object.assign({}, baseLayout.font, extra.font)
+  });
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+const rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(() => { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// FIGURE 2.1: Surface Atom Visualization
+// ============================================================
+const surfaceData = {
+  '111': {
+    coord: 9, surfE: '1.00', packing: 'High',
+    label: '(111) close-packed hexagonal'
+  },
+  '100': {
+    coord: 8, surfE: '1.15', packing: 'Medium',
+    label: '(100) square arrangement'
+  },
+  '110': {
+    coord: 7, surfE: '1.22', packing: 'Low',
+    label: '(110) rectangular rows'
+  },
+  '211': {
+    coord: 7, surfE: '1.25', packing: 'Low (stepped)',
+    label: '(211) terrace + step'
+  }
+};
+
+function genSurfaceAtoms(type) {
+  const xs = [], ys = [], colors = [], sizes = [], texts = [];
+  if (type === '111') {
+    // Hexagonal close-packed
+    const rows = 6, cols = 7;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = c + (r % 2 === 1 ? 0.5 : 0);
+        const y = r * 0.866;
+        xs.push(x); ys.push(y);
+        colors.push('#000'); sizes.push(36);
+        texts.push('Surface atom');
+      }
+    }
+    // Subsurface atoms (smaller, lighter)
+    for (let r = 0; r < rows - 1; r++) {
+      for (let c = 0; c < cols - 1; c++) {
+        const x = c + 0.5 + (r % 2 === 1 ? 0.5 : 0);
+        const y = r * 0.866 + 0.289;
+        if (x < cols && x > 0) {
+          xs.push(x); ys.push(y);
+          colors.push('#ccc'); sizes.push(20);
+          texts.push('Subsurface atom');
+        }
+      }
+    }
+  } else if (type === '100') {
+    // Square arrangement
+    const rows = 6, cols = 7;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        xs.push(c); ys.push(r);
+        colors.push('#000'); sizes.push(36);
+        texts.push('Surface atom');
+      }
+    }
+    // Subsurface at center of each square
+    for (let r = 0; r < rows - 1; r++) {
+      for (let c = 0; c < cols - 1; c++) {
+        xs.push(c + 0.5); ys.push(r + 0.5);
+        colors.push('#ccc'); sizes.push(18);
+        texts.push('Subsurface atom');
+      }
+    }
+  } else if (type === '110') {
+    // Rectangular rows
+    const rows = 6, cols = 7;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        xs.push(c); ys.push(r * 1.414);
+        colors.push('#000'); sizes.push(36);
+        texts.push('Surface atom (row)');
+      }
+    }
+    // Subsurface in channels
+    for (let r = 0; r < rows - 1; r++) {
+      for (let c = 0; c < cols; c++) {
+        xs.push(c); ys.push(r * 1.414 + 0.707);
+        colors.push('#ccc'); sizes.push(18);
+        texts.push('Channel atom');
+      }
+    }
+  } else if (type === '211') {
+    // Stepped surface: terrace (3 rows) + step
+    const cols = 7;
+    // Lower terrace
+    for (let r = 0; r < 3; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = c + (r % 2 === 1 ? 0.5 : 0);
+        const y = r * 0.866;
+        xs.push(x); ys.push(y);
+        colors.push('#000'); sizes.push(36);
+        texts.push('Terrace atom');
+      }
+    }
+    // Step edge
+    for (let c = 0; c < cols; c++) {
+      const x = c;
+      const y = 3 * 0.866;
+      xs.push(x); ys.push(y);
+      colors.push('#c0392b'); sizes.push(38);
+      texts.push('Step edge atom (CN=7)');
+    }
+    // Upper terrace
+    for (let r = 0; r < 2; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = c + ((r + 1) % 2 === 1 ? 0.5 : 0);
+        const y = (r + 4) * 0.866;
+        xs.push(x); ys.push(y);
+        colors.push('#666'); sizes.push(32);
+        texts.push('Upper terrace atom');
+      }
+    }
+  }
+  return { xs, ys, colors, sizes, texts };
+}
+
+let currentSurface = '111';
+
+function buildFig21() {
+  const atoms = genSurfaceAtoms('111');
+  const layout = mergeLayout({
+    xaxis: { title: '', showgrid: false, zeroline: false, showticklabels: false, range: [-0.5, 7.5] },
+    yaxis: { title: '', showgrid: false, zeroline: false, showticklabels: false, scaleanchor: 'x', scaleratio: 1 },
+    margin: { t: 10, r: 10, b: 10, l: 10 },
+    annotations: [{
+      x: 3.5, y: -0.6, xref: 'x', yref: 'y',
+      text: '(111) close-packed hexagonal', showarrow: false,
+      font: { size: 13, color: '#666' }
+    }]
+  });
+
+  Plotly.newPlot('fig21', [{
+    x: atoms.xs, y: atoms.ys,
+    type: 'scatter', mode: 'markers',
+    marker: { color: atoms.colors, size: atoms.sizes, line: { color: '#fff', width: 1.5 } },
+    text: atoms.texts,
+    hovertemplate: '%{text}<extra></extra>',
+    showlegend: false
+  }], layout, plotlyCfg);
+}
+
+function updateFig21(type) {
+  const atoms = genSurfaceAtoms(type);
+  const info = surfaceData[type];
+  const maxY = type === '110' ? 8.5 : type === '211' ? 5.5 : 5.5;
+  const minY = -1.0;
+
+  Plotly.react('fig21', [{
+    x: atoms.xs, y: atoms.ys,
+    type: 'scatter', mode: 'markers',
+    marker: { color: atoms.colors, size: atoms.sizes, line: { color: '#fff', width: 1.5 } },
+    text: atoms.texts,
+    hovertemplate: '%{text}<extra></extra>',
+    showlegend: false
+  }], mergeLayout({
+    xaxis: { title: '', showgrid: false, zeroline: false, showticklabels: false, range: [-0.5, 7.5] },
+    yaxis: { title: '', showgrid: false, zeroline: false, showticklabels: false, scaleanchor: 'x', scaleratio: 1, range: [minY, maxY] },
+    margin: { t: 10, r: 10, b: 10, l: 10 },
+    annotations: [{
+      x: 3.5, y: minY + 0.2, xref: 'x', yref: 'y',
+      text: info.label, showarrow: false,
+      font: { size: 13, color: '#666' }
+    }]
+  }), plotlyCfg);
+
+  // Update readout
+  document.getElementById('rd-surface').textContent = '(' + type + ')';
+  document.getElementById('rd-coord').textContent = info.coord;
+  document.getElementById('rd-surfE').textContent = info.surfE;
+  document.getElementById('rd-packing').textContent = info.packing;
+
+  // Challenge tracking
+  const s = document.getElementById('ch21-status');
+  if (s) {
+    s.textContent = '현재: (' + type + ') — CN=' + info.coord + ', packing=' + info.packing;
+  }
+}
+
+function switchSurface(type) {
+  currentSurface = type;
+  // Update toggle buttons
+  const btns = document.querySelectorAll('#surface-toggle .toggle-btn');
+  btns.forEach(b => {
+    b.classList.toggle('active', b.textContent.replace(/[()]/g, '') === type);
+  });
+  throttledDraw('fig21', () => updateFig21(type));
+}
+
+// ============================================================
+// FIGURE 2.2: Binding Energy by Site Type
+// ============================================================
+const adsorbateData = {
+  CO: { top: -1.50, bridge: -1.70, fcc: -1.80, hcp: -1.75, label: 'CO' },
+  O:  { top: -1.00, bridge: -2.50, fcc: -3.50, hcp: -3.40, label: 'O' },
+  H:  { top: -2.50, bridge: -2.60, fcc: -2.70, hcp: -2.65, label: 'H' },
+  N:  { top: -1.00, bridge: -2.00, fcc: -4.50, hcp: -4.30, label: 'N' }
+};
+
+let currentAdsorbate = 'CO';
+
+function fig22Data(ads) {
+  const d = adsorbateData[ads];
+  const sites = ['top', 'bridge', 'fcc-hollow', 'hcp-hollow'];
+  const vals = [d.top, d.bridge, d.fcc, d.hcp];
+  const colors = vals.map(v => {
+    const sorted = [...vals].sort((a, b) => a - b);
+    return v === sorted[0] ? '#000' : '#999';
+  });
+
+  // Find preferred and 2nd best
+  const indexed = vals.map((v, i) => ({ v, i }));
+  indexed.sort((a, b) => a.v - b.v);
+  const preferred = sites[indexed[0].i];
+  const second = sites[indexed[1].i];
+
+  return {
+    traces: [{
+      x: sites, y: vals,
+      type: 'bar',
+      marker: { color: colors },
+      text: vals.map(v => v.toFixed(2) + ' eV'),
+      textposition: 'outside',
+      textfont: { size: 11, color: '#000' },
+      hovertemplate: '%{x}: %{y:.2f} eV<extra></extra>',
+      showlegend: false
+    }],
+    layoutExtras: {
+      xaxis: { title: 'Adsorption Site' },
+      yaxis: { title: 'ΔE_ads (eV)', range: [Math.min(...vals) * 1.3, 0.2] },
+      margin: { t: 30, r: 20, b: 50, l: 60 }
+    },
+    preferred, second,
+    prefE: indexed[0].v
+  };
+}
+
+function buildFig22() {
+  const { traces, layoutExtras, preferred, second, prefE } = fig22Data('CO');
+  Plotly.newPlot('fig22', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout22('CO', preferred, prefE, second);
+}
+
+function updateFig22(ads) {
+  const { traces, layoutExtras, preferred, second, prefE } = fig22Data(ads);
+  Plotly.react('fig22', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout22(ads, preferred, prefE, second);
+}
+
+function updateReadout22(ads, preferred, prefE, second) {
+  document.getElementById('rd-ads').textContent = ads;
+  document.getElementById('rd-prefsite').textContent = preferred;
+  document.getElementById('rd-prefE').textContent = prefE.toFixed(2) + ' eV';
+  document.getElementById('rd-2nd').textContent = second;
+}
+
+function switchAdsorbate(ads) {
+  currentAdsorbate = ads;
+  const btns = document.querySelectorAll('#adsorbate-toggle .toggle-btn');
+  btns.forEach(b => b.classList.toggle('active', b.textContent === ads));
+  throttledDraw('fig22', () => updateFig22(ads));
+}
+
+// ============================================================
+// FIGURE 2.3: Periodic Table Heatmap
+// ============================================================
+const ptData = {
+  O: {
+    Ti: -5.5, V: -4.5, Cr: -3.5, Mn: -3.0, Fe: -2.0, Co: -1.5, Ni: -1.0, Cu: -0.5, Zn: 0.5,
+    Zr: -6.0, Nb: -5.0, Mo: -4.0, Ru: -2.0, Rh: -1.5, Pd: -0.8, Ag: -0.1, Cd: 0.8,
+    Hf: -6.5, Ta: -5.5, W: -4.5, Re: -3.0, Os: -2.5, Ir: -1.5, Pt: -0.8, Au: 0.2
+  },
+  N: {
+    Ti: -6.0, V: -5.0, Cr: -4.0, Mn: -3.5, Fe: -2.5, Co: -2.0, Ni: -1.5, Cu: -0.8, Zn: 0.2,
+    Zr: -6.5, Nb: -5.5, Mo: -4.5, Ru: -2.5, Rh: -2.0, Pd: -1.2, Ag: -0.3, Cd: 0.5,
+    Hf: -7.0, Ta: -6.0, W: -5.0, Re: -3.5, Os: -3.0, Ir: -2.0, Pt: -1.2, Au: -0.1
+  },
+  C: {
+    Ti: -7.0, V: -6.0, Cr: -5.0, Mn: -4.0, Fe: -3.0, Co: -2.5, Ni: -2.0, Cu: -1.2, Zn: -0.2,
+    Zr: -7.5, Nb: -6.5, Mo: -5.5, Ru: -3.5, Rh: -2.5, Pd: -1.5, Ag: -0.5, Cd: 0.3,
+    Hf: -8.0, Ta: -7.0, W: -6.0, Re: -4.5, Os: -3.5, Ir: -2.5, Pt: -1.5, Au: -0.3
+  },
+  H: {
+    Ti: -3.5, V: -3.0, Cr: -2.5, Mn: -2.2, Fe: -2.0, Co: -1.8, Ni: -1.5, Cu: -1.0, Zn: -0.2,
+    Zr: -3.8, Nb: -3.2, Mo: -2.8, Ru: -2.0, Rh: -1.6, Pd: -1.2, Ag: -0.5, Cd: 0.1,
+    Hf: -4.0, Ta: -3.5, W: -3.0, Re: -2.2, Os: -1.8, Ir: -1.3, Pt: -1.0, Au: -0.3
+  }
+};
+
+// Periodic table grid positions for d-block (column, row)
+const ptPositions = {
+  // 3d
+  Ti: { col: 0, row: 0 }, V:  { col: 1, row: 0 }, Cr: { col: 2, row: 0 },
+  Mn: { col: 3, row: 0 }, Fe: { col: 4, row: 0 }, Co: { col: 5, row: 0 },
+  Ni: { col: 6, row: 0 }, Cu: { col: 7, row: 0 }, Zn: { col: 8, row: 0 },
+  // 4d
+  Zr: { col: 0, row: 1 }, Nb: { col: 1, row: 1 }, Mo: { col: 2, row: 1 },
+  Ru: { col: 4, row: 1 }, Rh: { col: 5, row: 1 }, Pd: { col: 6, row: 1 },
+  Ag: { col: 7, row: 1 }, Cd: { col: 8, row: 1 },
+  // 5d
+  Hf: { col: 0, row: 2 }, Ta: { col: 1, row: 2 }, W:  { col: 2, row: 2 },
+  Re: { col: 3, row: 2 }, Os: { col: 4, row: 2 }, Ir: { col: 5, row: 2 },
+  Pt: { col: 6, row: 2 }, Au: { col: 7, row: 2 }
+};
+
+let currentPTAdsorbate = 'O';
+let selectedMetal = 'Pt';
+
+function fig23Data(ads) {
+  const data = ptData[ads];
+  const metals = Object.keys(ptPositions);
+  const xs = [], ys = [], zs = [], textArr = [];
+  const allVals = [];
+
+  metals.forEach(m => {
+    if (data[m] !== undefined) {
+      const pos = ptPositions[m];
+      xs.push(pos.col);
+      ys.push(2 - pos.row); // Invert so 3d is on top
+      zs.push(data[m]);
+      textArr.push(m + '<br>' + data[m].toFixed(1) + ' eV');
+      allVals.push(data[m]);
+    }
+  });
+
+  const zMin = Math.min(...allVals);
+  const zMax = Math.max(...allVals);
+
+  // Create heatmap-like scatter with colored squares
+  const traces = [{
+    x: xs, y: ys, z: zs,
+    type: 'heatmap',
+    colorscale: [
+      [0,   'rgb(33,102,172)'],
+      [0.5, 'rgb(247,247,247)'],
+      [1,   'rgb(178,24,43)']
+    ],
+    zmin: zMin, zmax: zMax,
+    showscale: true,
+    colorbar: { title: { text: 'ΔE (eV)', side: 'right' }, thickness: 14, len: 0.9 },
+    hoverinfo: 'skip',
+    xgap: 3, ygap: 3
+  }];
+
+  // Annotations for metal symbols
+  const annotations = [];
+  metals.forEach(m => {
+    if (data[m] !== undefined) {
+      const pos = ptPositions[m];
+      annotations.push({
+        x: pos.col, y: 2 - pos.row, xref: 'x', yref: 'y',
+        text: '<b>' + m + '</b><br>' + data[m].toFixed(1),
+        showarrow: false,
+        font: { size: 11, color: Math.abs(data[m]) > (Math.abs(zMax - zMin) * 0.35 + Math.min(Math.abs(zMin), Math.abs(zMax))) ? '#fff' : '#000' }
+      });
+    }
+  });
+
+  // Row labels
+  annotations.push(
+    { x: -0.8, y: 2, xref: 'x', yref: 'y', text: '3d', showarrow: false, font: { size: 11, color: '#888' } },
+    { x: -0.8, y: 1, xref: 'x', yref: 'y', text: '4d', showarrow: false, font: { size: 11, color: '#888' } },
+    { x: -0.8, y: 0, xref: 'x', yref: 'y', text: '5d', showarrow: false, font: { size: 11, color: '#888' } }
+  );
+
+  return { traces, annotations, data: data };
+}
+
+function buildFig23() {
+  const { traces, annotations } = fig23Data('O');
+  Plotly.newPlot('fig23', traces, mergeLayout({
+    xaxis: { title: '', showgrid: false, zeroline: false, showticklabels: false, range: [-1.2, 9] },
+    yaxis: { title: '', showgrid: false, zeroline: false, showticklabels: false, range: [-0.6, 2.6] },
+    margin: { t: 10, r: 80, b: 10, l: 30 },
+    annotations: annotations
+  }), plotlyCfg);
+
+  // Click handler
+  document.getElementById('fig23').on('plotly_click', function(data) {
+    if (data.points && data.points[0]) {
+      const pt = data.points[0];
+      const col = pt.x, row = 2 - pt.y;
+      const metal = Object.keys(ptPositions).find(m => {
+        const p = ptPositions[m];
+        return p.col === col && p.row === row;
+      });
+      if (metal && ptData[currentPTAdsorbate][metal] !== undefined) {
+        selectedMetal = metal;
+        updatePTReadout();
+      }
+    }
+  });
+
+  updatePTReadout();
+}
+
+function updateFig23(ads) {
+  const { traces, annotations } = fig23Data(ads);
+  Plotly.react('fig23', traces, mergeLayout({
+    xaxis: { title: '', showgrid: false, zeroline: false, showticklabels: false, range: [-1.2, 9] },
+    yaxis: { title: '', showgrid: false, zeroline: false, showticklabels: false, range: [-0.6, 2.6] },
+    margin: { t: 10, r: 80, b: 10, l: 30 },
+    annotations: annotations
+  }), plotlyCfg);
+  updatePTReadout();
+}
+
+function updatePTReadout() {
+  const data = ptData[currentPTAdsorbate];
+  const dE = data[selectedMetal];
+  const dE_Pt = data['Pt'];
+  document.getElementById('rd-pt-ads').textContent = currentPTAdsorbate;
+  document.getElementById('rd-pt-metal').textContent = selectedMetal;
+  document.getElementById('rd-pt-dE').textContent = dE !== undefined ? dE.toFixed(2) : '—';
+  document.getElementById('rd-pt-rel').textContent = (dE !== undefined && dE_Pt !== undefined) ? (dE - dE_Pt >= 0 ? '+' : '') + (dE - dE_Pt).toFixed(2) + ' eV' : '—';
+}
+
+function switchPTAdsorbate(ads) {
+  currentPTAdsorbate = ads;
+  const btns = document.querySelectorAll('#pt-adsorbate-toggle .toggle-btn');
+  btns.forEach(b => b.classList.toggle('active', b.textContent === ads));
+  throttledDraw('fig23', () => updateFig23(ads));
+}
+
+// ============================================================
+// FIGURE 2.4: ΔE vs Coverage
+// ============================================================
+function fig24Data(dE0, alpha) {
+  const N = 200;
+  const xs = [], ys = [];
+  for (let i = 0; i <= N; i++) {
+    const theta = i / N;
+    xs.push(theta);
+    ys.push(lateralAdsorption(dE0, alpha, theta));
+  }
+  return { xs, ys };
+}
+
+function buildFig24() {
+  const dE0 = -1.50, alpha = 0.50;
+  const { xs, ys } = fig24Data(dE0, alpha);
+
+  Plotly.newPlot('fig24', [
+    {
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'θ=%{x:.2f}<br>ΔE=%{y:.3f} eV<extra></extra>',
+      showlegend: false
+    },
+    {
+      x: [0, 0.25, 0.5, 1.0],
+      y: [dE0, lateralAdsorption(dE0, alpha, 0.25), lateralAdsorption(dE0, alpha, 0.5), lateralAdsorption(dE0, alpha, 1.0)],
+      type: 'scatter', mode: 'markers',
+      marker: { color: '#000', size: 8, line: { color: '#fff', width: 1.5 } },
+      hovertemplate: 'θ=%{x:.2f}<br>ΔE=%{y:.3f} eV<extra></extra>',
+      showlegend: false
+    }
+  ], mergeLayout({
+    xaxis: { title: 'Coverage θ', range: [-0.02, 1.02] },
+    yaxis: { title: 'ΔE (eV)', range: [-2.2, 0.5] },
+    shapes: [{
+      type: 'line', x0: 0, x1: 1, y0: 0, y1: 0,
+      xref: 'x', yref: 'y',
+      line: { color: '#bbb', width: 1.5, dash: 'dash' }
+    }]
+  }), plotlyCfg);
+
+  updateReadout24(dE0, alpha);
+}
+
+function updateFig24(dE0, alpha) {
+  const { xs, ys } = fig24Data(dE0, alpha);
+
+  Plotly.react('fig24', [
+    {
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'θ=%{x:.2f}<br>ΔE=%{y:.3f} eV<extra></extra>',
+      showlegend: false
+    },
+    {
+      x: [0, 0.25, 0.5, 1.0],
+      y: [dE0, lateralAdsorption(dE0, alpha, 0.25), lateralAdsorption(dE0, alpha, 0.5), lateralAdsorption(dE0, alpha, 1.0)],
+      type: 'scatter', mode: 'markers',
+      marker: { color: '#000', size: 8, line: { color: '#fff', width: 1.5 } },
+      hovertemplate: 'θ=%{x:.2f}<br>ΔE=%{y:.3f} eV<extra></extra>',
+      showlegend: false
+    }
+  ], mergeLayout({
+    xaxis: { title: 'Coverage θ', range: [-0.02, 1.02] },
+    yaxis: { title: 'ΔE (eV)', range: [-2.2, 0.5] },
+    shapes: [{
+      type: 'line', x0: 0, x1: 1, y0: 0, y1: 0,
+      xref: 'x', yref: 'y',
+      line: { color: '#bbb', width: 1.5, dash: 'dash' }
+    }]
+  }), plotlyCfg);
+
+  updateReadout24(dE0, alpha);
+
+  // Challenge check
+  const dE_half = lateralAdsorption(dE0, alpha, 0.5);
+  const s = document.getElementById('ch24-status');
+  if (s) {
+    s.textContent = 'ΔE(θ=0.5) = ' + dE_half.toFixed(3) + ' eV';
+    if (Math.abs(dE_half - (-0.5)) < 0.03) {
+      s.textContent = '정답! ΔE(θ=0.5) = ' + dE_half.toFixed(3) + ' eV ≈ -0.5 eV';
+      s.className = 'challenge-status success';
+      showToast('정답! ΔE₀ = ' + dE0.toFixed(2) + ', α = ' + alpha.toFixed(2) + ' → ΔE(0.5) ≈ -0.5 eV');
+    } else {
+      s.className = 'challenge-status';
+    }
+  }
+}
+
+function updateReadout24(dE0, alpha) {
+  document.getElementById('rd-dE0').textContent = dE0.toFixed(2) + ' eV';
+  document.getElementById('rd-dE025').textContent = lateralAdsorption(dE0, alpha, 0.25).toFixed(2) + ' eV';
+  document.getElementById('rd-dE05').textContent = lateralAdsorption(dE0, alpha, 0.5).toFixed(2) + ' eV';
+  document.getElementById('rd-dE10').textContent = lateralAdsorption(dE0, alpha, 1.0).toFixed(2) + ' eV';
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 2.4
+  document.getElementById('cov-dE0').addEventListener('input', () => {
+    const dE0 = parseFloat(document.getElementById('cov-dE0').value) / 100;
+    const alpha = parseFloat(document.getElementById('cov-alpha').value) / 100;
+    document.getElementById('cov-dE0-val').textContent = dE0.toFixed(2) + ' eV';
+    throttledDraw('fig24', () => updateFig24(dE0, alpha));
+  });
+  document.getElementById('cov-alpha').addEventListener('input', () => {
+    const dE0 = parseFloat(document.getElementById('cov-dE0').value) / 100;
+    const alpha = parseFloat(document.getElementById('cov-alpha').value) / 100;
+    document.getElementById('cov-alpha-val').textContent = alpha.toFixed(2) + ' eV';
+    throttledDraw('fig24', () => updateFig24(dE0, alpha));
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig21();
+  buildFig22();
+  buildFig23();
+  buildFig24();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

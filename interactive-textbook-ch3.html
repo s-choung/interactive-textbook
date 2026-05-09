@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Surface Equilibria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "—"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '▶'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Surface Equilibria</a>
+    <ul class="nav-links">
+      <li><a href="#s31">3.1 Gibbs</a></li>
+      <li><a href="#s32">3.2 Entropy</a></li>
+      <li><a href="#s33">3.3 Langmuir</a></li>
+      <li><a href="#s34">3.4 Competition</a></li>
+      <li><a href="#s35">3.5 CO Poisoning</a></li>
+    </ul>
+    <span class="nav-badge">Norskov Ch.3</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="page">
+  <section class="hero">
+    <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+    <h1 class="hero-title">Surface Equilibria</h1>
+    <p class="hero-subtitle">Norskov, <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 3. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+    <div class="hero-chips">
+      <span class="chip">Gibbs Free Energy</span>
+      <span class="chip">Langmuir Isotherm</span>
+      <span class="chip">Competitive Adsorption</span>
+      <span class="chip">CO Poisoning</span>
+      <span class="chip">Surface Coverage</span>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 3.1 =================== -->
+  <section id="s31" class="section">
+    <div class="two-col">
+      <div>
+        <p class="section-label">Section 3.1</p>
+        <h2 class="section-title">Chemical Equilibria &amp; Gibbs Free Energy</h2>
+        <div class="section-body">
+          <p>반응 A → B의 Gibbs 자유에너지 변화는 표준 자유에너지와 농도 항의 합으로 표현됩니다. 평형에서 $\Delta G = 0$ 이므로, 평형상수 $K_{eq}$가 결정됩니다.</p>
+          <p>암모니아 합성(N₂ + 3H₂ → 2NH₃)은 이 원리의 대표적 사례입니다. 반응 엔탈피 $\Delta H = -0.95\,\text{eV}$이며, 엔트로피 항이 온도에 따라 평형을 크게 바꿉니다.</p>
+        </div>
+        <div class="eq-block">$$\Delta G = \Delta G^\circ + k_B T \ln\!\left(\frac{p_B}{p_A}\right)$$</div>
+        <div class="eq-block">$$K_{eq} = \exp\!\left(\frac{-\Delta G^\circ}{k_B T}\right), \quad \Delta G^\circ = \Delta H - T\Delta S$$</div>
+        <ul class="concept-list">
+          <li>$\Delta H = -0.95\,\text{eV}$ (NH₃ 합성 엔탈피)</li>
+          <li>$\Delta S = -2.05\,\text{meV/K}$ (기체 → 기체, 분자 수 감소로 엔트로피 감소)</li>
+          <li>높은 압력·낮은 온도에서 NH₃ 평형 농도 증가</li>
+          <li>산업에서는 400–500 °C, 150–300 bar 조건 사용 (속도 vs. 평형 tradeoff)</li>
+        </ul>
+
+        <div class="whatif-grid" style="margin-top:24px;">
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 ΔH = 0 이라면?</div>
+            <div class="whatif-hint">엔탈피 변화가 없으면 온도에 관계없이 Keq ≈ 1. NH₃ 농도는 50%에 고정되고, 압력도 별 효과가 없어집니다. 발열 반응이어야 낮은 온도에서 평형이 유리해지는 이유입니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 →</div>
+          </div>
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 압력이 1 bar 고정이라면?</div>
+            <div class="whatif-hint">1 bar에서는 700K 이상이 되면 NH₃ mole fraction이 10% 아래로 떨어집니다. 산업적으로 150–300 bar를 쓰는 이유: 압력이 높을수록 mole fraction이 극적으로 올라가기 때문입니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 →</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Figure 3.1 -->
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 3.1</span>
+            <span class="figure-title">NH₃ 평형 농도 Heatmap</span>
+            <button class="challenge-btn" onclick="toggleChallenge('ch31')">도전 과제</button>
+          </div>
+          <div class="challenge-panel" id="ch31">
+            <div class="challenge-goal">목표: 산업용 암모니아 합성 조건을 찾아보세요</div>
+            <div class="challenge-desc">슬라이더를 조작해서 T = 700 K, P = 100 bar에서의 NH₃ mole fraction을 읽어보세요. 그 다음 같은 농도를 더 낮은 온도에서 달성하려면 압력을 얼마나 바꿔야 할까요?</div>
+            <div class="challenge-status" id="ch31-status">현재: 슬라이더를 조작해보세요</div>
+          </div>
+          <div class="figure-body">
+            <div id="fig31" class="plotly-container"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">Temperature</span>
+                <input type="range" id="hm-T" min="300" max="800" value="500" step="5">
+                <span class="control-value" id="hm-T-val">500 K</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Pressure</span>
+                <input type="range" id="hm-P" min="1" max="200" value="100" step="1">
+                <span class="control-value" id="hm-P-val">100 bar</span>
+              </div>
+            </div>
+            <div class="readout" id="hm-readout">
+              <div class="readout-item"><span class="readout-key">T</span><span class="readout-val" id="rd-T">500 K</span></div>
+              <div class="readout-item"><span class="readout-key">P</span><span class="readout-val" id="rd-P">100 bar</span></div>
+              <div class="readout-item"><span class="readout-key">NH₃ Mole Fraction</span><span class="readout-val" id="rd-nh3">—</span></div>
+              <div class="readout-item"><span class="readout-key">K<sub>eq</sub></span><span class="readout-val" id="rd-keq">—</span></div>
+              <div class="readout-item"><span class="readout-key">Relative Rate</span><span class="readout-val" id="rd-rate">—</span></div>
+            </div>
+
+            <div style="border:1px solid #e5e7eb;border-radius:6.08px;padding:20px;margin:16px 0;background:#f1f1f1">
+              <div style="font-size:14px;font-weight:600;margin-bottom:12px">Equilibrium vs Kinetics</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;line-height:1.6">
+                <div style="border:1px solid #e5e7eb;border-radius:6.08px;padding:12px;background:#fff">
+                  <div style="font-weight:600;margin-bottom:4px">K<sub>eq</sub> (평형) <span id="rd-keq2" style="float:right;color:#666">—</span></div>
+                  <div style="color:#666">"얼마나 만들 수 있어?"</div>
+                  <div style="margin-top:8px">
+                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#8f8f8f"><span>0</span><span>max</span></div>
+                    <div style="height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden">
+                      <div id="bar-keq" style="height:100%;background:#000;border-radius:3px;transition:width 0.3s ease;width:50%"></div>
+                    </div>
+                    <div style="font-size:11px;color:#666;margin-top:4px">T 낮을수록 큼 (발열 반응)</div>
+                  </div>
+                </div>
+                <div style="border:1px solid #e5e7eb;border-radius:6.08px;padding:12px;background:#fff">
+                  <div style="font-weight:600;margin-bottom:4px">Rate (속도) <span id="rd-rate2" style="float:right;color:#666">—</span></div>
+                  <div style="color:#666">"얼마나 빨리 만들어?"</div>
+                  <div style="margin-top:8px">
+                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#8f8f8f"><span>0</span><span>max</span></div>
+                    <div style="height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden">
+                      <div id="bar-rate" style="height:100%;background:#000;border-radius:3px;transition:width 0.3s ease;width:50%"></div>
+                    </div>
+                    <div style="font-size:11px;color:#666;margin-top:4px">T 높을수록 큼 (활성화 에너지)</div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:12px;font-size:12px;color:#666;text-align:center">
+                같은 온도가 평형과 속도에 <strong style="color:#000">반대 방향</strong>으로 작용한다 — 이것이 Haber-Bosch의 핵심 딜레마
+              </div>
+            </div>
+
+            <button class="explore-toggle" onclick="toggleExplore('ex31')">Step-by-step 탐색 ▾</button>
+            <div class="explore-panel" id="ex31">
+              <ol class="explore-steps">
+                <li>T = 300 K, P = 1 bar로 설정하세요. NH₃ 농도가 거의 100%에 가깝죠?</li>
+                <li>온도를 서서히 800 K까지 올려보세요. 어느 온도에서 농도가 급격히 떨어지나요?</li>
+                <li>이제 압력을 200 bar로 올려보세요. 같은 온도에서 훨씬 높은 농도가 유지됩니다!</li>
+                <li>T = 700 K, P = 100 bar: 이것이 실제 Haber-Bosch 공정의 근접 조건입니다.</li>
+              </ol>
+              <div class="explore-insight"><strong>Key Insight:</strong> 낮은 온도는 평형에 유리하지만 반응속도가 느립니다. 높은 압력은 두 마리 토끼를 동시에 — 평형도 유리하고 분자 충돌도 많아집니다. 이것이 Haber-Bosch가 150년 된 지금도 핵심 기술인 이유입니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 3.1 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: Langmuir 등온선에서 coverage θ = 0.5가 되려면?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz31')">A) K·p = 0.5</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz31')">B) K·p = 1</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz31')">C) K·p = 2</button>
+      </div>
+      <div class="quiz-explain" id="quiz31">정답: B) K·p = 1 일 때 θ = K·p/(1+K·p) = 1/2 = 0.5. 이 지점이 "반응물이 표면을 절반 차지"하는 전환점이며, 촉매 활성의 중요한 기준점입니다.</div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 3.2 =================== -->
+  <section id="s32" class="section">
+    <p class="section-label">Section 3.2</p>
+    <h2 class="section-title">Adsorption Entropy</h2>
+    <div class="two-col">
+      <div>
+        <div class="section-body">
+          <p>기체 분자가 표면에 흡착되면 병진·회전 자유도를 잃고 진동 모드만 남습니다. 이 엔트로피 손실은 흡착 자유에너지에 큰 기여를 합니다.</p>
+          <p>진동 자유에너지는 주파수 $\nu$와 온도 $T$에 따라 결정됩니다. 낮은 진동수($&lt;100\,\text{cm}^{-1}$)에서는 열적 활성화가 쉬워 자유에너지 기여가 큽니다.</p>
+        </div>
+        <div class="eq-block">$$G_{vib} = k_B T \ln\!\left(1 - e^{-h\nu/k_BT}\right)$$</div>
+        <ul class="concept-list">
+          <li>기체상 엔트로피: $S_{gas} \approx -k_B \ln(p/p_0)$ — 압력 의존</li>
+          <li>흡착 후 엔트로피는 진동 모드만 남아 크게 감소</li>
+          <li>낮은 진동수(soft mode)일수록 엔트로피 기여 큼</li>
+          <li>전형적 흡착 $\Delta S \approx -0.002\,\text{eV/K}$ (300 K에서 $-T\Delta S \approx 0.6\,\text{eV}$)</li>
+        </ul>
+
+        <div class="whatif-grid" style="margin-top:20px;">
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 ΔS = 0이라면?</div>
+            <div class="whatif-hint">엔트로피 항이 없으면 흡착 자유에너지 ΔG = ΔH가 온도에 무관해집니다. 온도를 아무리 올려도 coverage가 변하지 않아요 — 온도로 탈착을 유도하는 Temperature Programmed Desorption(TPD)이 불가능해집니다!</div>
+            <div class="whatif-arrow">클릭해서 확인 →</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 3.2</span>
+            <span class="figure-title">진동 자유에너지 vs. 주파수</span>
+          </div>
+          <div class="figure-body">
+            <div id="fig32" class="plotly-container"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">Temperature</span>
+                <input type="range" id="vib-T" min="200" max="800" value="300" step="10">
+                <span class="control-value" id="vib-T-val">300 K</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 3.3 =================== -->
+  <section id="s33" class="section">
+    <p class="section-label">Section 3.3</p>
+    <h2 class="section-title">Langmuir Isotherm</h2>
+    <div class="section-body">
+      <p>Langmuir 등온선은 표면 덮힘도(coverage) $\theta_A$를 흡착 에너지와 조건의 함수로 표현하는 핵심 방정식입니다. 흡착이 강할수록, 온도가 낮을수록, 압력이 높을수록 coverage가 1에 가까워집니다.</p>
+    </div>
+    <div class="eq-block" style="max-width:500px;margin:0 auto var(--spacing-32);">
+      $$\theta_A = \frac{K_A p_A}{1 + K_A p_A}, \quad K_A = \exp\!\left(\frac{-\Delta G_{ads}}{k_B T}\right)$$
+    </div>
+
+    <div class="two-col">
+      <div class="figure-card">
+        <div class="figure-header">
+          <span class="figure-label">Figure 3.3</span>
+          <span class="figure-title">Coverage vs. Adsorption Energy</span>
+          <button class="challenge-btn" onclick="toggleChallenge('ch33')">도전 과제</button>
+        </div>
+        <div class="challenge-panel" id="ch33">
+          <div class="challenge-goal">목표: θ = 0.5가 되는 ΔH 값을 찾아보세요</div>
+          <div class="challenge-desc">T = 400 K, P = 1 bar에서 coverage가 정확히 0.5가 되는 ΔH를 슬라이더로 맞춰보세요. 힌트: K·p = 1이 되는 조건을 생각해보세요.</div>
+          <div class="challenge-status" id="ch33-status">현재: 슬라이더를 조작해보세요</div>
+        </div>
+        <div class="figure-body">
+          <div id="fig33" class="plotly-container"></div>
+          <div class="controls">
+            <div class="control-row">
+              <span class="control-label">Temperature</span>
+              <input type="range" id="c3-T" min="200" max="800" value="400" step="10">
+              <span class="control-value" id="c3-T-val">400 K</span>
+            </div>
+            <div class="control-row">
+              <span class="control-label">Pressure (log)</span>
+              <input type="range" id="c3-P" min="-2" max="2" value="0" step="0.1">
+              <span class="control-value" id="c3-P-val">1.00 bar</span>
+            </div>
+          </div>
+          <div class="highlight">
+            <div class="highlight-title">핵심 관찰</div>
+            <div class="highlight-body">S자 커브의 중심점(θ = 0.5)은 $\Delta H = T\Delta S - k_BT\ln(p)$에서 결정됩니다. 온도와 압력 조작으로 커브가 좌우로 이동합니다.</div>
+          </div>
+
+          <button class="explore-toggle" onclick="toggleExplore('ex33')">Step-by-step 탐색 ▾</button>
+          <div class="explore-panel" id="ex33">
+            <ol class="explore-steps">
+              <li>T = 400 K, P = 1 bar: 커브 중심(θ=0.5 점)의 ΔH를 기록하세요.</li>
+              <li>온도를 600 K로 올려보세요. 중심점이 오른쪽(더 강한 결합 필요)으로 이동합니다.</li>
+              <li>압력을 100 bar (log = 2)로 올려보세요. 중심점이 왼쪽으로 이동 — 더 약한 결합으로도 높은 coverage!</li>
+              <li>커브의 폭(0→1이 되는 ΔH 범위)이 항상 ~0.2 eV임을 확인하세요.</li>
+            </ol>
+            <div class="explore-insight"><strong>Key Insight:</strong> 이 0.2 eV 창(window)이 촉매 설계의 민감도를 결정합니다. DFT 계산의 오차가 0.1 eV라면 — 이미 coverage 예측이 크게 흔들릴 수 있습니다!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="figure-card">
+        <div class="figure-header">
+          <span class="figure-label">Figure 3.4</span>
+          <span class="figure-title">Coverage vs. Temperature</span>
+          <button class="challenge-btn" onclick="toggleChallenge('ch34')">도전 과제</button>
+        </div>
+        <div class="challenge-panel" id="ch34">
+          <div class="challenge-goal">목표: coverage가 0→1로 변하는 온도 폭 측정</div>
+          <div class="challenge-desc">ΔH = −0.80 eV로 설정하고, coverage가 0.1에서 0.9가 되는 온도 범위를 추정해보세요. 이 "창"이 좁은 이유는 Boltzmann factor의 지수 특성 때문입니다!</div>
+          <div class="challenge-status" id="ch34-status">현재: 슬라이더를 조작해보세요</div>
+        </div>
+        <div class="figure-body">
+          <div id="fig34" class="plotly-container"></div>
+          <div class="controls">
+            <div class="control-row">
+              <span class="control-label">ΔH (eV)</span>
+              <input type="range" id="c4-dH" min="-150" max="0" value="-80" step="1">
+              <span class="control-value" id="c4-dH-val">−0.80 eV</span>
+            </div>
+            <div class="control-row">
+              <span class="control-label">Pressure (log)</span>
+              <input type="range" id="c4-P" min="-2" max="2" value="0" step="0.1">
+              <span class="control-value" id="c4-P-val">1.00 bar</span>
+            </div>
+          </div>
+          <div class="highlight">
+            <div class="highlight-title">탈착 전이</div>
+            <div class="highlight-body">특정 온도에서 coverage가 급격히 떨어집니다 (탈착). $\Delta H$가 약할수록 탈착 온도가 낮아집니다.</div>
+          </div>
+
+          <button class="explore-toggle" onclick="toggleExplore('ex34')">Step-by-step 탐색 ▾</button>
+          <div class="explore-panel" id="ex34">
+            <ol class="explore-steps">
+              <li>ΔH = −0.80 eV: 탈착이 시작되는 온도를 찾아보세요 (coverage가 0.9 → 0.1로 변하는 구간).</li>
+              <li>ΔH를 −0.40 eV로 바꿔보세요. 탈착 온도가 절반으로 줄어듭니다!</li>
+              <li>압력을 높이면 같은 ΔH에서 탈착 온도가 높아집니다. 왜일까요?</li>
+            </ol>
+            <div class="explore-insight"><strong>Key Insight:</strong> Temperature Programmed Desorption(TPD)의 피크 온도가 바로 이 탈착 전이 온도입니다. ΔH를 실험으로 역산하는 핵심 기법이죠.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fig 3.5 -->
+    <div class="figure-full">
+      <div class="figure-header">
+        <span class="figure-label">Figure 3.5</span>
+        <span class="figure-title">Coverage vs. Pressure — 세 가지 ΔH 비교</span>
+      </div>
+      <div class="figure-body" style="display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start;">
+        <div>
+          <div id="fig35" class="plotly-container"></div>
+        </div>
+        <div>
+          <div class="controls" style="margin-top:0;">
+            <div class="control-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+              <span class="control-label">Temperature</span>
+              <input type="range" id="c5-T" min="200" max="700" value="400" step="10" style="width:100%;">
+              <span class="control-value" id="c5-T-val">400 K</span>
+            </div>
+          </div>
+          <div class="highlight" style="margin-top:16px;">
+            <div class="highlight-title">0.1 eV 차이의 효과</div>
+            <div class="highlight-body" style="font-size:13px;">ΔH가 단 0.1 eV 다를 때, coverage 곡선이 얼마나 크게 분리되는지 확인하세요. 이것이 촉매 선택성의 기원입니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 3.3 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: 온도를 2배로 올리면 Langmuir coverage는?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz33')">A) 항상 절반으로 줄어든다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz33')">B) 항상 두 배로 늘어난다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz33')">C) ΔH와 현재 위치에 따라 크게 달라진다</button>
+      </div>
+      <div class="quiz-explain" id="quiz33">정답: C) θ = K·p/(1+K·p)에서 K = exp(−ΔG/kT). 이미 coverage가 ~1에 가까우면 온도가 올라도 별로 안 변하고, 전이 영역(θ≈0.5)에 있을 때 온도 변화가 가장 극적인 영향을 줍니다.</div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 3.4 =================== -->
+  <section id="s34" class="section">
+    <p class="section-label">Section 3.4</p>
+    <h2 class="section-title">Competitive Adsorption</h2>
+    <div class="two-col">
+      <div>
+        <div class="section-body">
+          <p>두 분자 A, B가 같은 활성 자리를 놓고 경쟁할 때, 각각의 coverage는 서로의 K·p 곱에 의해 결정됩니다. 단 0.1 eV의 결합 에너지 차이가 한 쪽의 완전한 지배로 이어집니다.</p>
+        </div>
+        <div class="eq-block">$$\theta_A = \frac{K_A p_A}{1 + K_A p_A + K_B p_B}$$</div>
+        <div class="eq-block">$$\theta_B = \frac{K_B p_B}{1 + K_A p_A + K_B p_B}$$</div>
+        <ul class="concept-list">
+          <li>분자당 0.1 eV 차이 → 300 K에서 Boltzmann factor ~50배</li>
+          <li>교차점(crossover)이 매우 급격: 촉매 선택성의 원리</li>
+          <li>압력 조건으로 경쟁 결과 일부 조절 가능</li>
+        </ul>
+
+        <div class="whatif-grid" style="margin-top:20px;">
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 A와 B의 ΔH가 같다면?</div>
+            <div class="whatif-hint">ΔΔH = 0이면 θ_A = θ_B = 0.5/(1 + ...). 표면을 정확히 반반 나눠 씁니다. 선택성은 사라지고 두 생성물이 동등하게 만들어져 촉매로서 쓸모가 없어집니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 →</div>
+          </div>
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">ΔΔH를 0.3 eV로 설정하면?</div>
+            <div class="whatif-hint">300 K에서 exp(0.3/0.026) ≈ 10⁵. A가 표면을 완전히 독점합니다. B의 coverage는 10만분의 1 수준으로 떨어져 사실상 반응에 참여하지 못합니다 — 이게 poisoning의 원리입니다!</div>
+            <div class="whatif-arrow">클릭해서 확인 →</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 3.6</span>
+            <span class="figure-title">A vs. B 경쟁 흡착</span>
+            <button class="challenge-btn" onclick="toggleChallenge('ch36')">도전 과제</button>
+          </div>
+          <div class="challenge-panel" id="ch36">
+            <div class="challenge-goal">목표: ΔΔH = 0.1 eV 설정 후 A의 지배 확인</div>
+            <div class="challenge-desc">슬라이더로 ΔΔH = +0.1 eV (그래프 오른쪽)를 찾아보세요. 이 작은 차이로 A가 B를 완전히 밀어냅니다. 읽어보기: θ_A at Δ=0은 얼마인가요?</div>
+            <div class="challenge-status" id="ch36-status">현재: 슬라이더를 조작해보세요</div>
+          </div>
+          <div class="figure-body">
+            <div id="fig36" class="plotly-container"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">ΔH<sub>A</sub> (eV)</span>
+                <input type="range" id="comp-dHA" min="-150" max="-50" value="-100" step="1">
+                <span class="control-value" id="comp-dHA-val">−1.00 eV</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Temperature</span>
+                <input type="range" id="comp-T" min="200" max="800" value="400" step="10">
+                <span class="control-value" id="comp-T-val">400 K</span>
+              </div>
+            </div>
+            <div class="readout" style="margin-top:12px;">
+              <div class="readout-item"><span class="readout-key">θ_A at Δ=0</span><span class="readout-val" id="rd-thA">—</span></div>
+              <div class="readout-item"><span class="readout-key">θ_B at Δ=0</span><span class="readout-val" id="rd-thB">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 3.5 =================== -->
+  <section id="s35" class="section">
+    <p class="section-label">Section 3.5</p>
+    <h2 class="section-title">CO Poisoning — 실생활 응용</h2>
+    <div class="two-col">
+      <div>
+        <div class="section-body">
+          <p>수소 연료전지와 암모니아 합성 공정에서 ppm 수준의 CO가 촉매를 완전히 비활성화시킵니다. CO는 H₂보다 훨씬 강하게 결합하기 때문에, 아주 적은 CO도 표면을 독점합니다.</p>
+          <p>H₂는 해리흡착(dissociative)으로, CO는 분자흡착으로 진행됩니다. 이 차이가 경쟁 kinetics에 큰 영향을 줍니다.</p>
+        </div>
+        <div class="eq-block">$$\text{H}_2 + 2{*} \rightarrow 2\text{H}^{*}, \quad \Delta H_{H_2} = -0.7\,\text{eV}$$</div>
+        <div class="eq-block">$$\text{CO} + {*} \rightarrow \text{CO}^{*}, \quad \Delta H_{CO} = -1.2\,\text{eV}$$</div>
+        <ul class="concept-list">
+          <li>CO의 결합 에너지가 H보다 0.5 eV 강함 → Boltzmann factor ~$10^8$ (300 K)</li>
+          <li>1 ppm CO에서도 H coverage가 급격히 감소</li>
+          <li>온도 증가 → CO 탈착, H coverage 회복 (일부)</li>
+          <li>실제 시스템: CO 제거 reactor(PROX, WGS)를 앞단에 배치</li>
+        </ul>
+
+        <div class="whatif-grid" style="margin-top:20px;">
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">만약 CO 흡착 에너지가 H₂와 같다면?</div>
+            <div class="whatif-hint">ΔH_CO = ΔH_H = −0.35 eV라면? CO poisoning이 사라집니다! 수백 ppm의 CO도 H coverage에 별 영향을 주지 못해요. 이것이 CO-tolerant 촉매 개발의 목표입니다 — 실제로는 Pt-Ru 합금이 사용됩니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 →</div>
+          </div>
+          <div class="whatif-card" onclick="revealWhatif(this)">
+            <div class="whatif-q">온도를 500 K까지 올리면?</div>
+            <div class="whatif-hint">CO 탈착 온도에 가까워져 poisoning이 완화됩니다. 하지만 동시에 H coverage도 줄어들어요. 이 tradeoff가 실제 연료전지에서 작동 온도를 80°C vs. 200°C로 나누는 이유입니다.</div>
+            <div class="whatif-arrow">클릭해서 확인 →</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 3.7</span>
+            <span class="figure-title">CO Poisoning of H Coverage</span>
+            <button class="challenge-btn" onclick="toggleChallenge('ch37')">도전 과제</button>
+          </div>
+          <div class="challenge-panel" id="ch37">
+            <div class="challenge-goal">목표: H coverage 50% 손실이 일어나는 CO 농도 찾기</div>
+            <div class="challenge-desc">T = 400 K, p_H₂ = 1 bar로 설정했을 때, readout에서 "50% H-loss at" 값을 읽어보세요. 왜 이렇게 적은 양으로도 poisoning이 일어날까요? Boltzmann factor를 계산해보세요!</div>
+            <div class="challenge-status" id="ch37-status">현재: 슬라이더를 조작해보세요</div>
+          </div>
+          <div class="figure-body">
+            <div id="fig37" class="plotly-container"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">Temperature</span>
+                <input type="range" id="co-T" min="300" max="500" value="400" step="5">
+                <span class="control-value" id="co-T-val">400 K</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">p<sub>H₂</sub></span>
+                <input type="range" id="co-pH2" min="-1" max="1" value="0" step="0.1">
+                <span class="control-value" id="co-pH2-val">1.0 bar</span>
+              </div>
+            </div>
+            <div class="readout" style="margin-top:12px;">
+              <div class="readout-item"><span class="readout-key">50% H-loss at</span><span class="readout-val" id="rd-co50">— ppm</span></div>
+            </div>
+
+            <button class="explore-toggle" onclick="toggleExplore('ex37')">Step-by-step 탐색 ▾</button>
+            <div class="explore-panel" id="ex37">
+              <ol class="explore-steps">
+                <li>T = 400 K, p_H₂ = 1 bar: readout의 "50% H-loss" 값을 확인하세요. 놀랍게도 ~1 ppm 수준입니다!</li>
+                <li>온도를 500 K로 올려보세요. 50% loss가 더 높은 ppm에서 일어납니다 — poisoning이 완화됩니다.</li>
+                <li>p_H₂를 10 bar로 올려보세요. H가 더 많아지니 같은 CO 농도로는 덜 poisoned됩니다.</li>
+                <li>그래프에서 θ_H가 갑자기 떨어지는 CO 농도가 바로 "독성 임계점"입니다.</li>
+              </ol>
+              <div class="explore-insight"><strong>Key Insight:</strong> CO의 K_CO ≫ K_H이기 때문에, 수ppm의 CO로도 표면을 독점합니다. exp((1.2−0.35)/0.034) ≈ 10¹¹ at 400K — 이 숫자가 ppm poisoning의 이유입니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 3.5 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: CO poisoning이 ppm 수준에서 일어나는 근본 이유는?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz35')">A) CO 분자가 H₂보다 커서 자리를 많이 차지한다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz35')">B) Boltzmann factor가 결합 에너지 차이를 지수적으로 증폭한다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz35')">C) CO의 분자량이 작아 확산이 빠르다</button>
+      </div>
+      <div class="quiz-explain" id="quiz35">정답: B) ΔΔH = 0.5 eV 차이가 300 K에서 exp(0.5/0.026) ≈ 2×10⁸배의 K 비율로 증폭됩니다. 이 천문학적인 비율 때문에 1 ppm = 10⁻⁶의 농도로도 CO가 H를 완전히 밀어낼 수 있습니다.</div>
+    </div>
+  </section>
+
+  <!-- =================== TAKEAWAYS =================== -->
+  <section class="takeaways section">
+    <p class="section-label">Key Takeaways</p>
+    <h2 class="section-title">Chapter 3 핵심 메시지</h2>
+    <div class="takeaway-grid">
+      <div class="takeaway-card">
+        <div class="takeaway-number">0.2</div>
+        <div class="takeaway-title">eV 창(Window)</div>
+        <div class="takeaway-body">Coverage가 0에서 1로 변하는 ΔH의 범위는 단 ~0.2 eV입니다. 이 좁은 창이 촉매 설계의 민감도를 결정합니다. 실험 오차 0.1 eV가 결과를 완전히 바꿀 수 있습니다.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">T·P</div>
+        <div class="takeaway-title">온도와 압력의 역할</div>
+        <div class="takeaway-body">온도와 압력은 흡착 에너지 ΔH를 바꾸지 않지만, 실효적 평형상수를 조절합니다. 높은 압력은 약한 결합 분자의 coverage를 높이고, 높은 온도는 모든 coverage를 낮춥니다.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">→</div>
+        <div class="takeaway-title">Sabatier Principle 예고</div>
+        <div class="takeaway-body">최적 촉매는 너무 강하지도(poisoning), 너무 약하지도(no coverage) 않은 ΔH를 가져야 합니다. 이 "Goldilocks" 조건이 Chapter 6에서 화산형(volcano) 곡선으로 이어집니다.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Norskov, Bligaard, Kleis — <em>Fundamental Concepts in Heterogeneous Catalysis</em>, Chapter 3</span>
+    <span class="footer-text">움직이는 교과서 · Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+const kB = 8.617e-5; // eV/K
+const h  = 4.136e-15; // eV·s
+const c  = 2.998e10;  // cm/s
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function safeExp(x) {
+  return Math.exp(Math.max(-500, Math.min(500, x)));
+}
+
+function calcNH3MoleFrac(T, P_bar) {
+  const dH = -0.95, dS = -2.05e-3;
+  const dG = dH - T * dS;
+  const Keq = safeExp(-dG / (kB * T));
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 60; i++) {
+    const x = (lo + hi) / 2;
+    const denom = 4 - 2 * x;
+    const pN2  = (1 - x) / denom * P_bar;
+    const pH2  = (3 - 3 * x) / denom * P_bar;
+    const pNH3 = (2 * x) / denom * P_bar;
+    const Qp   = (pNH3 * pNH3) / (pN2 * Math.pow(pH2, 3));
+    if (Qp < Keq) lo = x; else hi = x;
+  }
+  const x = (lo + hi) / 2;
+  return { yNH3: clamp((2 * x) / (4 - 2 * x), 0, 1), Keq };
+}
+
+function calcCoverage(dH_eV, T, p_bar, dS_eV_K = -0.002) {
+  const dG = dH_eV - T * dS_eV_K;
+  const K  = safeExp(-dG / (kB * T));
+  return (K * p_bar) / (1 + K * p_bar);
+}
+
+function gVib(freq_cm, T) {
+  const E = h * (freq_cm * c); // eV
+  const arg = E / (kB * T);
+  if (arg > 500) return 0;
+  const val = kB * T * Math.log(1 - Math.exp(-arg));
+  return isFinite(val) ? val : 0;
+}
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  return Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis),
+    font: Object.assign({}, baseLayout.font, extra.font)
+  });
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+const rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(() => { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// FIGURE 3.1: NH3 HEATMAP
+// ============================================================
+function buildFig31() {
+  const NT = 80, NP = 60;
+  const Tarr = Array.from({ length: NT }, (_, i) => 300 + i * (500 / (NT - 1)));
+  const Parr = Array.from({ length: NP }, (_, i) => 1   + i * (199 / (NP - 1)));
+
+  const z = Parr.map(p => Tarr.map(t => calcNH3MoleFrac(t, p).yNH3));
+
+  const T0 = 500, P0 = 100;
+  const { yNH3: nh3_0, Keq: keq_0 } = calcNH3MoleFrac(T0, P0);
+
+  const layout = mergeLayout({
+    xaxis: { title: 'Temperature (K)', range: [300, 800] },
+    yaxis: { title: 'Pressure (bar)', range: [1, 200] },
+    margin: { t: 20, r: 80, b: 50, l: 60 },
+    annotations: [{
+      x: T0, y: P0,
+      xref: 'x', yref: 'y',
+      text: '', showarrow: true,
+      arrowhead: 2, arrowsize: 1.2, arrowcolor: '#000',
+      ax: 20, ay: -20
+    }]
+  });
+
+  Plotly.newPlot('fig31', [
+    {
+      type: 'heatmap',
+      x: Tarr, y: Parr, z: z,
+      colorscale: [
+        [0,   'rgb(33,102,172)'],
+        [0.25,'rgb(146,197,222)'],
+        [0.5, 'rgb(247,247,247)'],
+        [0.75,'rgb(244,165,130)'],
+        [1,   'rgb(178,24,43)']
+      ],
+      colorbar: { title: { text: 'NH₃ mole fraction', side: 'right' }, thickness: 14, len: 0.9 },
+      zmin: 0, zmax: 1,
+      hovertemplate: 'T=%{x:.0f} K<br>P=%{y:.0f} bar<br>NH₃=%{z:.3f}<extra></extra>'
+    },
+    {
+      type: 'scatter',
+      x: [T0], y: [P0],
+      mode: 'markers',
+      marker: { color: '#000', size: 10, symbol: 'circle', line: { color: '#fff', width: 2 } },
+      hovertemplate: 'T=%{x} K<br>P=%{y} bar<extra>Marker</extra>',
+      showlegend: false
+    }
+  ], layout, plotlyCfg);
+
+  updateReadout31(T0, P0, nh3_0, keq_0);
+}
+
+function updateFig31(T, P) {
+  const { yNH3, Keq } = calcNH3MoleFrac(T, P);
+  Plotly.restyle('fig31', { x: [[T]], y: [[P]] }, [1]);
+  updateReadout31(T, P, yNH3, Keq);
+
+  const s = document.getElementById('ch31-status');
+  if (s) {
+    s.textContent = `현재: T=${T}K, P=${P}bar → NH₃=${(yNH3 * 100).toFixed(1)}%`;
+    if (T >= 680 && T <= 720 && P >= 90 && P <= 110) {
+      s.textContent = `산업 조건 근처! 700K, 100bar에서 NH₃ = ${(yNH3 * 100).toFixed(1)}%`;
+      s.className = 'challenge-status success';
+      showToast('정답! 700K, 100bar — 실제 Haber-Bosch 공정의 근접 조건입니다!');
+    }
+  }
+}
+
+function updateReadout31(T, P, yNH3, Keq) {
+  document.getElementById('rd-T').textContent   = T + ' K';
+  document.getElementById('rd-P').textContent   = P + ' bar';
+  document.getElementById('rd-nh3').textContent = (yNH3 * 100).toFixed(1) + '%';
+  document.getElementById('rd-keq').textContent = Keq.toExponential(2);
+  document.getElementById('hm-T-val').textContent = T + ' K';
+  document.getElementById('hm-P-val').textContent = P + ' bar';
+
+  // Rate: Arrhenius-like relative rate, Ea ~ 1.0 eV for N2 dissociation on Fe
+  const Ea = 1.0; // eV
+  const relRate = Math.exp(-Ea / (kB * T)) / Math.exp(-Ea / (kB * 700)); // normalized to 700K = 1
+  const rateStr = relRate >= 0.01 ? relRate.toFixed(2) : relRate.toExponential(1);
+  document.getElementById('rd-rate').textContent = rateStr + 'x';
+
+  // Keq bar (log scale, range ~1e-4 to 1e6)
+  const logKeq = Math.log10(Math.max(1e-6, Math.min(1e8, Keq)));
+  const keqPct = Math.max(0, Math.min(100, (logKeq + 6) / 14 * 100));
+  document.getElementById('bar-keq').style.width = keqPct + '%';
+  document.getElementById('rd-keq2').textContent = Keq.toExponential(1);
+
+  // Rate bar (log scale, range ~1e-15 to 1)
+  const logRate = Math.log10(Math.max(1e-16, relRate));
+  const ratePct = Math.max(0, Math.min(100, (logRate + 15) / 15 * 100));
+  document.getElementById('bar-rate').style.width = ratePct + '%';
+  document.getElementById('rd-rate2').textContent = rateStr + 'x';
+}
+
+// ============================================================
+// FIGURE 3.2: Vibrational Free Energy
+// ============================================================
+function buildFig32() {
+  const T0 = 300;
+  const traces = buildVibTraces(T0);
+
+  const layout = mergeLayout({
+    xaxis: {
+      title: 'Frequency (cm⁻¹)',
+      type: 'log',
+      range: [1, 3], // log10 of 10..1000
+      dtick: 1
+    },
+    yaxis: { title: 'G_vib (eV)', range: [-0.22, 0.01] },
+    showlegend: true,
+    legend: { x: 0.65, y: 0.05, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  });
+
+  Plotly.newPlot('fig32', traces, layout, plotlyCfg);
+}
+
+function buildVibTraces(Tsel) {
+  const N = 200;
+  const refTemps = [300, 500, 700];
+  const traces = [];
+
+  refTemps.forEach(Tr => {
+    const xs = [], ys = [];
+    for (let i = 0; i < N; i++) {
+      const nu = Math.pow(10, 1 + i / (N - 1) * 2); // 10..1000 log
+      const g  = gVib(nu, Tr);
+      if (g > -0.22) { xs.push(nu); ys.push(g); }
+    }
+    const isSelected = Math.abs(Tr - Tsel) < 15;
+    traces.push({
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      name: Tr + ' K',
+      line: {
+        color: isSelected ? '#000' : '#cccccc',
+        width: isSelected ? 2.5 : 1.2
+      },
+      hovertemplate: 'ν=%{x:.0f} cm⁻¹<br>G_vib=%{y:.4f} eV<extra>' + Tr + ' K</extra>'
+    });
+  });
+
+  // Extra trace for T not in refTemps
+  if (!refTemps.some(r => Math.abs(r - Tsel) < 15)) {
+    const xs = [], ys = [];
+    for (let i = 0; i < N; i++) {
+      const nu = Math.pow(10, 1 + i / (N - 1) * 2);
+      const g  = gVib(nu, Tsel);
+      if (g > -0.22) { xs.push(nu); ys.push(g); }
+    }
+    traces.push({
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      name: Tsel + ' K',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'ν=%{x:.0f} cm⁻¹<br>G_vib=%{y:.4f} eV<extra>' + Tsel + ' K</extra>'
+    });
+  }
+
+  return traces;
+}
+
+const fig32Layout = mergeLayout({
+  xaxis: { title: 'Frequency (cm⁻¹)', type: 'log', range: [1, 3], dtick: 1 },
+  yaxis: { title: 'G_vib (eV)', range: [-0.22, 0.01] },
+  showlegend: true,
+  legend: { x: 0.65, y: 0.05, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+});
+
+function updateFig32(T) {
+  const traces = buildVibTraces(T);
+  Plotly.react('fig32', traces, fig32Layout, plotlyCfg);
+}
+
+// ============================================================
+// FIGURE 3.3: Coverage vs dH
+// ============================================================
+function buildFig33() {
+  const T = 400, p = 1;
+  const { xs, ys, dH_half } = covDHData(T, p);
+
+  const layout = mergeLayout({
+    xaxis: { title: 'ΔH (eV)', range: [-1.0, 0] },
+    yaxis: { title: 'Coverage θ', range: [0, 1] },
+    shapes: [halfLineShape([-1.0, 0])],
+    showlegend: false
+  });
+
+  Plotly.newPlot('fig33', [
+    {
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'ΔH=%{x:.3f} eV<br>θ=%{y:.3f}<extra></extra>'
+    },
+    {
+      x: [dH_half], y: [0.5],
+      type: 'scatter', mode: 'markers+text',
+      marker: { color: '#000', size: 8, line: { color: '#fff', width: 1.5 } },
+      text: ['θ=0.5'], textposition: 'top right',
+      textfont: { size: 11, color: '#666' },
+      hovertemplate: 'θ=0.5 at ΔH=%{x:.3f} eV<extra></extra>',
+      showlegend: false
+    }
+  ], layout, plotlyCfg);
+}
+
+function covDHData(T, p) {
+  const N = 200;
+  const xs = [], ys = [];
+  for (let i = 0; i < N; i++) {
+    const dH = -1.0 + i / (N - 1);
+    xs.push(dH);
+    ys.push(calcCoverage(dH, T, p));
+  }
+  const dH_half = 0.002 * T - kB * T * Math.log(1 / p);
+  return { xs, ys, dH_half };
+}
+
+function halfLineShape(xrange) {
+  // horizontal dashed line at y=0.5
+  return {
+    type: 'line',
+    x0: xrange[0], x1: xrange[1],
+    y0: 0.5, y1: 0.5,
+    xref: 'x', yref: 'y',
+    line: { color: '#bbb', width: 1.5, dash: 'dash' }
+  };
+}
+
+function updateFig33(T, p) {
+  const { xs, ys, dH_half } = covDHData(T, p);
+  const inRange = dH_half >= -1.0 && dH_half <= 0;
+
+  Plotly.react('fig33', [
+    {
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'ΔH=%{x:.3f} eV<br>θ=%{y:.3f}<extra></extra>'
+    },
+    {
+      x: inRange ? [dH_half] : [],
+      y: inRange ? [0.5] : [],
+      type: 'scatter', mode: 'markers+text',
+      marker: { color: '#000', size: 8, line: { color: '#fff', width: 1.5 } },
+      text: inRange ? ['θ=0.5'] : [],
+      textposition: 'top right',
+      textfont: { size: 11, color: '#666' },
+      hovertemplate: 'θ=0.5 at ΔH=%{x:.3f} eV<extra></extra>',
+      showlegend: false
+    }
+  ], mergeLayout({
+    xaxis: { title: 'ΔH (eV)', range: [-1.0, 0] },
+    yaxis: { title: 'Coverage θ', range: [0, 1] },
+    shapes: [halfLineShape([-1.0, 0])],
+    showlegend: false
+  }), plotlyCfg);
+
+  const s = document.getElementById('ch33-status');
+  if (s && inRange) {
+    const cov = calcCoverage(dH_half, T, p);
+    if (Math.abs(cov - 0.5) < 0.02) {
+      s.textContent = `θ ≈ 0.5 달성! ΔH=${dH_half.toFixed(3)} eV. K·p = 1이 되는 지점입니다.`;
+      s.className = 'challenge-status success';
+    } else {
+      s.textContent = `θ=0.5 point: ΔH=${dH_half.toFixed(3)} eV`;
+    }
+  }
+}
+
+// ============================================================
+// FIGURE 3.4: Coverage vs Temperature
+// ============================================================
+function buildFig34() {
+  const dH = -0.80, p = 1;
+  const { xs, ys, T_half } = covTData(dH, p);
+
+  Plotly.newPlot('fig34', makeFig34Traces(xs, ys, T_half),
+    mergeLayout({
+      xaxis: { title: 'Temperature (K)', range: [200, 1000] },
+      yaxis: { title: 'Coverage θ', range: [0, 1] },
+      shapes: [halfLineShape([200, 1000])],
+      showlegend: false
+    }), plotlyCfg);
+}
+
+function covTData(dH, p) {
+  const N = 200;
+  const xs = [], ys = [];
+  for (let i = 0; i < N; i++) {
+    const T = 200 + i / (N - 1) * 800;
+    xs.push(T);
+    ys.push(calcCoverage(dH, T, p));
+  }
+  let T_half = null;
+  for (let i = 1; i < ys.length; i++) {
+    if (ys[i - 1] > 0.5 && ys[i] <= 0.5) { T_half = xs[i]; break; }
+  }
+  return { xs, ys, T_half };
+}
+
+function makeFig34Traces(xs, ys, T_half) {
+  return [
+    {
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'T=%{x:.0f} K<br>θ=%{y:.3f}<extra></extra>'
+    },
+    {
+      x: T_half ? [T_half] : [],
+      y: T_half ? [0.5] : [],
+      type: 'scatter', mode: 'markers+text',
+      marker: { color: '#000', size: 8, line: { color: '#fff', width: 1.5 } },
+      text: T_half ? ['T½=' + Math.round(T_half) + 'K'] : [],
+      textposition: 'top right',
+      textfont: { size: 11, color: '#666' },
+      hovertemplate: 'T½=%{x:.0f} K<extra></extra>',
+      showlegend: false
+    }
+  ];
+}
+
+function updateFig34(dH, p) {
+  const { xs, ys, T_half } = covTData(dH, p);
+  Plotly.react('fig34', makeFig34Traces(xs, ys, T_half),
+    mergeLayout({
+      xaxis: { title: 'Temperature (K)', range: [200, 1000] },
+      yaxis: { title: 'Coverage θ', range: [0, 1] },
+      shapes: [halfLineShape([200, 1000])],
+      showlegend: false
+    }), plotlyCfg);
+}
+
+// ============================================================
+// FIGURE 3.5: Coverage vs Pressure (3 curves)
+// ============================================================
+function buildFig35() {
+  const T = 400;
+  Plotly.newPlot('fig35', makeFig35Traces(T),
+    mergeLayout({
+      xaxis: { title: 'Pressure (bar)', range: [0, 100] },
+      yaxis: { title: 'Coverage θ', range: [0, 1] },
+      showlegend: true,
+      legend: { x: 0.65, y: 0.3, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+    }), plotlyCfg);
+}
+
+function makeFig35Traces(T) {
+  const dHs    = [-0.50, -0.60, -0.70];
+  const colors = ['#000', '#666', '#bbb'];
+  const N = 200;
+
+  return dHs.map((dH, idx) => {
+    const xs = [], ys = [];
+    for (let i = 0; i < N; i++) {
+      const p = i / (N - 1) * 100;
+      xs.push(p);
+      ys.push(p === 0 ? 0 : calcCoverage(dH, T, p));
+    }
+    return {
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      name: 'ΔH = ' + dH.toFixed(2) + ' eV',
+      line: { color: colors[idx], width: 2.5 },
+      hovertemplate: 'P=%{x:.1f} bar<br>θ=%{y:.3f}<extra>ΔH=' + dH.toFixed(2) + ' eV</extra>'
+    };
+  });
+}
+
+function updateFig35(T) {
+  Plotly.react('fig35', makeFig35Traces(T), mergeLayout({
+    xaxis: { title: 'Pressure (bar)', range: [0, 100] },
+    yaxis: { title: 'Coverage', range: [0, 1] },
+    showlegend: true,
+    legend: { x: 0.65, y: 0.3, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  }), plotlyCfg);
+}
+
+// ============================================================
+// FIGURE 3.6: Competitive Adsorption
+// ============================================================
+function buildFig36() {
+  const dHA = -1.00, T = 400;
+  const { tracesA, tracesB, thA_mid, thB_mid } = compData(dHA, T);
+
+  Plotly.newPlot('fig36', [tracesA, tracesB],
+    mergeLayout({
+      xaxis: { title: 'ΔΔH = ΔH_A − ΔH_B (eV)', range: [-0.3, 0.3] },
+      yaxis: { title: 'Coverage', range: [0, 1] },
+      showlegend: true,
+      legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 },
+      shapes: [{
+        type: 'line', x0: 0, x1: 0, y0: 0, y1: 1,
+        xref: 'x', yref: 'y',
+        line: { color: '#bbb', width: 1.5, dash: 'dash' }
+      }]
+    }), plotlyCfg);
+
+  document.getElementById('rd-thA').textContent = thA_mid.toFixed(3);
+  document.getElementById('rd-thB').textContent = thB_mid.toFixed(3);
+}
+
+function compData(dHA, T) {
+  const dS = -0.002, pA = 1, pB = 1, N = 300;
+  const xsA = [], ysA = [], xsB = [], ysB = [];
+  let thA_mid = 0.5, thB_mid = 0.5;
+
+  for (let i = 0; i < N; i++) {
+    const ddH = -0.3 + i / (N - 1) * 0.6;
+    const dHB = dHA - ddH;
+    const KA  = safeExp(-(dHA - T * dS) / (kB * T));
+    const KB  = safeExp(-(dHB  - T * dS) / (kB * T));
+    const denom = 1 + KA * pA + KB * pB;
+    xsA.push(ddH); ysA.push(KA * pA / denom);
+    xsB.push(ddH); ysB.push(KB * pB / denom);
+    if (Math.abs(ddH) < 0.005) { thA_mid = KA * pA / denom; thB_mid = KB * pB / denom; }
+  }
+
+  const tracesA = {
+    x: xsA, y: ysA, type: 'scatter', mode: 'lines',
+    name: 'θ_A (stronger binder)',
+    line: { color: '#c0392b', width: 2.5 },
+    hovertemplate: 'ΔΔH=%{x:.3f} eV<br>θ_A=%{y:.3f}<extra></extra>'
+  };
+  const tracesB = {
+    x: xsB, y: ysB, type: 'scatter', mode: 'lines',
+    name: 'θ_B (weaker binder)',
+    line: { color: '#2980b9', width: 2.5 },
+    hovertemplate: 'ΔΔH=%{x:.3f} eV<br>θ_B=%{y:.3f}<extra></extra>'
+  };
+
+  return { tracesA, tracesB, thA_mid, thB_mid };
+}
+
+const fig36Layout = mergeLayout({
+  xaxis: { title: 'ddH = dH_A - dH_B (eV)', range: [-0.3, 0.3] },
+  yaxis: { title: 'Coverage', range: [0, 1] },
+  showlegend: true,
+  legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 },
+  shapes: [{
+    type: 'line', x0: 0, x1: 0, y0: 0, y1: 1,
+    xref: 'x', yref: 'y',
+    line: { color: '#bbb', width: 1.5, dash: 'dash' }
+  }]
+});
+
+function updateFig36(dHA, T) {
+  const { tracesA, tracesB, thA_mid, thB_mid } = compData(dHA, T);
+  Plotly.react('fig36', [tracesA, tracesB], fig36Layout, plotlyCfg);
+  document.getElementById('rd-thA').textContent = thA_mid.toFixed(3);
+  document.getElementById('rd-thB').textContent = thB_mid.toFixed(3);
+}
+
+// ============================================================
+// FIGURE 3.7: CO Poisoning
+// ============================================================
+function buildFig37() {
+  const T = 400, pH2 = 1;
+  const { traceH, traceCO, co50 } = poisonData(T, pH2);
+
+  Plotly.newPlot('fig37', [traceH, traceCO],
+    mergeLayout({
+      xaxis: {
+        title: 'CO concentration (ppm)',
+        type: 'log',
+        range: [-2, Math.log10(500)],
+        tickvals: [0.01, 0.1, 1, 10, 100, 500],
+        ticktext: ['0.01', '0.1', '1', '10', '100', '500']
+      },
+      yaxis: { title: 'Coverage', range: [0, 1] },
+      showlegend: true,
+      legend: { x: 0.65, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+    }), plotlyCfg);
+
+  document.getElementById('rd-co50').textContent = co50 ? co50 + ' ppm' : '> 500 ppm';
+}
+
+function poisonData(T, pH2) {
+  const dH_H = -0.35, dH_CO = -1.2, dS = -0.002;
+  const N = 200;
+  const xsH = [], ysH = [], xsCO = [], ysCO = [];
+  let co50 = null, prevH = 1;
+
+  for (let i = 0; i < N; i++) {
+    const ppm_log = -2 + i / (N - 1) * (Math.log10(500) + 2);
+    const ppm = Math.pow(10, ppm_log);
+    const pCO = ppm * 1e-6 * pH2;
+
+    const KH  = safeExp(-(dH_H  - T * dS) / (kB * T));
+    const KCO = safeExp(-(dH_CO - T * dS) / (kB * T));
+    const sqKH = Math.sqrt(KH * pH2);
+    const KCOpCO = KCO * pCO;
+    const denom = 1 + sqKH + KCOpCO;
+    const th_H  = clamp(sqKH  / denom, 0, 1);
+    const th_CO = clamp(KCOpCO / denom, 0, 1);
+
+    xsH.push(ppm); ysH.push(th_H);
+    xsCO.push(ppm); ysCO.push(th_CO);
+
+    if (co50 === null && prevH > 0.5 && th_H <= 0.5) {
+      co50 = ppm.toFixed(3);
+    }
+    prevH = th_H;
+  }
+
+  const traceH = {
+    x: xsH, y: ysH, type: 'scatter', mode: 'lines',
+    name: 'θ_H',
+    line: { color: '#c0392b', width: 2.5 },
+    hovertemplate: 'CO=%{x:.3f} ppm<br>θ_H=%{y:.3f}<extra></extra>'
+  };
+  const traceCO = {
+    x: xsCO, y: ysCO, type: 'scatter', mode: 'lines',
+    name: 'θ_CO',
+    line: { color: '#2980b9', width: 2.5 },
+    hovertemplate: 'CO=%{x:.3f} ppm<br>θ_CO=%{y:.3f}<extra></extra>'
+  };
+
+  return { traceH, traceCO, co50 };
+}
+
+const fig37Layout = mergeLayout({
+  xaxis: { title: 'CO concentration (ppm)', type: 'log', range: [-2, 2.7] },
+  yaxis: { title: 'Coverage', range: [0, 1] },
+  showlegend: true,
+  legend: { x: 0.6, y: 0.5, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+});
+
+function updateFig37(T, pH2) {
+  const { traceH, traceCO, co50 } = poisonData(T, pH2);
+  Plotly.react('fig37', [traceH, traceCO], fig37Layout, plotlyCfg);
+  document.getElementById('rd-co50').textContent = co50 ? co50 + ' ppm' : '> 500 ppm';
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 3.1
+  document.getElementById('hm-T').addEventListener('input', () => {
+    const T = parseFloat(document.getElementById('hm-T').value);
+    const P = parseFloat(document.getElementById('hm-P').value);
+    document.getElementById('hm-T-val').textContent = T + ' K';
+    throttledDraw('hm', () => updateFig31(T, P));
+  });
+  document.getElementById('hm-P').addEventListener('input', () => {
+    const T = parseFloat(document.getElementById('hm-T').value);
+    const P = parseFloat(document.getElementById('hm-P').value);
+    document.getElementById('hm-P-val').textContent = P + ' bar';
+    throttledDraw('hm', () => updateFig31(T, P));
+  });
+
+  // Fig 3.2
+  document.getElementById('vib-T').addEventListener('input', () => {
+    const T = parseFloat(document.getElementById('vib-T').value);
+    document.getElementById('vib-T-val').textContent = T + ' K';
+    throttledDraw('vib', () => updateFig32(T));
+  });
+
+  // Fig 3.3
+  document.getElementById('c3-T').addEventListener('input', () => {
+    const T    = parseFloat(document.getElementById('c3-T').value);
+    const pLog = parseFloat(document.getElementById('c3-P').value);
+    const p    = Math.pow(10, pLog);
+    document.getElementById('c3-T-val').textContent = T + ' K';
+    throttledDraw('c3', () => updateFig33(T, p));
+  });
+  document.getElementById('c3-P').addEventListener('input', () => {
+    const T    = parseFloat(document.getElementById('c3-T').value);
+    const pLog = parseFloat(document.getElementById('c3-P').value);
+    const p    = Math.pow(10, pLog);
+    document.getElementById('c3-P-val').textContent = p.toFixed(p < 10 ? 2 : 0) + ' bar';
+    throttledDraw('c3', () => updateFig33(T, p));
+  });
+
+  // Fig 3.4
+  document.getElementById('c4-dH').addEventListener('input', () => {
+    const dH   = parseFloat(document.getElementById('c4-dH').value) / 100;
+    const pLog = parseFloat(document.getElementById('c4-P').value);
+    const p    = Math.pow(10, pLog);
+    document.getElementById('c4-dH-val').textContent = (dH >= 0 ? '+' : '−') + Math.abs(dH).toFixed(2) + ' eV';
+    throttledDraw('c4', () => updateFig34(dH, p));
+  });
+  document.getElementById('c4-P').addEventListener('input', () => {
+    const dH   = parseFloat(document.getElementById('c4-dH').value) / 100;
+    const pLog = parseFloat(document.getElementById('c4-P').value);
+    const p    = Math.pow(10, pLog);
+    document.getElementById('c4-P-val').textContent = p.toFixed(p < 10 ? 2 : 0) + ' bar';
+    throttledDraw('c4', () => updateFig34(dH, p));
+  });
+
+  // Fig 3.5
+  document.getElementById('c5-T').addEventListener('input', () => {
+    const T = parseFloat(document.getElementById('c5-T').value);
+    document.getElementById('c5-T-val').textContent = T + ' K';
+    throttledDraw('c5', () => updateFig35(T));
+  });
+
+  // Fig 3.6
+  document.getElementById('comp-dHA').addEventListener('input', () => {
+    const dHA = parseFloat(document.getElementById('comp-dHA').value) / 100;
+    const T   = parseFloat(document.getElementById('comp-T').value);
+    document.getElementById('comp-dHA-val').textContent = (dHA < 0 ? '−' : '+') + Math.abs(dHA).toFixed(2) + ' eV';
+    throttledDraw('comp', () => updateFig36(dHA, T));
+  });
+  document.getElementById('comp-T').addEventListener('input', () => {
+    const dHA = parseFloat(document.getElementById('comp-dHA').value) / 100;
+    const T   = parseFloat(document.getElementById('comp-T').value);
+    document.getElementById('comp-T-val').textContent = T + ' K';
+    throttledDraw('comp', () => updateFig36(dHA, T));
+  });
+
+  // Fig 3.7
+  document.getElementById('co-T').addEventListener('input', () => {
+    const T    = parseFloat(document.getElementById('co-T').value);
+    const pH2  = Math.pow(10, parseFloat(document.getElementById('co-pH2').value));
+    document.getElementById('co-T-val').textContent = T + ' K';
+    throttledDraw('poi', () => updateFig37(T, pH2));
+  });
+  document.getElementById('co-pH2').addEventListener('input', () => {
+    const T    = parseFloat(document.getElementById('co-T').value);
+    const pH2  = Math.pow(10, parseFloat(document.getElementById('co-pH2').value));
+    document.getElementById('co-pH2-val').textContent = pH2.toFixed(1) + ' bar';
+    throttledDraw('poi', () => updateFig37(T, pH2));
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig31();
+  buildFig32();
+  buildFig33();
+  buildFig34();
+  buildFig35();
+  buildFig36();
+  buildFig37();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>
