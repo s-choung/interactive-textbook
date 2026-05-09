@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Python &amp; DFT 기초</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "\2014"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '\25B6'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Python &amp; DFT 기초</a>
+    <ul class="nav-links">
+      <li><a href="#s11">1.1 소개</a></li>
+      <li><a href="#s12">1.2 ASE</a></li>
+      <li><a href="#s13">1.3 K-point</a></li>
+      <li><a href="#s14">1.4 Cutoff</a></li>
+      <li><a href="#s15">1.5 EOS</a></li>
+    </ul>
+    <span class="nav-badge">Sim Tutorial Ch.1</span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">움직이는 교과서 &middot; Interactive Textbook</p>
+    <h1 class="hero-title">Python &amp; DFT 기초</h1>
+    <p class="hero-subtitle">Choung, <em>Simulation Tutorials for Computational Materials Science</em>, Chapter 1. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+    <div class="hero-chips">
+      <span class="chip">Python</span>
+      <span class="chip">ASE</span>
+      <span class="chip">GPAW</span>
+      <span class="chip">DFT</span>
+      <span class="chip">Bulk Properties</span>
+      <span class="chip">Convergence</span>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 1.1: 계산재료과학 소개 -->
+  <!-- ============================================================ -->
+  <section id="s11" class="section">
+    <p class="section-label">Section 1.1</p>
+    <h2 class="section-title">계산재료과학 소개</h2>
+    <div class="section-body">
+      <p>기후변화에 대응하기 위해 효율적인 촉매 개발의 중요성이 커지고 있습니다. 밀도범함수이론(Density Functional Theory, DFT)은 원자핵 주변의 전자 밀도를 시뮬레이션하여 촉매의 활성점, 흡착 상호작용, 전자구조 등의 특성을 예측할 수 있게 해줍니다.</p>
+      <p>계산재료과학에서는 다양한 시뮬레이션 방법이 사용되며, 각 방법은 고유한 길이 스케일과 시간 스케일 영역을 다룹니다. DFT는 원자 수준(~1 nm)에서 전자구조를 직접 계산하고, 분자동역학(MD)은 더 큰 시스템의 원자 운동을, kinetic Monte Carlo(kMC)와 연속체 모델은 더 거시적인 현상을 다룹니다.</p>
+    </div>
+
+    <div class="eq-block">$$H\Psi = E\Psi \quad \xrightarrow{\text{DFT}} \quad E[n(\mathbf{r})] = T_s[n] + V_{\text{ext}}[n] + E_H[n] + E_{xc}[n]$$</div>
+
+    <ul class="concept-list">
+      <li>$H\Psi = E\Psi$: 다체 Schr&ouml;dinger 방정식. 정확하지만 전자 수가 많으면 직접 풀 수 없습니다.</li>
+      <li>DFT: 3N차원 파동함수 대신 3차원 전자 밀도 $n(\mathbf{r})$로 문제를 재구성합니다.</li>
+      <li>Kohn-Sham 방정식: 상호작용하는 다전자 문제를 비상호작용 전자의 유효 포텐셜 문제로 변환합니다.</li>
+      <li>Exchange-correlation functional ($E_{xc}$): DFT의 유일한 근사이며, LDA, GGA(PBE) 등 다양한 근사가 존재합니다.</li>
+    </ul>
+
+    <!-- Figure 1.1 -->
+    <div class="figure-card" style="margin-top: var(--spacing-32);">
+      <div class="figure-header">
+        <span class="figure-label">Figure 1.1</span>
+        <span class="figure-title">Multi-Scale Simulation Map</span>
+      </div>
+      <div class="figure-body">
+        <div id="fig11" class="plotly-container"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">관심 시스템 크기</span>
+            <input type="range" id="scale-size" min="-1" max="7" value="0" step="0.1">
+            <span class="control-value" id="scale-size-val">1 nm</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item">
+            <span class="readout-key">적합한 방법</span>
+            <span class="readout-val" id="rd-method11">DFT</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">원자 수 범위</span>
+            <span class="readout-val" id="rd-atoms11">~100</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">시간 스케일</span>
+            <span class="readout-val" id="rd-time11">~ps</span>
+          </div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-title">DFT는 원자 수준의 전자구조를 다루는 가장 기본적인 방법입니다</div>
+          <div class="highlight-body">시스템이 커지면 DFT로는 계산 비용이 너무 높아지므로, 더 큰 스케일에서는 MD, kMC, 연속체 모델 등으로 넘어가야 합니다. 각 방법의 적용 범위를 이해하는 것이 멀티스케일 시뮬레이션의 핵심입니다.</div>
+        </div>
+
+        <!-- Explore -->
+        <button class="explore-toggle" onclick="toggleExplore('ex11')">Step-by-step 탐색 &#x25BE;</button>
+        <div class="explore-panel" id="ex11">
+          <ol class="explore-steps">
+            <li>슬라이더를 왼쪽 끝(~0.1 nm)으로 이동하세요. DFT 영역이 강조됩니다.</li>
+            <li>천천히 오른쪽으로 이동하면서 어떤 시뮬레이션 방법이 적합한지 관찰하세요.</li>
+            <li>~10 nm 근처에서 DFT에서 MD 영역으로 전환되는 것을 확인하세요.</li>
+            <li>~1 &mu;m 이상이 되면 kMC나 연속체 모델이 필요해집니다.</li>
+          </ol>
+          <div class="explore-insight"><strong>Key Insight:</strong> 시뮬레이션 방법의 선택은 연구 대상의 길이/시간 스케일에 의해 결정됩니다. DFT는 가장 정밀하지만 가장 비싸고, 연속체 모델은 가장 빠르지만 원자 수준의 정보를 잃습니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 1.2: Python & ASE 기초 -->
+  <!-- ============================================================ -->
+  <section id="s12" class="section">
+    <p class="section-label">Section 1.2</p>
+    <h2 class="section-title">Python &amp; ASE 기초</h2>
+    <div class="section-body">
+      <p>ASE(Atomic Simulation Environment)는 원자 시뮬레이션을 위한 Python 라이브러리입니다. ASE의 핵심은 <code>Atoms</code> 객체와 <code>Calculator</code> 패턴입니다. <code>Atoms</code> 객체에 원자의 종류, 위치, 셀 정보를 담고, <code>Calculator</code>(예: GPAW)를 연결하면 에너지, 힘 등을 계산할 수 있습니다.</p>
+      <p>가장 간단한 예로 H<sub>2</sub> 분자의 포텐셜을 Morse potential로 모델링할 수 있습니다. Morse potential은 결합 에너지($D_e$), 평형 결합 거리($r_e$), 포텐셜 폭 파라미터($\alpha$)로 완전히 결정됩니다.</p>
+    </div>
+
+    <div class="eq-block">$$V(r) = D_e\bigl(1 - e^{-\alpha(r - r_e)}\bigr)^2 - D_e$$</div>
+
+    <ul class="concept-list">
+      <li>$D_e$: 해리 에너지(dissociation energy). 결합을 완전히 끊는 데 필요한 에너지입니다.</li>
+      <li>$r_e$: 평형 결합 거리. 포텐셜 에너지가 최소인 원자간 거리입니다.</li>
+      <li>$\alpha$: 포텐셜의 폭을 결정합니다. 클수록 포텐셜이 좁아지고 진동 주파수가 높아집니다.</li>
+      <li>Force $F(r) = -dV/dr$: 원자에 작용하는 힘. $r = r_e$에서 0이 됩니다.</li>
+    </ul>
+
+    <!-- Figure 1.2 -->
+    <div class="figure-card" style="margin-top: var(--spacing-32);">
+      <div class="figure-header">
+        <span class="figure-label">Figure 1.2</span>
+        <span class="figure-title">Morse Potential for H<sub>2</sub></span>
+        <button class="challenge-btn" onclick="toggleChallenge('ch12')">도전 과제</button>
+      </div>
+      <div class="challenge-panel" id="ch12">
+        <div class="challenge-goal">목표: D<sub>e</sub>를 최대로, r<sub>e</sub>를 최소로 설정했을 때 물리적으로 어떤 결합을 의미할까요?</div>
+        <div class="challenge-desc">짧은 결합 거리에 큰 해리 에너지 &mdash; 이것은 매우 강한 공유결합을 의미합니다. 예를 들어 N<sub>2</sub> 삼중결합이 이런 특성을 보입니다. 슬라이더를 움직여 readout의 zero-point frequency가 어떻게 변하는지도 관찰해보세요.</div>
+        <div class="challenge-status" id="ch12-status">현재: 슬라이더를 조작해보세요</div>
+      </div>
+      <div class="figure-body">
+        <div id="fig12" class="plotly-container"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">D<sub>e</sub></span>
+            <input type="range" id="morse-De" min="2" max="6" value="4.75" step="0.05">
+            <span class="control-value" id="morse-De-val">4.75 eV</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">r<sub>e</sub></span>
+            <input type="range" id="morse-re" min="0.5" max="1.2" value="0.74" step="0.01">
+            <span class="control-value" id="morse-re-val">0.74 &Aring;</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">&alpha;</span>
+            <input type="range" id="morse-alpha" min="1.0" max="3.0" value="1.94" step="0.02">
+            <span class="control-value" id="morse-alpha-val">1.94 &Aring;&sup1;</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item">
+            <span class="readout-key">Equilibrium r</span>
+            <span class="readout-val" id="rd-req12">0.74 &Aring;</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">Dissociation E</span>
+            <span class="readout-val" id="rd-De12">4.75 eV</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">ZP Frequency</span>
+            <span class="readout-val" id="rd-freq12">&mdash;</span>
+          </div>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#000;"></span>V(r) potential</div>
+          <div class="legend-item"><span class="legend-dot" style="background:#c0392b;"></span>F(r) = &minus;dV/dr</div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-title">$r = r_e$에서 힘이 0이 되고, 포텐셜이 최소입니다</div>
+          <div class="highlight-body">$r &lt; r_e$에서는 척력(양의 힘)이, $r &gt; r_e$에서는 인력(음의 힘)이 작용합니다. 이 균형점이 평형 결합 거리이며, ASE에서 구조 최적화는 바로 이 점을 찾는 과정입니다.</div>
+        </div>
+
+        <!-- Explore -->
+        <button class="explore-toggle" onclick="toggleExplore('ex12')">Step-by-step 탐색 &#x25BE;</button>
+        <div class="explore-panel" id="ex12">
+          <ol class="explore-steps">
+            <li>D<sub>e</sub> = 4.75 eV, r<sub>e</sub> = 0.74 &Aring;, &alpha; = 1.94 &Aring;<sup>&minus;1</sup>로 시작하세요. 이것은 H<sub>2</sub>의 실험 파라미터입니다.</li>
+            <li>ASE에서 <code>Atoms('H2', positions=[(0,0,0),(0,0,d)])</code>로 H<sub>2</sub>를 정의합니다. <code>d</code>가 r에 해당합니다.</li>
+            <li>Calculator를 연결하면 <code>atoms.get_forces()</code>로 각 원자에 작용하는 힘을 얻습니다.</li>
+            <li>&alpha;를 변경하면 포텐셜 우물의 폭이 변합니다. &alpha;가 클수록 우물이 좁아지고 진동 주파수가 높아집니다.</li>
+            <li>D<sub>e</sub>를 변경하면 우물의 깊이가 변합니다. 깊을수록 결합이 강합니다.</li>
+          </ol>
+          <div class="explore-insight"><strong>Key Insight:</strong> ASE의 Atoms + Calculator 패턴은 어떤 포텐셜(Morse, EMT, DFT 등)이든 동일한 인터페이스로 에너지와 힘을 계산합니다. 포텐셜만 바꾸면 같은 코드로 다른 수준의 계산이 가능합니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 1.3: K-point 수렴 테스트 -->
+  <!-- ============================================================ -->
+  <section id="s13" class="section">
+    <p class="section-label">Section 1.3</p>
+    <h2 class="section-title">K-point 수렴 테스트</h2>
+    <div class="section-body">
+      <p>주기적 시스템에서 Bloch 정리에 의해 전자 상태는 Brillouin zone 내의 k-point들로 레이블됩니다. 실제 계산에서는 유한한 수의 k-point로 Brillouin zone을 샘플링해야 합니다. k-point가 너무 적으면 에너지에 큰 오차가 발생하고, 너무 많으면 불필요한 계산 비용이 들어갑니다.</p>
+      <p>아래 그래프는 Al(FCC) bulk에 대한 k-point 수렴 테스트를 시뮬레이션한 것입니다. k-point 수를 늘리면 에너지가 특정 값으로 수렴하는 것을 볼 수 있습니다. 수렴 기준(convergence threshold)을 설정하면 필요한 최소 k-point 수를 결정할 수 있습니다.</p>
+    </div>
+
+    <div class="eq-block">$$E(k) = E_{\text{conv}} + A\,e^{-Bk} + C\sin\!\left(\frac{\pi k}{2}\right)e^{-k/3}$$</div>
+
+    <!-- Figure 1.3 -->
+    <div class="figure-card" style="margin-top: var(--spacing-32);">
+      <div class="figure-header">
+        <span class="figure-label">Figure 1.3</span>
+        <span class="figure-title">K-point Convergence (Al FCC)</span>
+      </div>
+      <div class="figure-body">
+        <div id="fig13" class="plotly-container"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">수렴 기준</span>
+            <input type="range" id="kpt-thresh" min="0.001" max="0.1" value="0.01" step="0.001">
+            <span class="control-value" id="kpt-thresh-val">0.010 eV</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item">
+            <span class="readout-key">수렴 k-point</span>
+            <span class="readout-val" id="rd-kconv13">&mdash;</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">에너지 차이</span>
+            <span class="readout-val" id="rd-ediff13">&mdash;</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">수렴 에너지</span>
+            <span class="readout-val" id="rd-econv13">&minus;4.040 eV</span>
+          </div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-title">k-point가 충분히 크면 에너지가 수렴합니다</div>
+          <div class="highlight-body">금속 시스템(예: Al)은 Fermi level 근처의 전자 상태가 k-space에서 빠르게 변하므로 많은 k-point가 필요합니다. 반도체나 절연체는 상대적으로 적은 k-point로도 수렴합니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 1.3 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: k-point를 무한히 늘리면 계산 정확도는 어떻게 되나요?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz13')">A) 무한히 증가합니다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz13')">B) 특정 값으로 수렴합니다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz13')">C) 발산합니다</button>
+      </div>
+      <div class="quiz-explain" id="quiz13">k-point를 늘리면 Brillouin zone 적분의 정밀도가 높아지지만, 충분히 많아지면 추가적인 개선이 무시할 수 있을 정도로 작아져 에너지가 수렴합니다. 이것이 수렴 테스트가 필요한 이유입니다.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 1.4: Plane-wave Cutoff 수렴 -->
+  <!-- ============================================================ -->
+  <section id="s14" class="section">
+    <p class="section-label">Section 1.4</p>
+    <h2 class="section-title">Plane-wave Cutoff 수렴</h2>
+    <div class="section-body">
+      <p>Plane-wave DFT에서 Kohn-Sham 궤도함수(orbital)는 평면파(plane wave)의 합으로 전개됩니다. Cutoff energy($E_{\text{cut}}$)는 이 전개에 포함되는 평면파의 최대 운동에너지를 결정합니다. 높은 cutoff은 더 많은 평면파를 포함하여 급격한 전자 밀도 변화를 잘 표현하지만, 계산 비용도 증가합니다.</p>
+      <p>GPAW에서는 <code>mode=PW(cutoff)</code>으로 cutoff energy를 설정합니다. 아래 그래프는 cutoff에 따른 에너지 수렴을 보여줍니다. 일반적으로 cutoff이 증가하면 에너지가 단조감소하며 수렴합니다.</p>
+    </div>
+
+    <div class="eq-block">$$\psi_{n\mathbf{k}}(\mathbf{r}) = \sum_{|\mathbf{G}+\mathbf{k}|^2 \le 2E_{\text{cut}}} c_{n\mathbf{k}+\mathbf{G}}\,e^{i(\mathbf{k}+\mathbf{G})\cdot\mathbf{r}}$$</div>
+
+    <!-- Figure 1.4 -->
+    <div class="figure-card" style="margin-top: var(--spacing-32);">
+      <div class="figure-header">
+        <span class="figure-label">Figure 1.4</span>
+        <span class="figure-title">Cutoff Energy Convergence (Al FCC)</span>
+      </div>
+      <div class="figure-body">
+        <div id="fig14" class="plotly-container"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">E<sub>conv</sub></span>
+            <input type="range" id="cut-Econv" min="-4.20" max="-3.90" value="-4.04" step="0.01">
+            <span class="control-value" id="cut-Econv-val">&minus;4.04 eV</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">A (amplitude)</span>
+            <input type="range" id="cut-A" min="500" max="2000" value="1000" step="50">
+            <span class="control-value" id="cut-A-val">1000</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item">
+            <span class="readout-key">수렴 Cutoff</span>
+            <span class="readout-val" id="rd-cutconv14">&mdash;</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">에너지 차이</span>
+            <span class="readout-val" id="rd-ecutdiff14">&mdash;</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">상대 계산 비용</span>
+            <span class="readout-val" id="rd-cost14">&mdash;</span>
+          </div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-title">Cutoff이 높을수록 정확하지만 계산 비용이 급격히 증가합니다</div>
+          <div class="highlight-body">Plane-wave 수는 $E_{\text{cut}}^{3/2}$에 비례하므로, cutoff을 2배로 올리면 basis set 크기가 약 2.8배 증가합니다. 따라서 수렴한 최소 cutoff을 사용하는 것이 효율적입니다.</div>
+        </div>
+
+        <!-- Explore -->
+        <button class="explore-toggle" onclick="toggleExplore('ex14')">Step-by-step 탐색 &#x25BE;</button>
+        <div class="explore-panel" id="ex14">
+          <ol class="explore-steps">
+            <li>E<sub>conv</sub> = &minus;4.04 eV, A = 1000으로 시작하세요.</li>
+            <li>그래프에서 cutoff 100 eV의 에너지와 800 eV의 에너지 차이를 비교하세요.</li>
+            <li>A를 2000으로 올려보세요. 낮은 cutoff에서의 오차가 더 커집니다.</li>
+            <li>A를 500으로 줄여보세요. 낮은 cutoff에서도 수렴이 빨라집니다. 이것은 원소에 따라 다릅니다 &mdash; 산소 같은 1주기 원소는 급격한 전자 밀도를 가져 높은 cutoff이 필요합니다.</li>
+          </ol>
+          <div class="explore-insight"><strong>Key Insight:</strong> GPAW에서 <code>mode=PW(300)</code>은 300 eV cutoff을 의미합니다. 실제 연구에서는 원소와 pseudopotential에 따라 400&ndash;600 eV 사이의 cutoff이 흔히 사용됩니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 1.5: 상태방정식 (Equation of State) -->
+  <!-- ============================================================ -->
+  <section id="s15" class="section">
+    <p class="section-label">Section 1.5</p>
+    <h2 class="section-title">상태방정식 (Equation of State)</h2>
+    <div class="section-body">
+      <p>DFT 계산에서 격자 상수를 결정하기 위해 Birch-Murnaghan 상태방정식(EOS)을 사용합니다. 여러 격자 상수(또는 부피)에서 에너지를 계산한 뒤, E(V) 곡선을 Birch-Murnaghan 식으로 fitting하면 평형 격자 상수, 최소 에너지, 체적탄성률(bulk modulus)을 정밀하게 추출할 수 있습니다.</p>
+      <p>FCC 구조에서 부피 $V = a^3/4$ (primitive cell)이므로, 격자 상수 $a$를 변화시키면 부피가 변합니다. 아래 그래프에서 슬라이더를 조절하여 Al(FCC)의 EOS를 탐색해보세요.</p>
+    </div>
+
+    <div class="eq-block">$$E(V) = E_0 + \frac{9V_0 B_0}{16}\left\{\left[\left(\frac{V_0}{V}\right)^{2/3}-1\right]^3 B_0' + \left[\left(\frac{V_0}{V}\right)^{2/3}-1\right]^2\left[6-4\left(\frac{V_0}{V}\right)^{2/3}\right]\right\}$$</div>
+
+    <!-- Derivation -->
+    <details class="derivation">
+      <summary>유도 과정 보기</summary>
+      <div class="deriv-body">
+        <div class="deriv-step">
+          <div class="deriv-step-row">
+            <span class="deriv-step-num">1</span>
+            <div class="deriv-step-text">Euler strain: $f = \frac{1}{2}\left[\left(\frac{V_0}{V}\right)^{2/3} - 1\right]$</div>
+          </div>
+          <div class="deriv-meaning">유한 변형(finite strain)을 정의합니다. $V = V_0$일 때 $f = 0$입니다.</div>
+        </div>
+        <div class="deriv-step">
+          <div class="deriv-step-row">
+            <span class="deriv-step-num">2</span>
+            <div class="deriv-step-text">에너지를 strain의 Taylor 급수로 전개: $E(f) = E_0 + \alpha f^2 + \beta f^3 + \cdots$</div>
+          </div>
+          <div class="deriv-meaning">평형 근처에서 $f$의 다항식으로 에너지를 근사합니다.</div>
+        </div>
+        <div class="deriv-step">
+          <div class="deriv-step-row">
+            <span class="deriv-step-num">3</span>
+            <div class="deriv-step-text">$B_0 = -V\frac{dP}{dV}\big|_{V_0}$, $B_0' = \frac{dB}{dP}\big|_{P=0}$</div>
+          </div>
+          <div class="deriv-meaning">Bulk modulus $B_0$는 압축에 대한 저항, $B_0'$는 압력에 따른 bulk modulus의 변화율입니다.</div>
+        </div>
+        <div class="deriv-step">
+          <div class="deriv-step-row">
+            <span class="deriv-step-num">4</span>
+            <div class="deriv-step-text">3차까지의 계수를 $B_0$, $B_0'$로 표현하면 Birch-Murnaghan EOS가 됩니다.</div>
+          </div>
+          <div class="deriv-meaning">3개의 피팅 파라미터($E_0$, $V_0$, $B_0$, $B_0'$)로 E-V 곡선을 정확히 기술합니다.</div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Figure 1.5 -->
+    <div class="figure-card" style="margin-top: var(--spacing-32);">
+      <div class="figure-header">
+        <span class="figure-label">Figure 1.5</span>
+        <span class="figure-title">Birch-Murnaghan Equation of State (Al FCC)</span>
+        <button class="challenge-btn" onclick="toggleChallenge('ch15')">도전 과제</button>
+      </div>
+      <div class="challenge-panel" id="ch15">
+        <div class="challenge-goal">목표: 실험값 a = 4.05 &Aring;에 가장 가까운 B<sub>0</sub>, B<sub>0</sub>'를 찾아보세요</div>
+        <div class="challenge-desc">Al의 실험 bulk modulus는 약 76 GPa, B<sub>0</sub>'는 약 4.2입니다. 슬라이더를 조절해서 실험값에 가까운 EOS 곡선을 만들어보세요. 곡선의 모양이 어떻게 변하는지 관찰하세요.</div>
+        <div class="challenge-status" id="ch15-status">현재: 슬라이더를 조작해보세요</div>
+      </div>
+      <div class="figure-body">
+        <div id="fig15" class="plotly-container"></div>
+        <div class="controls">
+          <div class="control-row">
+            <span class="control-label">a<sub>0</sub></span>
+            <input type="range" id="eos-a0" min="3.8" max="4.3" value="4.05" step="0.01">
+            <span class="control-value" id="eos-a0-val">4.05 &Aring;</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">B<sub>0</sub></span>
+            <input type="range" id="eos-B0" min="50" max="120" value="76" step="1">
+            <span class="control-value" id="eos-B0-val">76 GPa</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">B<sub>0</sub>'</span>
+            <input type="range" id="eos-B0p" min="3.0" max="6.0" value="4.2" step="0.1">
+            <span class="control-value" id="eos-B0p-val">4.2</span>
+          </div>
+        </div>
+        <div class="readout">
+          <div class="readout-item">
+            <span class="readout-key">Optimal a</span>
+            <span class="readout-val" id="rd-aopt15">&mdash;</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">Bulk Modulus</span>
+            <span class="readout-val" id="rd-B015">&mdash;</span>
+          </div>
+          <div class="readout-item">
+            <span class="readout-key">Min Energy</span>
+            <span class="readout-val" id="rd-Emin15">&mdash;</span>
+          </div>
+        </div>
+        <div class="highlight">
+          <div class="highlight-title">EOS fitting으로 격자 상수를 정밀하게 결정합니다</div>
+          <div class="highlight-body">단순히 몇 개의 격자 상수에서 에너지를 비교하는 것보다, Birch-Murnaghan fitting을 사용하면 연속적인 E(V) 곡선에서 최소점을 찾으므로 더 정확한 평형 격자 상수를 얻을 수 있습니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 1.5 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: Birch-Murnaghan EOS에서 B<sub>0</sub>는 무엇을 나타내나요?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz15a')">A) 열팽창계수</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz15a')">B) 체적탄성률 (Bulk Modulus)</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz15a')">C) 전기전도도</button>
+      </div>
+      <div class="quiz-explain" id="quiz15a">B<sub>0</sub>는 체적탄성률(bulk modulus)로, 재료가 균일한 압축에 저항하는 정도를 나타냅니다. 단위는 GPa이며, B<sub>0</sub> = &minus;V(dP/dV)로 정의됩니다. 값이 클수록 재료가 단단합니다.</div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- WHAT-IF CARDS -->
+  <!-- ============================================================ -->
+  <section class="section">
+    <p class="section-label">What If?</p>
+    <h2 class="section-title">만약에&hellip;</h2>
+    <div class="whatif-grid">
+      <div class="whatif-card" onclick="revealWhatif(this)">
+        <div class="whatif-q">만약 k-point를 1로 줄이면?</div>
+        <div class="whatif-hint">Brillouin zone의 &Gamma;점만 샘플링하게 되어 금속에서는 큰 오차가 발생합니다. 특히 Fermi level 근처의 전자 상태를 제대로 반영하지 못해 에너지, 힘, 전자구조 모두 부정확해집니다.</div>
+        <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+      </div>
+      <div class="whatif-card" onclick="revealWhatif(this)">
+        <div class="whatif-q">만약 cutoff을 50 eV로 낮추면?</div>
+        <div class="whatif-hint">Basis set이 너무 작아 전자의 급격한 밀도 변화를 표현하지 못합니다. 결과적으로 에너지가 크게 틀어지고, 원자간 힘도 부정확해져 구조 최적화가 잘못된 결과를 줍니다.</div>
+        <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+      </div>
+      <div class="whatif-card" onclick="revealWhatif(this)">
+        <div class="whatif-q">만약 격자상수를 실험값 대신 임의로 넣으면?</div>
+        <div class="whatif-hint">잘못된 평형 구조에서 출발하면 모든 후속 계산(표면에너지, 흡착에너지 등)이 체계적으로 틀어집니다. EOS fitting으로 정확한 격자 상수를 결정한 후 본 계산을 시작해야 합니다.</div>
+        <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- TAKEAWAYS -->
+  <!-- ============================================================ -->
+  <section class="takeaways section">
+    <p class="section-label">Key Takeaways</p>
+    <h2 class="section-title">Chapter 1 핵심 메시지</h2>
+    <div class="takeaway-grid">
+      <div class="takeaway-card">
+        <div class="takeaway-number">&#x2713;</div>
+        <div class="takeaway-title">수렴 테스트 필수</div>
+        <div class="takeaway-body">k-point와 cutoff은 반드시 수렴을 확인한 후 본 계산에 사용해야 합니다. 수렴하지 않은 파라미터로 계산하면 모든 결과가 부정확해집니다.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">EOS</div>
+        <div class="takeaway-title">EOS로 격자 상수 결정</div>
+        <div class="takeaway-body">Birch-Murnaghan fitting으로 정확한 평형 격자 상수와 체적탄성률을 얻을 수 있습니다. 이것이 모든 후속 표면/흡착 계산의 출발점입니다.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">&#x21CC;</div>
+        <div class="takeaway-title">정확도 vs 비용</div>
+        <div class="takeaway-body">더 높은 k-point와 cutoff은 정확하지만 계산 비용이 급격히 증가합니다. 수렴한 최소 파라미터를 찾아 효율적으로 계산하는 것이 핵심입니다.</div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Choung &mdash; <em>Simulation Tutorials</em>, Chapter 1</span>
+    <span class="footer-text">움직이는 교과서 &middot; Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+var kB = 8.617e-5; // eV/K
+var h_planck = 4.136e-15; // eV·s
+var eV_per_GPa_A3 = 160.2176634; // 1 eV/A^3 = 160.2176634 GPa
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function safeExp(x) { return Math.exp(Math.max(-500, Math.min(500, x))); }
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+var plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+var baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  var merged = Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis || {}),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis || {}),
+    font: Object.assign({}, baseLayout.font, extra.font || {})
+  });
+  if (extra.yaxis2) merged.yaxis2 = extra.yaxis2;
+  if (extra.shapes) merged.shapes = extra.shapes;
+  if (extra.annotations) merged.annotations = extra.annotations;
+  if (extra.showlegend !== undefined) merged.showlegend = extra.showlegend;
+  return merged;
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  var t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  var opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(function(o) {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+var rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(function() { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// FIGURE 1.1: Multi-Scale Simulation Map
+// ============================================================
+function fig11Data(logSize) {
+  // Regions: DFT, MD, kMC, Continuum
+  // logSize is log10(nm), so 0 = 1 nm, 1 = 10 nm, etc.
+  var regions = [
+    { name: 'DFT',        x0: -1, x1: 1.2, y0: -14, y1: -11, color: 'rgba(0,0,0,0.08)' },
+    { name: 'MD',         x0: 0.5, x1: 2.5, y0: -12, y1: -6, color: 'rgba(192,57,43,0.08)' },
+    { name: 'kMC',        x0: 1.5, x1: 4, y0: -6, y1: 0, color: 'rgba(41,128,185,0.08)' },
+    { name: 'Continuum',  x0: 3, x1: 7, y0: -3, y1: 4, color: 'rgba(102,102,102,0.08)' }
+  ];
+
+  var shapes = [];
+  var annotations = [];
+  var highlightIdx = -1;
+
+  // Determine which region the slider is in
+  if (logSize <= 1.2) highlightIdx = 0;
+  else if (logSize <= 2.5) highlightIdx = 1;
+  else if (logSize <= 4) highlightIdx = 2;
+  else highlightIdx = 3;
+
+  regions.forEach(function(r, i) {
+    var fillColor = (i === highlightIdx) ?
+      r.color.replace('0.08', '0.22') : r.color;
+    var borderColor = (i === highlightIdx) ? '#000' : '#e5e7eb';
+    var borderWidth = (i === highlightIdx) ? 2 : 1;
+
+    shapes.push({
+      type: 'rect',
+      x0: r.x0, x1: r.x1, y0: r.y0, y1: r.y1,
+      xref: 'x', yref: 'y',
+      fillcolor: fillColor,
+      line: { color: borderColor, width: borderWidth }
+    });
+
+    annotations.push({
+      x: (r.x0 + r.x1) / 2,
+      y: (r.y0 + r.y1) / 2,
+      xref: 'x', yref: 'y',
+      text: r.name,
+      showarrow: false,
+      font: { size: (i === highlightIdx) ? 16 : 13, color: (i === highlightIdx) ? '#000' : '#8f8f8f', family: 'Inter, sans-serif' }
+    });
+  });
+
+  // Vertical line for current system size
+  shapes.push({
+    type: 'line',
+    x0: logSize, x1: logSize, y0: -15, y1: 5,
+    xref: 'x', yref: 'y',
+    line: { color: '#000', width: 2, dash: 'dash' }
+  });
+
+  var layoutExtras = {
+    xaxis: { title: 'log₁₀(Length Scale / nm)', range: [-1.5, 7.5] },
+    yaxis: { title: 'log₁₀(Time Scale / s)', range: [-15, 5] },
+    shapes: shapes,
+    annotations: annotations,
+    showlegend: false
+  };
+
+  // Empty trace (shapes do the work)
+  var trace = {
+    x: [logSize], y: [0],
+    type: 'scatter', mode: 'markers',
+    marker: { color: '#000', size: 10, symbol: 'diamond' },
+    hovertemplate: 'Size: 10^%{x:.1f} nm<extra></extra>',
+    showlegend: false
+  };
+
+  return { traces: [trace], layoutExtras: layoutExtras, highlightIdx: highlightIdx };
+}
+
+function buildFig11() {
+  var d = fig11Data(0);
+  Plotly.newPlot('fig11', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout11(0);
+}
+
+function updateFig11(logSize) {
+  var d = fig11Data(logSize);
+  Plotly.react('fig11', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout11(logSize);
+}
+
+function updateReadout11(logSize) {
+  var sizeNm = Math.pow(10, logSize);
+  var sizeStr;
+  if (sizeNm < 1) sizeStr = (sizeNm * 10).toFixed(1) + ' Å';
+  else if (sizeNm < 1000) sizeStr = sizeNm.toFixed(1) + ' nm';
+  else if (sizeNm < 1e6) sizeStr = (sizeNm / 1000).toFixed(1) + ' µm';
+  else sizeStr = (sizeNm / 1e6).toFixed(1) + ' mm';
+
+  document.getElementById('scale-size-val').textContent = sizeStr;
+
+  var method, atoms, time;
+  if (logSize <= 1.2) {
+    method = 'DFT'; atoms = '~10–500'; time = '~ps';
+  } else if (logSize <= 2.5) {
+    method = 'MD'; atoms = '~10³–10⁶'; time = '~ns–µs';
+  } else if (logSize <= 4) {
+    method = 'kMC'; atoms = '~10⁶–10⁹'; time = '~s–min';
+  } else {
+    method = 'Continuum'; atoms = 'N/A (mesh)'; time = '~s–hr';
+  }
+
+  document.getElementById('rd-method11').textContent = method;
+  document.getElementById('rd-atoms11').textContent = atoms;
+  document.getElementById('rd-time11').textContent = time;
+}
+
+// ============================================================
+// FIGURE 1.2: Morse Potential for H2
+// ============================================================
+function morseV(r, De, re, alpha) {
+  return De * Math.pow(1 - safeExp(-alpha * (r - re)), 2) - De;
+}
+
+function morseForce(r, De, re, alpha) {
+  // F = -dV/dr = -2*De*alpha*(1 - exp(-a(r-re)))*exp(-a(r-re))
+  var ex = safeExp(-alpha * (r - re));
+  return -2 * De * alpha * (1 - ex) * ex;
+}
+
+function fig12Data(De, re, alpha) {
+  var N = 300;
+  var rMin = 0.3, rMax = 4.0;
+  var rs = [], vs = [], fs = [];
+  for (var i = 0; i < N; i++) {
+    var r = rMin + (rMax - rMin) * i / (N - 1);
+    rs.push(r);
+    vs.push(morseV(r, De, re, alpha));
+    fs.push(morseForce(r, De, re, alpha));
+  }
+
+  var traceV = {
+    x: rs, y: vs,
+    type: 'scatter', mode: 'lines',
+    name: 'V(r)',
+    line: { color: '#000', width: 2.5 },
+    hovertemplate: 'r=%{x:.2f} Å<br>V=%{y:.3f} eV<extra>V(r)</extra>'
+  };
+
+  var traceF = {
+    x: rs, y: fs,
+    type: 'scatter', mode: 'lines',
+    name: 'F(r)',
+    line: { color: '#c0392b', width: 2 },
+    yaxis: 'y2',
+    hovertemplate: 'r=%{x:.2f} Å<br>F=%{y:.3f} eV/Å<extra>F(r)</extra>'
+  };
+
+  var layoutExtras = {
+    xaxis: { title: 'r (Å)', range: [0.3, 4.0] },
+    yaxis: { title: 'V(r) (eV)', range: [-De - 0.5, De * 0.3] },
+    yaxis2: {
+      title: 'F(r) (eV/Å)',
+      overlaying: 'y',
+      side: 'right',
+      gridcolor: 'rgba(0,0,0,0)',
+      zerolinecolor: '#e5e7eb',
+      linecolor: '#c0392b',
+      linewidth: 1,
+      titlefont: { color: '#c0392b' },
+      tickfont: { color: '#c0392b' }
+    },
+    showlegend: false,
+    shapes: [
+      { type: 'line', x0: re, x1: re, y0: -De - 0.5, y1: De * 0.3, xref: 'x', yref: 'y', line: { color: '#e5e7eb', width: 1, dash: 'dash' } }
+    ],
+    annotations: [
+      { x: re, y: -De, xref: 'x', yref: 'y', text: 'rₑ = ' + re.toFixed(2) + ' Å', showarrow: true, arrowhead: 0, ax: 40, ay: -30, font: { size: 11, color: '#666' } }
+    ]
+  };
+
+  return { traces: [traceV, traceF], layoutExtras: layoutExtras };
+}
+
+function buildFig12() {
+  var De = 4.75, re = 0.74, alpha = 1.94;
+  var d = fig12Data(De, re, alpha);
+  Plotly.newPlot('fig12', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout12(De, re, alpha);
+}
+
+function updateFig12(De, re, alpha) {
+  var d = fig12Data(De, re, alpha);
+  Plotly.react('fig12', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout12(De, re, alpha);
+}
+
+function updateReadout12(De, re, alpha) {
+  document.getElementById('rd-req12').innerHTML = re.toFixed(2) + ' &Aring;';
+  document.getElementById('rd-De12').textContent = De.toFixed(2) + ' eV';
+
+  // Zero-point frequency: omega = alpha * sqrt(2*De/mu), mu for H2 ≈ 0.5 amu
+  // Convert to cm^-1: nu_bar = omega / (2*pi*c)
+  // Using reduced mass of H2: mu = 0.5 amu = 0.5 * 1.6605e-27 kg
+  // De in J = De * 1.602e-19
+  // omega = alpha * 1e10 * sqrt(2 * De * 1.602e-19 / (0.5 * 1.6605e-27))
+  var mu_kg = 0.5 * 1.6605e-27;
+  var De_J = De * 1.602e-19;
+  var alpha_m = alpha * 1e10;
+  var omega = alpha_m * Math.sqrt(2 * De_J / mu_kg);
+  var nu_cm = omega / (2 * Math.PI * 2.998e10);
+  document.getElementById('rd-freq12').textContent = Math.round(nu_cm) + ' cm⁻¹';
+
+  // Challenge check: De >= 5.9 and re <= 0.52
+  var s = document.getElementById('ch12-status');
+  if (s) {
+    if (De >= 5.9 && re <= 0.52) {
+      s.textContent = 'Dₑ = ' + De.toFixed(2) + ' eV, rₑ = ' + re.toFixed(2) + ' Å — 매우 강하고 짧은 결합! N₂ 삼중결합에 가깝습니다.';
+      s.className = 'challenge-status success';
+      showToast('매우 강한 결합을 찾았습니다!');
+    } else {
+      s.textContent = 'Dₑ = ' + De.toFixed(2) + ' eV, rₑ = ' + re.toFixed(2) + ' Å';
+      s.className = 'challenge-status';
+    }
+  }
+}
+
+// ============================================================
+// FIGURE 1.3: K-point Convergence
+// ============================================================
+function kptEnergy(k) {
+  // E(k) = E_conv + A * exp(-B * k) + C * sin(pi*k/2) * exp(-k/3)
+  var E_conv = -4.04, A = 0.8, B = 0.5, C = 0.1;
+  return E_conv + A * safeExp(-B * k) + C * Math.sin(Math.PI * k / 2) * safeExp(-k / 3);
+}
+
+function fig13Data(threshold) {
+  var ks = [];
+  var Es = [];
+  for (var k = 1; k <= 12; k++) {
+    ks.push(k);
+    Es.push(kptEnergy(k));
+  }
+
+  var E_conv = -4.04;
+  var E_last = Es[Es.length - 1];
+
+  // Find converged k-point
+  var convergedK = 12;
+  for (var i = 0; i < ks.length; i++) {
+    if (Math.abs(Es[i] - E_last) <= threshold) {
+      convergedK = ks[i];
+      break;
+    }
+  }
+
+  var tracePoints = {
+    x: ks, y: Es,
+    type: 'scatter', mode: 'lines+markers',
+    line: { color: '#000', width: 2 },
+    marker: { color: '#000', size: 7 },
+    hovertemplate: 'k=%{x}<br>E=%{y:.4f} eV<extra></extra>',
+    showlegend: false
+  };
+
+  // Convergence band
+  var shapes = [
+    {
+      type: 'rect',
+      x0: 0.5, x1: 12.5,
+      y0: E_last - threshold, y1: E_last + threshold,
+      xref: 'x', yref: 'y',
+      fillcolor: 'rgba(0,0,0,0.06)',
+      line: { color: '#e5e7eb', width: 1 }
+    },
+    {
+      type: 'line',
+      x0: 0.5, x1: 12.5,
+      y0: E_last, y1: E_last,
+      xref: 'x', yref: 'y',
+      line: { color: '#8f8f8f', width: 1, dash: 'dash' }
+    }
+  ];
+
+  // Mark converged k-point
+  if (convergedK <= 12) {
+    shapes.push({
+      type: 'line',
+      x0: convergedK, x1: convergedK,
+      y0: Math.min.apply(null, Es) - 0.05,
+      y1: Math.max.apply(null, Es) + 0.05,
+      xref: 'x', yref: 'y',
+      line: { color: '#c0392b', width: 1.5, dash: 'dot' }
+    });
+  }
+
+  var layoutExtras = {
+    xaxis: { title: 'K-points (k × k × k)', range: [0.5, 12.5], dtick: 1 },
+    yaxis: { title: 'Energy (eV)' },
+    shapes: shapes,
+    showlegend: false,
+    annotations: [
+      {
+        x: convergedK, y: kptEnergy(convergedK),
+        xref: 'x', yref: 'y',
+        text: 'k=' + convergedK + ' converged',
+        showarrow: true, arrowhead: 0, ax: 40, ay: -30,
+        font: { size: 11, color: '#c0392b' }
+      }
+    ]
+  };
+
+  return { traces: [tracePoints], layoutExtras: layoutExtras, convergedK: convergedK, E_last: E_last };
+}
+
+function buildFig13() {
+  var thresh = 0.01;
+  var d = fig13Data(thresh);
+  Plotly.newPlot('fig13', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout13(thresh);
+}
+
+function updateFig13(threshold) {
+  var d = fig13Data(threshold);
+  Plotly.react('fig13', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout13(threshold);
+}
+
+function updateReadout13(threshold) {
+  var Es = [];
+  for (var k = 1; k <= 12; k++) Es.push(kptEnergy(k));
+  var E_last = Es[Es.length - 1];
+
+  var convergedK = 12;
+  for (var i = 0; i < Es.length; i++) {
+    if (Math.abs(Es[i] - E_last) <= threshold) {
+      convergedK = i + 1;
+      break;
+    }
+  }
+
+  var ediff = Math.abs(kptEnergy(convergedK) - E_last);
+
+  document.getElementById('rd-kconv13').textContent = convergedK + ' × ' + convergedK + ' × ' + convergedK;
+  document.getElementById('rd-ediff13').textContent = ediff.toFixed(4) + ' eV';
+  document.getElementById('rd-econv13').textContent = E_last.toFixed(4) + ' eV';
+}
+
+// ============================================================
+// FIGURE 1.4: Cutoff Convergence
+// ============================================================
+function cutoffEnergy(Ecut, Econv, A) {
+  // E(Ecut) = E_conv + A / (Ecut)^1.5
+  return Econv + A / Math.pow(Ecut, 1.5);
+}
+
+function fig14Data(Econv, A) {
+  var N = 200;
+  var ecuts = [], Es = [];
+  for (var i = 0; i < N; i++) {
+    var Ecut = 100 + (700) * i / (N - 1);
+    ecuts.push(Ecut);
+    Es.push(cutoffEnergy(Ecut, Econv, A));
+  }
+
+  // Discrete points at typical cutoff values
+  var discreteEcuts = [100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800];
+  var discreteEs = discreteEcuts.map(function(ec) { return cutoffEnergy(ec, Econv, A); });
+
+  var E_ref = cutoffEnergy(800, Econv, A);
+
+  // Find converged cutoff (within 0.01 eV of 800 eV value)
+  var convThresh = 0.01;
+  var convergedCut = 800;
+  for (var j = 0; j < discreteEcuts.length; j++) {
+    if (Math.abs(discreteEs[j] - E_ref) <= convThresh) {
+      convergedCut = discreteEcuts[j];
+      break;
+    }
+  }
+
+  var traceLine = {
+    x: ecuts, y: Es,
+    type: 'scatter', mode: 'lines',
+    line: { color: '#000', width: 2 },
+    hovertemplate: 'E<sub>cut</sub>=%{x:.0f} eV<br>E=%{y:.4f} eV<extra></extra>',
+    showlegend: false
+  };
+
+  var tracePoints = {
+    x: discreteEcuts, y: discreteEs,
+    type: 'scatter', mode: 'markers',
+    marker: { color: '#000', size: 6 },
+    hovertemplate: 'E<sub>cut</sub>=%{x:.0f} eV<br>E=%{y:.4f} eV<extra></extra>',
+    showlegend: false
+  };
+
+  // Convergence band around E_ref
+  var shapes = [
+    {
+      type: 'rect',
+      x0: 80, x1: 820,
+      y0: E_ref - convThresh, y1: E_ref + convThresh,
+      xref: 'x', yref: 'y',
+      fillcolor: 'rgba(0,0,0,0.06)',
+      line: { color: '#e5e7eb', width: 1 }
+    },
+    {
+      type: 'line',
+      x0: 80, x1: 820,
+      y0: E_ref, y1: E_ref,
+      xref: 'x', yref: 'y',
+      line: { color: '#8f8f8f', width: 1, dash: 'dash' }
+    }
+  ];
+
+  if (convergedCut < 800) {
+    shapes.push({
+      type: 'line',
+      x0: convergedCut, x1: convergedCut,
+      y0: Math.min.apply(null, Es) - 0.05,
+      y1: Math.max.apply(null, Es) + 0.1,
+      xref: 'x', yref: 'y',
+      line: { color: '#c0392b', width: 1.5, dash: 'dot' }
+    });
+  }
+
+  var layoutExtras = {
+    xaxis: { title: 'Cutoff Energy (eV)', range: [80, 820] },
+    yaxis: { title: 'Energy (eV)' },
+    shapes: shapes,
+    showlegend: false,
+    annotations: [
+      {
+        x: convergedCut, y: cutoffEnergy(convergedCut, Econv, A),
+        xref: 'x', yref: 'y',
+        text: convergedCut + ' eV converged',
+        showarrow: true, arrowhead: 0, ax: 50, ay: -30,
+        font: { size: 11, color: '#c0392b' }
+      }
+    ]
+  };
+
+  return { traces: [traceLine, tracePoints], layoutExtras: layoutExtras, convergedCut: convergedCut, E_ref: E_ref };
+}
+
+function buildFig14() {
+  var Econv = -4.04, A = 1000;
+  var d = fig14Data(Econv, A);
+  Plotly.newPlot('fig14', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout14(Econv, A);
+}
+
+function updateFig14(Econv, A) {
+  var d = fig14Data(Econv, A);
+  Plotly.react('fig14', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout14(Econv, A);
+}
+
+function updateReadout14(Econv, A) {
+  var E_ref = cutoffEnergy(800, Econv, A);
+  var convThresh = 0.01;
+  var discreteEcuts = [100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800];
+  var convergedCut = 800;
+  for (var j = 0; j < discreteEcuts.length; j++) {
+    if (Math.abs(cutoffEnergy(discreteEcuts[j], Econv, A) - E_ref) <= convThresh) {
+      convergedCut = discreteEcuts[j];
+      break;
+    }
+  }
+
+  var ediff = Math.abs(cutoffEnergy(convergedCut, Econv, A) - E_ref);
+
+  // Relative cost: proportional to Ecut^1.5
+  var costRatio = Math.pow(convergedCut / 100, 1.5);
+
+  document.getElementById('rd-cutconv14').textContent = convergedCut + ' eV';
+  document.getElementById('rd-ecutdiff14').textContent = ediff.toFixed(4) + ' eV';
+  document.getElementById('rd-cost14').textContent = costRatio.toFixed(1) + '×';
+}
+
+// ============================================================
+// FIGURE 1.5: Birch-Murnaghan EOS
+// ============================================================
+function birchMurnaghan(V, E0, V0, B0_GPa, B0p) {
+  // B0 in GPa -> eV/A^3: B0_eVA3 = B0_GPa / 160.2176634
+  var B0 = B0_GPa / eV_per_GPa_A3;
+  var eta = Math.pow(V0 / V, 2.0 / 3.0);
+  var f = eta - 1;
+  return E0 + (9 * V0 * B0 / 16) * (f * f * f * B0p + f * f * (6 - 4 * eta));
+}
+
+function fig15Data(a0, B0_GPa, B0p) {
+  var E0 = -4.04; // eV
+  var V0 = a0 * a0 * a0 / 4; // FCC primitive cell
+
+  var N = 200;
+  var aMin = 3.7, aMax = 4.4;
+  var as = [], Vs = [], Es = [];
+  for (var i = 0; i < N; i++) {
+    var a = aMin + (aMax - aMin) * i / (N - 1);
+    var V = a * a * a / 4;
+    as.push(a);
+    Vs.push(V);
+    Es.push(birchMurnaghan(V, E0, V0, B0_GPa, B0p));
+  }
+
+  var traceEvsA = {
+    x: as, y: Es,
+    type: 'scatter', mode: 'lines',
+    line: { color: '#000', width: 2.5 },
+    hovertemplate: 'a=%{x:.3f} Å<br>E=%{y:.4f} eV<extra></extra>',
+    showlegend: false
+  };
+
+  // Mark minimum
+  var traceMin = {
+    x: [a0], y: [E0],
+    type: 'scatter', mode: 'markers',
+    marker: { color: '#c0392b', size: 10, symbol: 'circle' },
+    hovertemplate: 'a₀=%{x:.3f} Å<br>E₀=%{y:.4f} eV<extra>Minimum</extra>',
+    showlegend: false
+  };
+
+  var shapes = [
+    { type: 'line', x0: a0, x1: a0, y0: E0 - 0.02, y1: Math.max.apply(null, Es), xref: 'x', yref: 'y', line: { color: '#e5e7eb', width: 1, dash: 'dash' } },
+    { type: 'line', x0: aMin, x1: aMax, y0: E0, y1: E0, xref: 'x', yref: 'y', line: { color: '#e5e7eb', width: 1, dash: 'dash' } }
+  ];
+
+  var layoutExtras = {
+    xaxis: { title: 'Lattice Constant a (Å)', range: [aMin, aMax] },
+    yaxis: { title: 'Energy (eV)' },
+    shapes: shapes,
+    showlegend: false,
+    annotations: [
+      { x: a0, y: E0, xref: 'x', yref: 'y', text: 'a₀ = ' + a0.toFixed(2) + ' Å', showarrow: true, arrowhead: 0, ax: 50, ay: -30, font: { size: 11, color: '#c0392b' } }
+    ]
+  };
+
+  return { traces: [traceEvsA, traceMin], layoutExtras: layoutExtras };
+}
+
+function buildFig15() {
+  var a0 = 4.05, B0 = 76, B0p = 4.2;
+  var d = fig15Data(a0, B0, B0p);
+  Plotly.newPlot('fig15', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout15(a0, B0, B0p);
+}
+
+function updateFig15(a0, B0, B0p) {
+  var d = fig15Data(a0, B0, B0p);
+  Plotly.react('fig15', d.traces, mergeLayout(d.layoutExtras), plotlyCfg);
+  updateReadout15(a0, B0, B0p);
+}
+
+function updateReadout15(a0, B0, B0p) {
+  document.getElementById('rd-aopt15').innerHTML = a0.toFixed(2) + ' &Aring;';
+  document.getElementById('rd-B015').textContent = B0 + ' GPa';
+  document.getElementById('rd-Emin15').textContent = '-4.040 eV';
+
+  // Challenge check: close to experimental values
+  var s = document.getElementById('ch15-status');
+  if (s) {
+    var aClose = Math.abs(a0 - 4.05) < 0.02;
+    var bClose = Math.abs(B0 - 76) < 5;
+    var bpClose = Math.abs(B0p - 4.2) < 0.3;
+    if (aClose && bClose && bpClose) {
+      s.textContent = 'a₀ = ' + a0.toFixed(2) + ' Å, B₀ = ' + B0 + ' GPa, B₀\' = ' + B0p.toFixed(1) + ' — 실험값에 매우 가깝습니다!';
+      s.className = 'challenge-status success';
+      showToast('실험값에 근접한 파라미터를 찾았습니다!');
+    } else {
+      s.textContent = 'a₀ = ' + a0.toFixed(2) + ' Å, B₀ = ' + B0 + ' GPa, B₀\' = ' + B0p.toFixed(1);
+      s.className = 'challenge-status';
+    }
+  }
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 1.1: scale size
+  document.getElementById('scale-size').addEventListener('input', function() {
+    var val = parseFloat(this.value);
+    throttledDraw('fig11', function() { updateFig11(val); });
+  });
+
+  // Fig 1.2: Morse potential
+  var morseIds = ['morse-De', 'morse-re', 'morse-alpha'];
+  morseIds.forEach(function(id) {
+    document.getElementById(id).addEventListener('input', function() {
+      var De = parseFloat(document.getElementById('morse-De').value);
+      var re = parseFloat(document.getElementById('morse-re').value);
+      var alpha = parseFloat(document.getElementById('morse-alpha').value);
+      document.getElementById('morse-De-val').textContent = De.toFixed(2) + ' eV';
+      document.getElementById('morse-re-val').innerHTML = re.toFixed(2) + ' &Aring;';
+      document.getElementById('morse-alpha-val').innerHTML = alpha.toFixed(2) + ' &Aring;<sup>&minus;1</sup>';
+      throttledDraw('fig12', function() { updateFig12(De, re, alpha); });
+    });
+  });
+
+  // Fig 1.3: k-point threshold
+  document.getElementById('kpt-thresh').addEventListener('input', function() {
+    var val = parseFloat(this.value);
+    document.getElementById('kpt-thresh-val').textContent = val.toFixed(3) + ' eV';
+    throttledDraw('fig13', function() { updateFig13(val); });
+  });
+
+  // Fig 1.4: cutoff parameters
+  var cutIds = ['cut-Econv', 'cut-A'];
+  cutIds.forEach(function(id) {
+    document.getElementById(id).addEventListener('input', function() {
+      var Econv = parseFloat(document.getElementById('cut-Econv').value);
+      var A = parseFloat(document.getElementById('cut-A').value);
+      document.getElementById('cut-Econv-val').innerHTML = (Econv < 0 ? '&minus;' : '') + Math.abs(Econv).toFixed(2) + ' eV';
+      document.getElementById('cut-A-val').textContent = A;
+      throttledDraw('fig14', function() { updateFig14(Econv, A); });
+    });
+  });
+
+  // Fig 1.5: EOS parameters
+  var eosIds = ['eos-a0', 'eos-B0', 'eos-B0p'];
+  eosIds.forEach(function(id) {
+    document.getElementById(id).addEventListener('input', function() {
+      var a0 = parseFloat(document.getElementById('eos-a0').value);
+      var B0 = parseFloat(document.getElementById('eos-B0').value);
+      var B0p = parseFloat(document.getElementById('eos-B0p').value);
+      document.getElementById('eos-a0-val').innerHTML = a0.toFixed(2) + ' &Aring;';
+      document.getElementById('eos-B0-val').textContent = B0 + ' GPa';
+      document.getElementById('eos-B0p-val').textContent = B0p.toFixed(1);
+      throttledDraw('fig15', function() { updateFig15(a0, B0, B0p); });
+    });
+  });
+}
+
+// ============================================================
+// INIT & SCROLL REVEAL
+// ============================================================
+function initAll() {
+  buildFig11();
+  buildFig12();
+  buildFig13();
+  buildFig14();
+  buildFig15();
+  setupSliders();
+}
+
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(function(s) { observer.observe(s); });
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.add('visible'); });
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

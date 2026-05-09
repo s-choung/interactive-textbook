@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulation Tutorials - 움직이는 교과서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 560px; margin: 0 auto var(--spacing-32); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+.chip a { color: var(--color-void); text-decoration: none; }
+.chip a:hover { color: var(--color-graphite); }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* CHAPTER CARDS GRID */
+.chapter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-24);
+}
+
+.chapter-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  padding: var(--spacing-32);
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+}
+.chapter-card:hover {
+  border-color: var(--color-ash);
+}
+
+.chapter-number {
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--color-fog-border);
+  line-height: 1;
+  margin-bottom: var(--spacing-16);
+  letter-spacing: -0.03em;
+}
+
+.chapter-card-title {
+  font-size: var(--text-heading);
+  font-weight: 600;
+  color: var(--color-void);
+  line-height: 1.25;
+  margin-bottom: var(--spacing-12);
+}
+
+.chapter-card-desc {
+  font-size: 14px;
+  color: var(--color-graphite);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-20);
+}
+
+.chapter-chips {
+  display: flex;
+  gap: var(--spacing-8);
+  flex-wrap: wrap;
+}
+.chapter-chip {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-graphite);
+  background: var(--color-chalk);
+  border-radius: var(--radius-full);
+  padding: 5px 12px;
+  letter-spacing: 0.011em;
+}
+
+/* ROADMAP TABLE */
+.roadmap-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-24);
+  font-size: 14px;
+}
+.roadmap-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-graphite);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--spacing-12) var(--spacing-16);
+  border-bottom: 2px solid var(--color-void);
+}
+.roadmap-table td {
+  padding: var(--spacing-12) var(--spacing-16);
+  border-bottom: 1px solid var(--color-fog-border);
+  color: var(--color-graphite);
+  line-height: 1.5;
+}
+.roadmap-table tr:last-child td {
+  border-bottom: none;
+}
+.roadmap-table td:first-child {
+  font-weight: 600;
+  color: var(--color-void);
+  white-space: nowrap;
+}
+.roadmap-table .chapter-group td {
+  background: #fafafa;
+  font-weight: 600;
+  color: var(--color-void);
+  border-bottom: 1px solid var(--color-fog-border);
+}
+
+/* COURSE INFO */
+.course-info {
+  display: flex;
+  gap: var(--spacing-32);
+  margin-top: var(--spacing-32);
+  flex-wrap: wrap;
+}
+.course-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.course-info-key {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-ash);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.course-info-val {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-void);
+}
+.course-info-val a {
+  color: var(--color-void);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-fog-border);
+  transition: border-color 0.15s;
+}
+.course-info-val a:hover {
+  border-color: var(--color-void);
+}
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .chapter-card-desc {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .chapter-grid { grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+  .roadmap-table { font-size: 13px; }
+  .roadmap-table th,
+  .roadmap-table td { padding: var(--spacing-8) var(--spacing-12); }
+  .course-info { flex-direction: column; gap: var(--spacing-20); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">Simulation Tutorials</a>
+    <ul class="nav-links">
+      <li><a href="#chapters">Chapters</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+    </ul>
+    <span class="nav-badge">움직이는 교과서</span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">움직이는 교과서 &middot; Interactive Textbook</p>
+    <h1 class="hero-title">Simulation Tutorials</h1>
+    <p class="hero-subtitle">계산재료과학 실습을 위한 인터랙티브 교과서입니다. 각 챕터에서 슬라이더를 움직이면 그래프가 실시간으로 반응합니다. Python, DFT, MD, ML의 핵심 개념을 직접 실험하며 배워보세요.</p>
+    <div class="hero-chips">
+      <span class="chip">Seokhyun Choung</span>
+      <span class="chip"><a href="https://github.com/s-choung/Simulation_tutorials" target="_blank" rel="noopener">GitHub: s-choung/Simulation_tutorials</a></span>
+    </div>
+  </section>
+
+  <!-- CHAPTERS -->
+  <section id="chapters" class="section">
+    <p class="section-label">Table of Contents</p>
+    <h2 class="section-title">Chapters</h2>
+    <div class="section-body">
+      <p>5개의 챕터로 구성되어 있습니다. 카드를 클릭하면 해당 챕터의 인터랙티브 교과서로 이동합니다.</p>
+    </div>
+
+    <div class="chapter-grid">
+
+      <!-- Card 1 -->
+      <a href="simulation-textbook-ch1.html" class="chapter-card">
+        <div class="chapter-number">01</div>
+        <div class="chapter-card-title">Python &amp; DFT 기초</div>
+        <div class="chapter-card-desc">Python 기초부터 ASE/GPAW 기반 DFT 계산까지. K-point 수렴, cutoff 수렴, Birch-Murnaghan 상태방정식을 인터랙티브하게 탐색합니다.</div>
+        <div class="chapter-chips">
+          <span class="chapter-chip">Python</span>
+          <span class="chapter-chip">ASE</span>
+          <span class="chapter-chip">GPAW</span>
+          <span class="chapter-chip">K-point</span>
+          <span class="chapter-chip">Cutoff</span>
+          <span class="chapter-chip">EOS</span>
+        </div>
+      </a>
+
+      <!-- Card 2 -->
+      <a href="simulation-textbook-ch2.html" class="chapter-card">
+        <div class="chapter-number">02</div>
+        <div class="chapter-card-title">표면과학과 흡착</div>
+        <div class="chapter-card-desc">촉매 표면 slab 구성, surface energy 수렴, 흡착 자리 비교, coverage 효과를 시각적으로 이해합니다.</div>
+        <div class="chapter-chips">
+          <span class="chapter-chip">Surface Slab</span>
+          <span class="chapter-chip">Surface Energy</span>
+          <span class="chapter-chip">Adsorption Sites</span>
+          <span class="chapter-chip">Coverage</span>
+        </div>
+      </a>
+
+      <!-- Card 3 -->
+      <a href="simulation-textbook-ch3.html" class="chapter-card">
+        <div class="chapter-number">03</div>
+        <div class="chapter-card-title">분자동역학 시뮬레이션</div>
+        <div class="chapter-card-desc">Lennard-Jones 포텐셜부터 NPT 앙상블, Maxwell-Boltzmann 분포, 열팽창 계수, MSD 분석까지 MD의 핵심을 다룹니다.</div>
+        <div class="chapter-chips">
+          <span class="chapter-chip">Lennard-Jones</span>
+          <span class="chapter-chip">MD</span>
+          <span class="chapter-chip">NPT</span>
+          <span class="chapter-chip">Thermal Expansion</span>
+          <span class="chapter-chip">MSD</span>
+        </div>
+      </a>
+
+      <!-- Card 4 -->
+      <a href="simulation-textbook-ch4.html" class="chapter-card">
+        <div class="chapter-number">04</div>
+        <div class="chapter-card-title">머신러닝 회귀와 Feature Engineering</div>
+        <div class="chapter-card-desc">선형 회귀, 과적합, feature importance, cross-validation을 CO<sub>2</sub>RR 데이터로 실습합니다.</div>
+        <div class="chapter-chips">
+          <span class="chapter-chip">Regression</span>
+          <span class="chapter-chip">Overfitting</span>
+          <span class="chapter-chip">Feature Engineering</span>
+          <span class="chapter-chip">Cross-Validation</span>
+        </div>
+      </a>
+
+      <!-- Card 5 -->
+      <a href="simulation-textbook-ch5.html" class="chapter-card">
+        <div class="chapter-number">05</div>
+        <div class="chapter-card-title">Machine Learning Potentials</div>
+        <div class="chapter-card-desc">MACE/Open Catalyst 기반 MLP의 원리, DFT 대비 속도, 벤치마킹, CatBench 촉매 스크리닝까지.</div>
+        <div class="chapter-chips">
+          <span class="chapter-chip">MACE</span>
+          <span class="chapter-chip">MLP</span>
+          <span class="chapter-chip">Benchmarking</span>
+          <span class="chapter-chip">CatBench</span>
+          <span class="chapter-chip">Screening</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section id="roadmap" class="section">
+    <p class="section-label">Course Information</p>
+    <h2 class="section-title">Notebook Roadmap</h2>
+    <div class="section-body">
+      <p>12개의 실습 노트북과 3개의 부록이 5개 챕터에 매핑됩니다.</p>
+    </div>
+
+    <table class="roadmap-table">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Notebook</th>
+          <th>Topic</th>
+          <th>Chapter</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="chapter-group"><td colspan="4">Chapter 1 &mdash; Python &amp; DFT 기초</td></tr>
+        <tr>
+          <td>00</td>
+          <td>00_intro_to_python</td>
+          <td>Python 기초 문법과 실습 환경 소개</td>
+          <td>Ch.1</td>
+        </tr>
+        <tr>
+          <td>01</td>
+          <td>01_dft_setup_and_bulk</td>
+          <td>GPAW 설치, ASE 기본 구조, bulk 계산</td>
+          <td>Ch.1</td>
+        </tr>
+        <tr class="chapter-group"><td colspan="4">Chapter 2 &mdash; 표면과학과 흡착</td></tr>
+        <tr>
+          <td>02</td>
+          <td>02_dft_surface</td>
+          <td>표면 slab 생성과 시각화</td>
+          <td>Ch.2</td>
+        </tr>
+        <tr>
+          <td>03</td>
+          <td>03_dft_adsorption</td>
+          <td>흡착 구조 생성과 adsorption workflow</td>
+          <td>Ch.2</td>
+        </tr>
+        <tr>
+          <td>04</td>
+          <td>04_dft_adsorption_applications</td>
+          <td>흡착 예제 확장 및 응용</td>
+          <td>Ch.2</td>
+        </tr>
+        <tr class="chapter-group"><td colspan="4">Chapter 3 &mdash; 분자동역학 시뮬레이션</td></tr>
+        <tr>
+          <td>05</td>
+          <td>05_md_setup_and_simulation</td>
+          <td>MD 설정, trajectory 저장, GIF 시각화</td>
+          <td>Ch.3</td>
+        </tr>
+        <tr>
+          <td>06</td>
+          <td>06_md_displacement_analysis</td>
+          <td>MD trajectory 해석과 displacement 분석</td>
+          <td>Ch.3</td>
+        </tr>
+        <tr class="chapter-group"><td colspan="4">Chapter 4 &mdash; 머신러닝 회귀와 Feature Engineering</td></tr>
+        <tr>
+          <td>07</td>
+          <td>07_ml_regression_and_feature_engineering</td>
+          <td>회귀 모델, descriptor, feature engineering</td>
+          <td>Ch.4</td>
+        </tr>
+        <tr class="chapter-group"><td colspan="4">Chapter 5 &mdash; Machine Learning Potentials</td></tr>
+        <tr>
+          <td>08</td>
+          <td>08_mlp_intro_and_setup</td>
+          <td>MLP 설치와 기본 사용 흐름</td>
+          <td>Ch.5</td>
+        </tr>
+        <tr>
+          <td>09</td>
+          <td>09_mlp_adsorption_workflows</td>
+          <td>MLP 기반 표면/흡착 계산</td>
+          <td>Ch.5</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>10_mlp_benchmarking</td>
+          <td>Catalysis-Hub 계열 benchmark workflow</td>
+          <td>Ch.5</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>11_catbench</td>
+          <td>CatBench 예제와 응용</td>
+          <td>Ch.5</td>
+        </tr>
+        <tr class="chapter-group"><td colspan="4">Appendix</td></tr>
+        <tr>
+          <td>A1</td>
+          <td>appendix_advanced_dft_optimization</td>
+          <td>추가 DFT 최적화 알고리즘 실습</td>
+          <td>App.</td>
+        </tr>
+        <tr>
+          <td>A2</td>
+          <td>appendix_mace_calculator_setup</td>
+          <td>MACE calculator 로딩 및 예제</td>
+          <td>App.</td>
+        </tr>
+        <tr>
+          <td>A3</td>
+          <td>appendix_open_catalyst_calculator_setup</td>
+          <td>Open Catalyst Project calculator 설정</td>
+          <td>App.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="course-info">
+      <div class="course-info-item">
+        <span class="course-info-key">Institution</span>
+        <span class="course-info-val">서울대학교 계산재료 및 데이터과학 실습</span>
+      </div>
+      <div class="course-info-item">
+        <span class="course-info-key">Term</span>
+        <span class="course-info-val">2024 Fall</span>
+      </div>
+      <div class="course-info-item">
+        <span class="course-info-key">Instructor</span>
+        <span class="course-info-val">정석현 (Seokhyun Choung)</span>
+      </div>
+      <div class="course-info-item">
+        <span class="course-info-key">Source Code</span>
+        <span class="course-info-val"><a href="https://github.com/s-choung/Simulation_tutorials" target="_blank" rel="noopener">github.com/s-choung/Simulation_tutorials</a></span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Choung &mdash; Simulation Tutorials for Computational Materials Science</span>
+    <span class="footer-text">움직이는 교과서 &middot; Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+/* Scroll Reveal */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+  }, 100);
+});
+</script>
+</body>
+</html>

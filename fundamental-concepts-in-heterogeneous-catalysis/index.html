@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서 — Interactive Textbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+.hero {
+  padding: 120px 0 80px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-fog-border);
+}
+.hero-eyebrow {
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: 20px;
+}
+.hero-title {
+  font-size: clamp(36px, 5vw, 56px); font-weight: 600;
+  letter-spacing: -1.44px; line-height: 1.08; margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: 18px; color: var(--color-graphite); line-height: 1.5;
+  max-width: 560px; margin: 0 auto 40px;
+}
+.hero-stats {
+  display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+}
+.hero-stat { text-align: center; }
+.hero-stat-num { font-size: 32px; font-weight: 600; letter-spacing: -0.5px; }
+.hero-stat-label { font-size: 13px; color: var(--color-graphite); margin-top: 4px; }
+
+.chapters { padding: 80px 0; }
+.chapters-title {
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: 32px;
+}
+.chapter-grid { display: flex; flex-direction: column; gap: 1px; }
+.chapter-card {
+  display: grid; grid-template-columns: 60px 1fr auto;
+  align-items: center; gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-fog-border);
+  text-decoration: none; color: inherit;
+  transition: background 0.15s;
+}
+.chapter-card:first-child { border-top: 1px solid var(--color-fog-border); }
+.chapter-card:hover { background: var(--color-chalk); margin: 0 -16px; padding: 24px 16px; border-radius: var(--radius-cards); }
+.ch-num {
+  font-size: 28px; font-weight: 600; color: var(--color-fog-border);
+  letter-spacing: -0.03em; text-align: right;
+}
+.ch-info { display: flex; flex-direction: column; gap: 4px; }
+.ch-title { font-size: 18px; font-weight: 600; line-height: 1.3; }
+.ch-desc { font-size: 14px; color: var(--color-graphite); line-height: 1.5; }
+.ch-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.ch-tag {
+  font-size: 11px; font-weight: 500; color: var(--color-ash);
+  background: rgba(0,0,0,0.03); border-radius: var(--radius-full);
+  padding: 3px 10px; letter-spacing: 0.01em;
+}
+.ch-arrow {
+  font-size: 18px; color: var(--color-fog-border);
+  transition: color 0.15s, transform 0.15s;
+}
+.chapter-card:hover .ch-arrow { color: var(--color-void); transform: translateX(4px); }
+.chapter-card:hover .ch-num { color: var(--color-void); }
+
+footer {
+  border-top: 1px solid var(--color-fog-border);
+  padding: 40px 0;
+  text-align: center;
+}
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+.footer-text a { color: var(--color-void); text-decoration: none; }
+
+@media (max-width: 640px) {
+  .page { padding: 0 20px; }
+  .hero { padding: 64px 0 48px; }
+  .chapter-card { grid-template-columns: 40px 1fr auto; gap: 16px; }
+  .ch-num { font-size: 22px; }
+  .ch-title { font-size: 16px; }
+  .hero-stats { gap: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <section class="hero">
+    <p class="hero-eyebrow">Norskov · Fundamental Concepts in Heterogeneous Catalysis</p>
+    <h1 class="hero-title">움직이는 교과서</h1>
+    <p class="hero-subtitle">슬라이더를 움직이면 그래프가 실시간으로 반응합니다. 수식을 외우는 대신, 파라미터를 직접 조작하면서 촉매화학의 "감"을 잡으세요.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num">10</div><div class="hero-stat-label">Chapters</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">41</div><div class="hero-stat-label">Interactive Figures</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">25+</div><div class="hero-stat-label">Quizzes</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Dependencies</div></div>
+    </div>
+  </section>
+
+  <section class="chapters">
+    <p class="chapters-title">All Chapters</p>
+    <div class="chapter-grid">
+      <a href="interactive-textbook-ch1.html" class="chapter-card">
+        <div class="ch-num">01</div>
+        <div class="ch-info">
+          <div class="ch-title">Introduction to Catalysis</div>
+          <div class="ch-desc">촉매의 개념, 에너지 스케일, 산업 촉매, 나노입자와 비표면적</div>
+          <div class="ch-tags"><span class="ch-tag">Activation Energy</span><span class="ch-tag">TOF</span><span class="ch-tag">Haber-Bosch</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="interactive-textbook-ch2.html" class="chapter-card">
+        <div class="ch-num">02</div>
+        <div class="ch-info">
+          <div class="ch-title">Surface Structure &amp; Energetics</div>
+          <div class="ch-desc">FCC 표면 구조, 흡착 사이트, 주기율표 트렌드, Coverage 의존성</div>
+          <div class="ch-tags"><span class="ch-tag">Miller Indices</span><span class="ch-tag">Adsorption Sites</span><span class="ch-tag">Lateral Interactions</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="interactive-textbook-ch3.html" class="chapter-card">
+        <div class="ch-num">03</div>
+        <div class="ch-info">
+          <div class="ch-title">Surface Equilibria</div>
+          <div class="ch-desc">Gibbs 자유에너지, Langmuir 등온선, 경쟁 흡착, CO Poisoning</div>
+          <div class="ch-tags"><span class="ch-tag">Langmuir</span><span class="ch-tag">Competitive Adsorption</span><span class="ch-tag">NH&#8323; Synthesis</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="interactive-textbook-ch4.html" class="chapter-card">
+        <div class="ch-num">04</div>
+        <div class="ch-info">
+          <div class="ch-title">Rate Constants &amp; Transition State Theory</div>
+          <div class="ch-desc">반응좌표, TST, Arrhenius 분석, 표면 반응 속도론</div>
+          <div class="ch-tags"><span class="ch-tag">TST</span><span class="ch-tag">Arrhenius</span><span class="ch-tag">Microscopic Reversibility</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="interactive-textbook-ch5.html" class="chapter-card">
+        <div class="ch-num">05</div>
+        <div class="ch-info">
+          <div class="ch-title">Scaling Relations</div>
+          <div class="ch-desc">BEP 관계, Adsorbate Scaling, 보편성과 한계</div>
+          <div class="ch-tags"><span class="ch-tag">BEP</span><span class="ch-tag">Descriptor</span><span class="ch-tag">MAE 0.2 eV</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="interactive-textbook-ch6.html" class="chapter-card">
+        <div class="ch-num">06</div>
+        <div class="ch-info">
+          <div class="ch-title">Volcano Curves &amp; Activity Maps</div>
+          <div class="ch-desc">Sabatier 원리, 1D/2D Volcano, 선택성 맵</div>
+          <div class="ch-tags"><span class="ch-tag">Sabatier</span><span class="ch-tag">Volcano</span><span class="ch-tag">Selectivity</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="interactive-textbook-ch7.html" class="chapter-card">
+        <div class="ch-num">07</div>
+        <div class="ch-info">
+          <div class="ch-title">The Electronic Factor</div>
+          <div class="ch-desc">d-band 모델, &#949;<sub>d</sub> vs &#916;E, 합금 효과, Strain/Ligand</div>
+          <div class="ch-tags"><span class="ch-tag">d-band Center</span><span class="ch-tag">Alloying</span><span class="ch-tag">Strain</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="interactive-textbook-ch8.html" class="chapter-card">
+        <div class="ch-num">08</div>
+        <div class="ch-info">
+          <div class="ch-title">Free Energy Diagrams &amp; Microkinetics</div>
+          <div class="ch-desc">자유에너지 다이어그램, Microkinetic Solver, Degree of Rate Control</div>
+          <div class="ch-tags"><span class="ch-tag">FED</span><span class="ch-tag">DRC</span><span class="ch-tag">Steady State</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="interactive-textbook-ch9.html" class="chapter-card">
+        <div class="ch-num">09</div>
+        <div class="ch-info">
+          <div class="ch-title">Electrocatalysis</div>
+          <div class="ch-desc">Computational Hydrogen Electrode, HER/OER Volcano, Overpotential</div>
+          <div class="ch-tags"><span class="ch-tag">CHE</span><span class="ch-tag">HER</span><span class="ch-tag">OER</span><span class="ch-tag">3.2 eV Scaling</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="interactive-textbook-ch10.html" class="chapter-card">
+        <div class="ch-num">10</div>
+        <div class="ch-info">
+          <div class="ch-title">Computational Catalyst Screening</div>
+          <div class="ch-desc">High-Throughput DFT, Descriptor Space, Pareto Front, 성공 사례</div>
+          <div class="ch-tags"><span class="ch-tag">Screening</span><span class="ch-tag">Pareto</span><span class="ch-tag">Catalyst Discovery</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <p class="footer-text">Based on Norskov, Bligaard, Kleis — <em>Fundamental Concepts in Heterogeneous Catalysis</em> (2014)</p>
+  <p class="footer-text" style="margin-top:8px;">움직이는 교과서 · <a href="https://schoung.com">Seokhyun Choung</a></p>
+</footer>
+</body>
+</html>

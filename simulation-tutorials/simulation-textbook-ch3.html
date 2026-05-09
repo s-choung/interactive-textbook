@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: 분자동역학 시뮬레이션</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "\2014"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* DERIVATION TOGGLE */
+details.derivation {
+  margin: var(--spacing-16) 0;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+details.derivation summary {
+  padding: 10px 16px;
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px;
+  background: #fafafa;
+  transition: background 0.15s;
+}
+details.derivation summary::-webkit-details-marker { display: none; }
+details.derivation summary::before { content: '\25B6'; font-size: 10px; transition: transform 0.2s; }
+details.derivation[open] summary::before { transform: rotate(90deg); }
+details.derivation summary:hover { background: #f1f1f1; }
+.deriv-body { padding: 16px 20px; font-size: 13px; color: var(--color-graphite); line-height: 1.7; }
+.deriv-step { padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); display: flex; flex-direction: column; gap: 4px; }
+.deriv-step:last-child { border-bottom: none; }
+.deriv-step-num { font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deriv-step-row { display: flex; gap: 10px; align-items: flex-start; }
+.deriv-step-text { flex: 1; }
+.deriv-meaning { font-size: 12px; color: var(--color-ash); font-style: italic; margin-top: 2px; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">분자동역학</a>
+    <ul class="nav-links">
+      <li><a href="#s31">3.1 원리</a></li>
+      <li><a href="#s32">3.2 Maxwell-Boltzmann</a></li>
+      <li><a href="#s33">3.3 NPT</a></li>
+      <li><a href="#s34">3.4 열팽창</a></li>
+      <li><a href="#s35">3.5 MSD</a></li>
+    </ul>
+    <span class="nav-badge">Sim Tutorial Ch.3</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 &middot; Interactive Textbook</p>
+  <h1 class="hero-title">분자동역학 시뮬레이션</h1>
+  <p class="hero-subtitle">Choung, <em>Simulation Tutorials for Computational Materials Science</em>, Chapter 3. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+  <div class="hero-chips">
+    <span class="chip">Molecular Dynamics</span>
+    <span class="chip">Lennard-Jones</span>
+    <span class="chip">NPT</span>
+    <span class="chip">Thermal Expansion</span>
+    <span class="chip">Diffusion</span>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3.1: 분자동역학의 원리 -->
+<!-- ============================================================ -->
+<section id="s31" class="section">
+  <p class="section-label">Section 3.1</p>
+  <h2 class="section-title">분자동역학의 원리</h2>
+  <div class="section-body">
+    <p>분자동역학(Molecular Dynamics, MD) 시뮬레이션은 원자 사이의 상호작용 퍼텐셜로부터 힘을 계산하고, Newton의 운동 방정식 $F = ma = -dV/dr$을 수치적으로 적분하여 원자의 궤적을 추적하는 방법입니다.</p>
+    <p>시간 적분에는 Verlet algorithm이 널리 사용됩니다. 이 방법은 시간 가역성(time-reversibility)을 보장하고, 에너지 보존 성능이 뛰어나며, 구현이 간단합니다. 원자 간 상호작용을 기술하는 가장 기본적인 모델이 Lennard-Jones potential입니다.</p>
+  </div>
+
+  <div class="eq-block">$$F = ma = -\frac{dV}{dr}$$</div>
+
+  <ul class="concept-list">
+    <li><strong>Newton's 2nd Law</strong>: 각 원자에 작용하는 힘은 퍼텐셜 에너지의 위치 미분으로 구합니다. 힘이 결정되면 가속도를 얻고, 속도와 위치를 업데이트합니다.</li>
+    <li><strong>Verlet Algorithm</strong>: $r(t+\Delta t) = 2r(t) - r(t-\Delta t) + a(t)\Delta t^2$. 속도를 명시적으로 계산하지 않고도 궤적을 추적할 수 있어 수치적으로 안정적입니다.</li>
+    <li><strong>Time Step</strong>: 일반적으로 1 fs 정도를 사용합니다. 가장 빠른 진동 주기의 1/10 이하여야 에너지 보존이 됩니다.</li>
+    <li><strong>Lennard-Jones Potential</strong>: 반발력(Pauli repulsion)과 인력(van der Waals attraction)을 하나의 함수로 모사합니다.</li>
+  </ul>
+
+  <!-- Derivation: Verlet integration -->
+  <details class="derivation">
+    <summary>유도 과정 보기: Verlet Integration</summary>
+    <div class="deriv-body">
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">1</span>
+          <div class="deriv-step-text">Taylor 전개: $r(t+\Delta t) = r(t) + v(t)\Delta t + \frac{1}{2}a(t)\Delta t^2 + \frac{1}{6}\dot{a}(t)\Delta t^3 + \cdots$</div>
+        </div>
+        <div class="deriv-meaning">현재 위치에서 미래 위치를 급수로 전개합니다.</div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">2</span>
+          <div class="deriv-step-text">반대 방향으로도 전개: $r(t-\Delta t) = r(t) - v(t)\Delta t + \frac{1}{2}a(t)\Delta t^2 - \frac{1}{6}\dot{a}(t)\Delta t^3 + \cdots$</div>
+        </div>
+        <div class="deriv-meaning">과거 위치도 같은 방식으로 구합니다.</div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">3</span>
+          <div class="deriv-step-text">두 식을 더하면 홀수 차수 항이 상쇄: $r(t+\Delta t) + r(t-\Delta t) = 2r(t) + a(t)\Delta t^2 + O(\Delta t^4)$</div>
+        </div>
+        <div class="deriv-meaning">속도 항이 자연스럽게 소거되어, 속도 없이도 위치를 업데이트할 수 있습니다.</div>
+      </div>
+      <div class="deriv-step">
+        <div class="deriv-step-row">
+          <span class="deriv-step-num">4</span>
+          <div class="deriv-step-text">최종 Verlet formula: $r(t+\Delta t) = 2r(t) - r(t-\Delta t) + a(t)\Delta t^2$</div>
+        </div>
+        <div class="deriv-meaning">가속도 $a(t) = F(t)/m$은 퍼텐셜의 기울기로부터 계산합니다. 오차는 $O(\Delta t^4)$으로, 매우 정확합니다.</div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Figure 3.1: Lennard-Jones Potential -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 3.1</span>
+      <span class="figure-title">Lennard-Jones Potential</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch31')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch31">
+      <div class="challenge-goal">목표: r<sub>min</sub>에서 force가 정확히 0이 되는지 확인해보세요</div>
+      <div class="challenge-desc">빨간색 force 곡선이 0을 지나는 위치와, 검은색 potential 곡선의 최솟값 위치가 일치하는지 확인해보세요. 이것은 $F = -dV/dr$의 직접적인 결과입니다.</div>
+      <div class="challenge-status" id="ch31-status">현재: 슬라이더를 조작해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig31" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">&epsilon; (well depth)</span>
+          <input type="range" id="lj-eps" min="0.01" max="0.5" value="0.167" step="0.001">
+          <span class="control-value" id="lj-eps-val">0.167 eV</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">&sigma;</span>
+          <input type="range" id="lj-sig" min="1.5" max="4.0" value="2.55" step="0.01">
+          <span class="control-value" id="lj-sig-val">2.55 &Aring;</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">r<sub>min</sub></span>
+          <span class="readout-val" id="rd-rmin">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Well Depth</span>
+          <span class="readout-val" id="rd-well">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">F=0 Distance</span>
+          <span class="readout-val" id="rd-f0">--</span>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#000;"></span>V(r) (eV)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#c0392b;"></span>F(r) (eV/&Aring;)</div>
+      </div>
+      <button class="explore-toggle" onclick="toggleExplore('ex31')">Step-by-step Verlet integration 탐색 &#9662;</button>
+      <div class="explore-panel" id="ex31">
+        <ol class="explore-steps">
+          <li>&epsilon;을 0.167 eV (Cu EMT 기본값)으로 설정하고, &sigma;를 2.55 &Aring;로 맞추세요.</li>
+          <li>r<sub>min</sub> = 2<sup>1/6</sup>&sigma; &approx; 2.86 &Aring;에서 potential이 최솟값(-&epsilon;)을 가지는 것을 확인하세요.</li>
+          <li>같은 위치에서 force(빨간색)가 정확히 0을 지나는 것을 확인하세요. 이것이 평형 거리입니다.</li>
+          <li>r < r<sub>min</sub>: force가 양수(repulsive), r > r<sub>min</sub>: force가 음수(attractive)임을 확인하세요.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> Verlet algorithm은 이 force를 매 time step마다 계산하여 원자의 가속도를 구하고, 위치를 업데이트합니다. LJ potential의 기울기가 급한 영역(r &lt; &sigma;)에서는 작은 time step이 필수적입니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3.2: Maxwell-Boltzmann 속도 분포 -->
+<!-- ============================================================ -->
+<section id="s32" class="section">
+  <p class="section-label">Section 3.2</p>
+  <h2 class="section-title">Maxwell-Boltzmann 속도 분포</h2>
+  <div class="section-body">
+    <p>MD 시뮬레이션에서 원자의 초기 속도는 Maxwell-Boltzmann 분포에서 무작위로 추출합니다. 이 분포는 통계역학에서 유도되며, 주어진 온도에서 원자가 가질 수 있는 속력의 확률 분포를 나타냅니다.</p>
+    <p>온도가 높을수록 분포가 넓어지고 가장 확률이 높은 속력(most probable speed)이 커집니다. 반대로 질량이 큰 원자는 같은 온도에서도 느리게 움직입니다.</p>
+  </div>
+
+  <div class="eq-block">$$f(v) = 4\pi \left(\frac{m}{2\pi k_BT}\right)^{3/2} v^2 \exp\!\left(-\frac{mv^2}{2k_BT}\right)$$</div>
+
+  <ul class="concept-list">
+    <li><strong>Most Probable Speed</strong>: $v_p = \sqrt{2k_BT/m}$ &mdash; 분포의 최댓값에 해당하는 속력입니다.</li>
+    <li><strong>Mean Speed</strong>: $\langle v \rangle = \sqrt{8k_BT/(\pi m)}$ &mdash; 전체 속력의 산술 평균입니다.</li>
+    <li><strong>RMS Speed</strong>: $v_\text{rms} = \sqrt{3k_BT/m}$ &mdash; 운동 에너지와 직접 관계되는 속력입니다.</li>
+  </ul>
+
+  <!-- Figure 3.2: Maxwell-Boltzmann Distribution -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 3.2</span>
+      <span class="figure-title">Maxwell-Boltzmann Distribution</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig32" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Temperature</span>
+          <input type="range" id="mb-T" min="100" max="1500" value="300" step="10">
+          <span class="control-value" id="mb-T-val">300 K</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Mass</span>
+          <input type="range" id="mb-m" min="1" max="200" value="63.5" step="0.5">
+          <span class="control-value" id="mb-m-val">63.5 amu</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">v<sub>p</sub> (most probable)</span>
+          <span class="readout-val" id="rd-vp">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Mean Speed</span>
+          <span class="readout-val" id="rd-vmean">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">v<sub>rms</sub></span>
+          <span class="readout-val" id="rd-vrms">--</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">온도가 높을수록 분포가 넓어지고, 질량이 클수록 좁아집니다. Cu(63.5 amu)와 H(1 amu)를 비교해보면 속도 분포의 차이가 극적입니다.</div>
+      </div>
+      <button class="explore-toggle" onclick="toggleExplore('ex32')">Step-by-step 탐색 &#9662;</button>
+      <div class="explore-panel" id="ex32">
+        <ol class="explore-steps">
+          <li>T = 300 K, m = 63.5 amu (Cu)에서 v<sub>p</sub>를 확인하세요.</li>
+          <li>T를 600 K로 올려보세요. v<sub>p</sub>가 약 &radic;2배 커지는 것을 확인할 수 있습니다.</li>
+          <li>m을 1 amu (H)로 바꿔보세요. 같은 온도에서 수소는 구리보다 약 8배 빠릅니다.</li>
+          <li>MD에서 time step은 가장 빠른 원자의 진동 주기에 맞춰야 합니다. H가 포함된 시스템에서 time step이 더 작아야 하는 이유를 이해할 수 있습니다.</li>
+        </ol>
+        <div class="explore-insight"><strong>Key Insight:</strong> Maxwell-Boltzmann 분포는 $v^2 \exp(-mv^2/2k_BT)$의 곱으로, 저속 영역은 위상 공간($v^2$)이, 고속 영역은 Boltzmann factor가 지배합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3.3: NPT 앙상블과 열평형 -->
+<!-- ============================================================ -->
+<section id="s33" class="section">
+  <p class="section-label">Section 3.3</p>
+  <h2 class="section-title">NPT 앙상블과 열평형</h2>
+  <div class="section-body">
+    <p>MD 시뮬레이션에서 앙상블(ensemble)은 어떤 열역학적 변수를 고정할지를 결정합니다. NVE(microcanonical)는 에너지가 보존되고, NVT(canonical)는 thermostat으로 온도를 제어하며, NPT(isothermal-isobaric)는 온도와 압력 모두를 제어합니다.</p>
+    <p>실험 조건(일정한 온도, 대기압)을 모사하려면 NPT 앙상블이 적합합니다. 열팽창이나 상전이 같은 열역학적 물성을 계산하려면 부피가 자유롭게 변할 수 있는 NPT가 필수적입니다.</p>
+  </div>
+
+  <div class="eq-block">$$T(t) = T_\text{target} + (T_\text{init} - T_\text{target})\exp(-t/\tau) + \text{noise}$$</div>
+
+  <ul class="concept-list">
+    <li><strong>NVE</strong>: 총 에너지 보존. force field 검증에 유용하지만, 온도/압력 제어가 불가능합니다.</li>
+    <li><strong>NVT</strong>: Thermostat(Nose-Hoover, Berendsen 등)으로 온도를 제어합니다. 부피는 고정됩니다.</li>
+    <li><strong>NPT</strong>: Thermostat + Barostat. 온도와 압력 모두 제어하며, 셀 부피가 자유롭게 변합니다.</li>
+    <li><strong>Thermostat Coupling (&tau;)</strong>: &tau;가 작으면 빠르게 목표 온도에 도달하지만, 동역학을 왜곡할 수 있습니다.</li>
+  </ul>
+
+  <!-- Figure 3.3: MD Temperature Evolution -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 3.3</span>
+      <span class="figure-title">MD Temperature Evolution</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig33" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">T<sub>target</sub></span>
+          <input type="range" id="th-Ttarget" min="100" max="800" value="300" step="10">
+          <span class="control-value" id="th-Ttarget-val">300 K</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">T<sub>init</sub></span>
+          <input type="range" id="th-Tinit" min="50" max="1000" value="10" step="10">
+          <span class="control-value" id="th-Tinit-val">10 K</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">&tau; (coupling)</span>
+          <input type="range" id="th-tau" min="0.5" max="5.0" value="1.5" step="0.1">
+          <span class="control-value" id="th-tau-val">1.5 ps</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">N (atoms)</span>
+          <input type="range" id="th-N" min="10" max="500" value="64" step="10">
+          <span class="control-value" id="th-N-val">64</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">T (at 10 ps)</span>
+          <span class="readout-val" id="rd-Tfinal">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Equilibration Time</span>
+          <span class="readout-val" id="rd-teq">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Fluctuation &Delta;T</span>
+          <span class="readout-val" id="rd-dT">--</span>
+        </div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">Thermostat coupling time &tau;가 작을수록 빠르게 수렴하지만, 원자 수 N이 적으면 온도 요동이 커집니다. 실제 MD에서는 충분한 시스템 크기와 적절한 &tau;의 균형이 중요합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3.4: 열팽창 계수 -->
+<!-- ============================================================ -->
+<section id="s34" class="section">
+  <p class="section-label">Section 3.4</p>
+  <h2 class="section-title">열팽창 계수</h2>
+  <div class="section-body">
+    <p>NPT MD 시뮬레이션에서 여러 온도에서의 격자 상수(lattice parameter)를 측정하면 열팽창 계수 $\alpha$를 구할 수 있습니다. 선형 열팽창 모델에서 $a(T) = a_0[1 + \alpha(T - T_\text{ref})]$이며, 실제로는 고온에서 비선형 기여($\beta$ 항)가 있습니다.</p>
+    <p>Notebook 05에서 Cu의 EMT potential을 사용한 NPT MD 결과를 NIST 실험 데이터와 비교한 바 있습니다. 시뮬레이션과 실험의 열팽창 계수를 비교하여 force field의 정확도를 평가할 수 있습니다.</p>
+  </div>
+
+  <div class="eq-block">$$a(T) = a_0\left[1 + \alpha(T - T_\text{ref}) + \beta(T - T_\text{ref})^2\right]$$</div>
+
+  <!-- Figure 3.4: Thermal Expansion -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 3.4</span>
+      <span class="figure-title">Thermal Expansion</span>
+      <button class="challenge-btn" onclick="toggleChallenge('ch34')">도전 과제</button>
+    </div>
+    <div class="challenge-panel" id="ch34">
+      <div class="challenge-goal">목표: &alpha;를 조절하여 실험 데이터와 가장 잘 맞는 값을 찾아보세요</div>
+      <div class="challenge-desc">빨간색 점선(실험)과 검은색 실선(시뮬레이션)이 겹치도록 &alpha; 슬라이더를 조절하세요. 오차가 5% 이내이면 성공입니다.</div>
+      <div class="challenge-status" id="ch34-status">현재: 슬라이더를 조작해보세요</div>
+    </div>
+    <div class="figure-body">
+      <div id="fig34" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">a<sub>0</sub></span>
+          <input type="range" id="te-a0" min="3.5" max="4.0" value="3.615" step="0.001">
+          <span class="control-value" id="te-a0-val">3.615 &Aring;</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">&alpha; (&times;10<sup>-5</sup>/K)</span>
+          <input type="range" id="te-alpha" min="0.1" max="3.0" value="1.7" step="0.01">
+          <span class="control-value" id="te-alpha-val">1.70</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">&alpha;<sub>sim</sub></span>
+          <span class="readout-val" id="rd-asim">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">&alpha;<sub>exp</sub></span>
+          <span class="readout-val" id="rd-aexp">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Error</span>
+          <span class="readout-val" id="rd-aerr">--</span>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#000;"></span>Simulation</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#c0392b;"></span>Experiment (NIST Cu)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3.5: 확산 계수와 MSD -->
+<!-- ============================================================ -->
+<section id="s35" class="section">
+  <p class="section-label">Section 3.5</p>
+  <h2 class="section-title">확산 계수와 MSD</h2>
+  <div class="section-body">
+    <p>Mean Square Displacement(MSD)는 원자가 시간에 따라 얼마나 멀리 이동했는지를 정량화합니다. Einstein relation에 의하면 확산 계수 $D$는 MSD의 장시간 기울기로부터 구할 수 있습니다: $\text{MSD} = 6Dt$ (3차원).</p>
+    <p>짧은 시간에서는 원자가 아직 주변 원자와 충돌하기 전이므로 탄도적(ballistic) 운동을 하며, MSD $\propto t^2$입니다. 충분한 시간이 지나면 확산(diffusive) regime으로 전환되어 MSD $\propto t$가 됩니다.</p>
+  </div>
+
+  <div class="eq-block">$$D = \lim_{t\to\infty}\frac{\text{MSD}(t)}{6t} = \lim_{t\to\infty}\frac{\langle|r(t)-r(0)|^2\rangle}{6t}$$</div>
+
+  <ul class="concept-list">
+    <li><strong>Ballistic Regime</strong>: $\text{MSD} = \frac{3k_BT}{m}t^2$ &mdash; 짧은 시간에서 원자는 초기 속도로 직선 운동합니다.</li>
+    <li><strong>Diffusive Regime</strong>: $\text{MSD} = 6Dt$ &mdash; 충분한 시간 후 random walk로 전환됩니다.</li>
+    <li><strong>Crossover Time</strong>: 탄도에서 확산으로 전환되는 시간은 원자 간 충돌 시간과 관련됩니다.</li>
+  </ul>
+
+  <!-- Figure 3.5: MSD Analysis -->
+  <div class="figure-card" style="margin-top: var(--spacing-32);">
+    <div class="figure-header">
+      <span class="figure-label">Figure 3.5</span>
+      <span class="figure-title">MSD Analysis</span>
+    </div>
+    <div class="figure-body">
+      <div id="fig35" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">D (&times;10<sup>-9</sup> m<sup>2</sup>/s)</span>
+          <input type="range" id="msd-D" min="0.1" max="10" value="2.3" step="0.1">
+          <span class="control-value" id="msd-D-val">2.3</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Temperature</span>
+          <input type="range" id="msd-T" min="200" max="1000" value="500" step="10">
+          <span class="control-value" id="msd-T-val">500 K</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">D (from fit)</span>
+          <span class="readout-val" id="rd-Dfit">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">Crossover Time</span>
+          <span class="readout-val" id="rd-tcross">--</span>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#000;"></span>MSD (total)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2980b9;"></span>Linear fit (diffusive)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#cccccc;"></span>Ballistic regime</div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-title">Key Observation</div>
+        <div class="highlight-body">확산 계수는 MSD의 기울기에서 직접 추출할 수 있습니다. D와 T를 조절하여 탄도-확산 전환 지점이 어떻게 변하는지 관찰해보세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What-If Cards -->
+  <div class="whatif-grid" style="margin-top: var(--spacing-32);">
+    <div class="whatif-card" onclick="revealWhatif(this)">
+      <div class="whatif-q">만약 time step을 10 fs로 크게 잡으면?</div>
+      <div class="whatif-hint">빠르게 진동하는 경량 원자(H)의 운동을 놓쳐 에너지가 보존되지 않고 시뮬레이션이 불안정해집니다. 가장 빠른 진동의 주기 대비 time step이 너무 크면 numerical integration error가 축적됩니다.</div>
+      <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+    </div>
+    <div class="whatif-card" onclick="revealWhatif(this)">
+      <div class="whatif-q">만약 NPT 대신 NVE로 돌리면?</div>
+      <div class="whatif-hint">온도와 압력이 제어되지 않아 열팽창 측정이 불가능합니다. NVE에서는 총 에너지만 보존되므로, 부피 변화가 허용되지 않고 온도도 drift합니다.</div>
+      <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+    </div>
+    <div class="whatif-card" onclick="revealWhatif(this)">
+      <div class="whatif-q">만약 시뮬레이션 시간이 1 ps로 짧으면?</div>
+      <div class="whatif-hint">열평형에 도달하기 전이라 측정된 물성이 신뢰할 수 없습니다. 통계적 수렴을 위해 equilibration 시간 이후에도 충분한 production run이 필요합니다.</div>
+      <div class="whatif-arrow">클릭해서 확인 &rarr;</div>
+    </div>
+  </div>
+
+  <!-- Quiz 1 -->
+  <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+    <div class="quiz-q">Q: MSD가 시간에 선형적이면 운동 regime은?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz31')">A) 탄도적(ballistic)</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz31')">B) 확산(diffusive)</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz31')">C) 구속(confined)</button>
+    </div>
+    <div class="quiz-explain" id="quiz31">MSD &prop; t (선형)이면 확산 regime입니다. 탄도적 regime에서는 MSD &prop; t&sup2;이고, 구속 상태에서는 MSD가 상수로 수렴합니다. Einstein relation D = MSD/(6t)는 확산 regime에서만 유효합니다.</div>
+  </div>
+
+  <!-- Quiz 2 -->
+  <div class="quiz-block" style="margin-top:16px; max-width:600px;">
+    <div class="quiz-q">Q: Maxwell-Boltzmann 분포의 most probable speed는 온도가 2배가 되면?</div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz32')">A) &radic;2배</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz32')">B) 2배</button>
+      <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz32')">C) 4배</button>
+    </div>
+    <div class="quiz-explain" id="quiz32">$v_p = \sqrt{2k_BT/m}$이므로, T가 2배이면 $v_p$는 $\sqrt{2}$배가 됩니다. 운동 에너지 $\frac{1}{2}mv^2 = \frac{3}{2}k_BT$에서 속력은 온도의 제곱근에 비례합니다.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TAKEAWAYS -->
+<!-- ============================================================ -->
+<section class="takeaways section">
+  <p class="section-label">Key Takeaways</p>
+  <h2 class="section-title">Chapter 3 핵심 메시지</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">LJ</div>
+      <div class="takeaway-title">Lennard-Jones &rarr; 실제</div>
+      <div class="takeaway-body">LJ potential은 MD의 기본이지만, 실제 촉매 연구에서는 DFT나 MLP(Machine-Learned Potential)를 사용합니다. EMT도 금속에 한정된 간단한 모델입니다.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">NPT</div>
+      <div class="takeaway-title">앙상블 선택</div>
+      <div class="takeaway-body">NPT는 실험 조건(일정 T, P)을 모사하므로 열팽창 등 열역학적 물성 계산에 적합합니다. NVE는 검증용, NVT는 표면/나노입자에 주로 사용합니다.</div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">&infin;</div>
+      <div class="takeaway-title">충분한 시뮬레이션</div>
+      <div class="takeaway-body">열평형 + 통계적 수렴을 위해 충분한 시간과 시스템 크기가 필요합니다. 짧은 시뮬레이션은 비평형 상태의 물성을 측정하는 오류를 범합니다.</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Choung &mdash; <em>Simulation Tutorials</em>, Chapter 3</span>
+    <span class="footer-text">움직이는 교과서 &middot; Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & PHYSICS FUNCTIONS
+// ============================================================
+const kB = 8.617e-5; // eV/K
+const kB_SI = 1.380649e-23; // J/K
+const amu_to_kg = 1.66054e-27; // kg per amu
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function safeExp(x) {
+  return Math.exp(Math.max(-500, Math.min(500, x)));
+}
+
+// Lennard-Jones potential V(r) = 4*eps*[(sig/r)^12 - (sig/r)^6]
+function ljPotential(r, eps, sig) {
+  const s6 = Math.pow(sig / r, 6);
+  return 4 * eps * (s6 * s6 - s6);
+}
+
+// Lennard-Jones force F(r) = 24*eps/r * [2*(sig/r)^12 - (sig/r)^6]
+function ljForce(r, eps, sig) {
+  const s6 = Math.pow(sig / r, 6);
+  return 24 * eps / r * (2 * s6 * s6 - s6);
+}
+
+// Maxwell-Boltzmann speed distribution (SI units internally, output in m/s)
+function mbDistribution(v, T, m_amu) {
+  const m = m_amu * amu_to_kg;
+  const kT = kB_SI * T;
+  const prefactor = 4 * Math.PI * Math.pow(m / (2 * Math.PI * kT), 1.5);
+  const exponent = -m * v * v / (2 * kT);
+  return prefactor * v * v * safeExp(exponent);
+}
+
+function mostProbableSpeed(T, m_amu) {
+  return Math.sqrt(2 * kB_SI * T / (m_amu * amu_to_kg));
+}
+
+function meanSpeed(T, m_amu) {
+  return Math.sqrt(8 * kB_SI * T / (Math.PI * m_amu * amu_to_kg));
+}
+
+function rmsSpeed(T, m_amu) {
+  return Math.sqrt(3 * kB_SI * T / (m_amu * amu_to_kg));
+}
+
+// Seeded pseudo-random for reproducible noise
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+// ============================================================
+// PLOTLY COMMON CONFIG
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  const result = Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis),
+    font: Object.assign({}, baseLayout.font, extra.font)
+  });
+  if (extra.yaxis2) {
+    result.yaxis2 = Object.assign({}, extra.yaxis2);
+  }
+  return result;
+}
+
+// ============================================================
+// TOAST / UI HELPERS
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function toggleChallenge(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleExplore(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function revealWhatif(card) {
+  card.classList.toggle('revealed');
+}
+
+function answerQuiz(btn, correct, explainId) {
+  const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o === btn) o.classList.add(correct ? 'correct' : 'wrong');
+  });
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답! ' + btn.textContent.trim());
+}
+
+// RAF throttle
+const rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(() => { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// FIGURE 3.1: Lennard-Jones Potential & Force
+// ============================================================
+function fig31Data(eps, sig) {
+  const N = 400;
+  const rMin = sig * 0.85;
+  const rMax = 8.0;
+  const xs = [], ysV = [], ysF = [];
+
+  for (let i = 0; i < N; i++) {
+    const r = rMin + (rMax - rMin) * i / (N - 1);
+    xs.push(r);
+    const V = ljPotential(r, eps, sig);
+    const F = ljForce(r, eps, sig);
+    ysV.push(clamp(V, -2, 2));
+    ysF.push(clamp(F, -2, 2));
+  }
+
+  const traces = [
+    {
+      x: xs, y: ysV,
+      type: 'scatter', mode: 'lines',
+      name: 'V(r)',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'r=%{x:.2f} A<br>V=%{y:.4f} eV<extra>V(r)</extra>',
+      yaxis: 'y'
+    },
+    {
+      x: xs, y: ysF,
+      type: 'scatter', mode: 'lines',
+      name: 'F(r)',
+      line: { color: '#c0392b', width: 2 },
+      hovertemplate: 'r=%{x:.2f} A<br>F=%{y:.4f} eV/A<extra>F(r)</extra>',
+      yaxis: 'y'
+    }
+  ];
+
+  const vMax = Math.max(eps * 1.5, 0.3);
+  const layoutExtras = {
+    xaxis: { title: 'r (Å)', range: [rMin, rMax] },
+    yaxis: { title: 'V(r) (eV) / F(r) (eV/Å)', range: [-vMax, vMax] },
+    showlegend: true,
+    legend: { x: 0.6, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 },
+    shapes: [{
+      type: 'line', x0: rMin, x1: rMax, y0: 0, y1: 0,
+      line: { color: '#e5e7eb', width: 1, dash: 'dot' }
+    }]
+  };
+
+  return { traces, layoutExtras };
+}
+
+function buildFig31() {
+  const eps = 0.167, sig = 2.55;
+  const { traces, layoutExtras } = fig31Data(eps, sig);
+  Plotly.newPlot('fig31', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout31(eps, sig);
+}
+
+function updateFig31(eps, sig) {
+  const { traces, layoutExtras } = fig31Data(eps, sig);
+  Plotly.react('fig31', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout31(eps, sig);
+}
+
+function updateReadout31(eps, sig) {
+  const rmin = Math.pow(2, 1/6) * sig;
+  document.getElementById('rd-rmin').textContent = rmin.toFixed(3) + ' Å';
+  document.getElementById('rd-well').textContent = eps.toFixed(3) + ' eV';
+  document.getElementById('rd-f0').textContent = rmin.toFixed(3) + ' Å';
+
+  // Challenge check: confirm F=0 at r_min
+  const forceAtRmin = Math.abs(ljForce(rmin, eps, sig));
+  const s = document.getElementById('ch31-status');
+  if (s) {
+    s.textContent = 'r_min = ' + rmin.toFixed(3) + ' Å, F(r_min) = ' + forceAtRmin.toExponential(2) + ' eV/Å';
+    s.className = 'challenge-status';
+    if (forceAtRmin < 1e-10) {
+      s.textContent = 'F(r_min) ≈ 0 확인! r_min = ' + rmin.toFixed(3) + ' Å에서 force가 0입니다.';
+      s.className = 'challenge-status success';
+      showToast('도전 과제 완료! r_min에서 F = 0 확인');
+    }
+  }
+}
+
+// ============================================================
+// FIGURE 3.2: Maxwell-Boltzmann Distribution
+// ============================================================
+function fig32Data(T, m) {
+  const N = 300;
+  const vMax = Math.min(2000, mostProbableSpeed(T, m) * 4);
+  const xs = [], ys = [];
+
+  for (let i = 0; i < N; i++) {
+    const v = vMax * i / (N - 1);
+    xs.push(v);
+    ys.push(mbDistribution(v, T, m));
+  }
+
+  const vp = mostProbableSpeed(T, m);
+
+  const traces = [
+    {
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      name: 'f(v)',
+      line: { color: '#000', width: 2.5 },
+      fill: 'tozeroy',
+      fillcolor: 'rgba(0,0,0,0.05)',
+      hovertemplate: 'v=%{x:.0f} m/s<br>f(v)=%{y:.2e}<extra></extra>'
+    },
+    {
+      x: [vp, vp], y: [0, mbDistribution(vp, T, m)],
+      type: 'scatter', mode: 'lines',
+      name: 'v_p',
+      line: { color: '#c0392b', width: 1.5, dash: 'dash' },
+      hovertemplate: 'v_p=%{x:.0f} m/s<extra>Most probable</extra>'
+    }
+  ];
+
+  const layoutExtras = {
+    xaxis: { title: 'Speed (m/s)', range: [0, vMax] },
+    yaxis: { title: 'Probability Density (s/m)', rangemode: 'tozero' },
+    showlegend: true,
+    legend: { x: 0.6, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  };
+
+  return { traces, layoutExtras };
+}
+
+function buildFig32() {
+  const T = 300, m = 63.5;
+  const { traces, layoutExtras } = fig32Data(T, m);
+  Plotly.newPlot('fig32', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout32(T, m);
+}
+
+function updateFig32(T, m) {
+  const { traces, layoutExtras } = fig32Data(T, m);
+  Plotly.react('fig32', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout32(T, m);
+}
+
+function updateReadout32(T, m) {
+  document.getElementById('rd-vp').textContent = mostProbableSpeed(T, m).toFixed(0) + ' m/s';
+  document.getElementById('rd-vmean').textContent = meanSpeed(T, m).toFixed(0) + ' m/s';
+  document.getElementById('rd-vrms').textContent = rmsSpeed(T, m).toFixed(0) + ' m/s';
+}
+
+// ============================================================
+// FIGURE 3.3: MD Temperature Evolution
+// ============================================================
+function fig33Data(Ttarget, Tinit, tau, Natoms) {
+  const N = 500;
+  const tMax = 10.0; // ps
+  const xs = [], ys = [];
+  const rng = seededRandom(42);
+
+  // Temperature fluctuation amplitude: sqrt(2*kB*T^2 / (3*N*kB)) = T * sqrt(2/(3N))
+  const fluctAmp = Ttarget * Math.sqrt(2 / (3 * Natoms));
+
+  for (let i = 0; i < N; i++) {
+    const t = tMax * i / (N - 1);
+    xs.push(t);
+    const Tbase = Ttarget + (Tinit - Ttarget) * safeExp(-t / tau);
+    // Add Gaussian-like noise using Box-Muller
+    const u1 = rng();
+    const u2 = rng();
+    const noise = Math.sqrt(-2 * Math.log(Math.max(u1, 1e-10))) * Math.cos(2 * Math.PI * u2) * fluctAmp;
+    // Noise scales with how close we are to equilibrium
+    const eqFrac = Math.min(1, t / (3 * tau));
+    ys.push(Math.max(0, Tbase + noise * eqFrac));
+  }
+
+  // Target line
+  const xsTarget = [0, tMax];
+  const ysTarget = [Ttarget, Ttarget];
+
+  const traces = [
+    {
+      x: xs, y: ys,
+      type: 'scatter', mode: 'lines',
+      name: 'T(t)',
+      line: { color: '#000', width: 1.5 },
+      hovertemplate: 't=%{x:.2f} ps<br>T=%{y:.0f} K<extra></extra>'
+    },
+    {
+      x: xsTarget, y: ysTarget,
+      type: 'scatter', mode: 'lines',
+      name: 'T_target',
+      line: { color: '#c0392b', width: 1.5, dash: 'dash' },
+      hovertemplate: 'T_target=%{y:.0f} K<extra></extra>'
+    }
+  ];
+
+  const layoutExtras = {
+    xaxis: { title: 'Time (ps)', range: [0, tMax] },
+    yaxis: { title: 'Temperature (K)', range: [0, Math.max(Ttarget, Tinit) * 1.3] },
+    showlegend: true,
+    legend: { x: 0.6, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  };
+
+  return { traces, layoutExtras };
+}
+
+function buildFig33() {
+  const Tt = 300, Ti = 10, tau = 1.5, N = 64;
+  const { traces, layoutExtras } = fig33Data(Tt, Ti, tau, N);
+  Plotly.newPlot('fig33', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout33(Tt, Ti, tau, N);
+}
+
+function updateFig33(Tt, Ti, tau, N) {
+  const { traces, layoutExtras } = fig33Data(Tt, Ti, tau, N);
+  Plotly.react('fig33', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout33(Tt, Ti, tau, N);
+}
+
+function updateReadout33(Tt, Ti, tau, Natoms) {
+  // T at 10 ps
+  const Tfinal = Tt + (Ti - Tt) * safeExp(-10 / tau);
+  document.getElementById('rd-Tfinal').textContent = Tfinal.toFixed(0) + ' K';
+
+  // Equilibration time: ~3*tau (99.5% of the way)
+  const teq = 3 * tau;
+  document.getElementById('rd-teq').textContent = teq.toFixed(1) + ' ps';
+
+  // Fluctuation amplitude
+  const dT = Tt * Math.sqrt(2 / (3 * Natoms));
+  document.getElementById('rd-dT').textContent = '±' + dT.toFixed(1) + ' K';
+}
+
+// ============================================================
+// FIGURE 3.4: Thermal Expansion
+// ============================================================
+
+// Cu experimental data (NIST) - selected points from notebook
+const expData = {
+  T: [87.65, 100.15, 150, 200, 250, 293.15, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 773.25],
+  dLL: [-0.002596, -0.002490, -0.001761, -0.001002, -0.000256, 0.0, 0.000079, 0.000493, 0.000961, 0.001474, 0.002026, 0.002609, 0.003226, 0.003877, 0.004562, 0.005281, 0.009166]
+};
+
+// Normalize: a/a_300K = 1 + dL/L (where dL/L is referenced to ~293K)
+function getExpNormalized() {
+  const xs = expData.T;
+  const ys = expData.dLL.map(d => 1 + d);
+  return { xs, ys };
+}
+
+function fig34Data(a0, alpha_e5) {
+  const alpha = alpha_e5 * 1e-5;
+  const beta = 2e-9; // small nonlinear term
+  const Tref = 300;
+  const N = 200;
+  const xs = [], ysSim = [];
+
+  for (let i = 0; i < N; i++) {
+    const T = 50 + (900 - 50) * i / (N - 1);
+    xs.push(T);
+    const aT = a0 * (1 + alpha * (T - Tref) + beta * (T - Tref) * (T - Tref));
+    const aRef = a0 * (1 + alpha * 0 + beta * 0); // a at T_ref = a0
+    ysSim.push(aT / aRef);
+  }
+
+  const exp = getExpNormalized();
+
+  const traces = [
+    {
+      x: xs, y: ysSim,
+      type: 'scatter', mode: 'lines',
+      name: 'Simulation',
+      line: { color: '#000', width: 2.5 },
+      hovertemplate: 'T=%{x:.0f} K<br>a/a₃₀₀=%{y:.5f}<extra>Sim</extra>'
+    },
+    {
+      x: exp.xs, y: exp.ys,
+      type: 'scatter', mode: 'markers+lines',
+      name: 'Experiment (NIST Cu)',
+      line: { color: '#c0392b', width: 1.5, dash: 'dash' },
+      marker: { color: '#c0392b', size: 5 },
+      hovertemplate: 'T=%{x:.0f} K<br>a/a₃₀₀=%{y:.5f}<extra>Exp</extra>'
+    }
+  ];
+
+  const layoutExtras = {
+    xaxis: { title: 'Temperature (K)', range: [50, 900] },
+    yaxis: { title: 'Normalized Lattice Parameter a/a₃₀₀ₖ', range: [0.994, 1.012] },
+    showlegend: true,
+    legend: { x: 0.05, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  };
+
+  return { traces, layoutExtras };
+}
+
+function buildFig34() {
+  const a0 = 3.615, alpha = 1.7;
+  const { traces, layoutExtras } = fig34Data(a0, alpha);
+  Plotly.newPlot('fig34', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout34(alpha);
+}
+
+function updateFig34(a0, alpha) {
+  const { traces, layoutExtras } = fig34Data(a0, alpha);
+  Plotly.react('fig34', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout34(alpha);
+}
+
+function updateReadout34(alpha_e5) {
+  const alpha_sim = alpha_e5 * 1e-5;
+  const alpha_exp = 1.72e-5; // Cu experimental ~17.2 x 10^-6 /K
+
+  document.getElementById('rd-asim').textContent = (alpha_sim * 1e5).toFixed(2) + ' ×10⁻⁵/K';
+  document.getElementById('rd-aexp').textContent = (alpha_exp * 1e5).toFixed(2) + ' ×10⁻⁵/K';
+
+  const err = Math.abs(alpha_sim - alpha_exp) / alpha_exp * 100;
+  document.getElementById('rd-aerr').textContent = err.toFixed(1) + '%';
+
+  // Challenge check
+  const s = document.getElementById('ch34-status');
+  if (s) {
+    s.textContent = 'α_sim = ' + (alpha_sim * 1e5).toFixed(2) + ' ×10⁻⁵/K, error = ' + err.toFixed(1) + '%';
+    s.className = 'challenge-status';
+    if (err < 5) {
+      s.textContent = '성공! α = ' + (alpha_sim * 1e5).toFixed(2) + ' ×10⁻⁵/K (error ' + err.toFixed(1) + '%)';
+      s.className = 'challenge-status success';
+      showToast('도전 과제 완료! 실험과 5% 이내 오차');
+    }
+  }
+}
+
+// ============================================================
+// FIGURE 3.5: MSD Analysis
+// ============================================================
+function fig35Data(D_e9, T) {
+  const D = D_e9 * 1e-9; // m^2/s -> convert to A^2/ps
+  // 1e-9 m^2/s = 1e-9 * (1e10)^2 A^2 / (1e12 ps/s) = 1e-9 * 1e20 / 1e12 = 0.1 A^2/ps * value
+  const D_Aps = D_e9 * 0.1; // A^2/ps
+
+  const m_amu = 63.5; // Cu
+  // Ballistic: MSD = (3kBT/m) * t^2
+  // kBT in eV, m in amu -> need conversion to A^2/ps^2
+  // kB_SI * T in J, m in kg -> v^2 in m^2/s^2
+  // 3 * kB_SI * T / (m_amu * amu_to_kg) -> m^2/s^2
+  // Convert to A^2/ps^2: * (1e10)^2 / (1e12)^2 = 1e20/1e24 = 1e-4
+  const ballCoeff = 3 * kB_SI * T / (m_amu * amu_to_kg) * 1e-4; // A^2/ps^2
+
+  // Crossover time: when ballistic MSD = diffusive MSD
+  // ballCoeff * t^2 = 6 * D_Aps * t => t_cross = 6*D_Aps / ballCoeff
+  const tCross = (ballCoeff > 0) ? 6 * D_Aps / ballCoeff : 1;
+
+  const N = 400;
+  const tMax = 50; // ps
+  const xs = [], ysMSD = [], ysBall = [], ysDiff = [];
+  const rng = seededRandom(123);
+
+  for (let i = 0; i < N; i++) {
+    const t = tMax * i / (N - 1);
+    xs.push(t);
+
+    // Ballistic
+    const msdBall = ballCoeff * t * t;
+    ysBall.push(msdBall);
+
+    // Diffusive
+    const msdDiff = 6 * D_Aps * t;
+    ysDiff.push(msdDiff);
+
+    // Smooth crossover: use harmonic mean-like blending
+    // MSD = msdBall * msdDiff / (msdBall + msdDiff) * something
+    // Better: 1/MSD_total = 1/msdBall + 1/msdDiff doesn't work for t=0
+    // Use: MSD = min(msdBall, msdDiff) with smooth blend
+    let msdTotal;
+    if (t < 1e-6) {
+      msdTotal = 0;
+    } else {
+      // Smooth transition: MSD ~ msdDiff / (1 + msdDiff/msdBall)
+      msdTotal = msdDiff / (1 + (msdDiff / (msdBall + 1e-30)));
+    }
+    // Add some noise
+    const u1 = rng();
+    const u2 = rng();
+    const noise = Math.sqrt(-2 * Math.log(Math.max(u1, 1e-10))) * Math.cos(2 * Math.PI * u2);
+    const noiseScale = Math.max(0.01, msdTotal * 0.05);
+    msdTotal = Math.max(0, msdTotal + noise * noiseScale);
+
+    ysMSD.push(msdTotal);
+  }
+
+  // Linear fit on diffusive regime (t > 3*tCross)
+  const fitStart = Math.max(5, 3 * tCross);
+  const xsFit = [fitStart, tMax];
+  const ysFit = [6 * D_Aps * fitStart, 6 * D_Aps * tMax];
+
+  const traces = [
+    {
+      x: xs, y: ysMSD,
+      type: 'scatter', mode: 'lines',
+      name: 'MSD',
+      line: { color: '#000', width: 2 },
+      hovertemplate: 't=%{x:.1f} ps<br>MSD=%{y:.1f} Å²<extra></extra>'
+    },
+    {
+      x: xsFit, y: ysFit,
+      type: 'scatter', mode: 'lines',
+      name: 'Linear fit (6Dt)',
+      line: { color: '#2980b9', width: 2, dash: 'dash' },
+      hovertemplate: 't=%{x:.1f} ps<br>6Dt=%{y:.1f} Å²<extra>Fit</extra>'
+    },
+    {
+      x: xs.filter((_, i) => xs[i] < fitStart),
+      y: ysBall.filter((_, i) => xs[i] < fitStart),
+      type: 'scatter', mode: 'lines',
+      name: 'Ballistic',
+      line: { color: '#cccccc', width: 1.5, dash: 'dot' },
+      hovertemplate: 't=%{x:.2f} ps<br>Ballistic=%{y:.2f} Å²<extra></extra>'
+    }
+  ];
+
+  const msdMax = 6 * D_Aps * tMax * 1.1;
+  const layoutExtras = {
+    xaxis: { title: 'Time (ps)', range: [0, tMax] },
+    yaxis: { title: 'MSD (Å²)', range: [0, Math.max(msdMax, 10)] },
+    showlegend: true,
+    legend: { x: 0.05, y: 0.95, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  };
+
+  return { traces, layoutExtras, tCross, D_Aps };
+}
+
+function buildFig35() {
+  const D = 2.3, T = 500;
+  const { traces, layoutExtras } = fig35Data(D, T);
+  Plotly.newPlot('fig35', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout35(D, T);
+}
+
+function updateFig35(D, T) {
+  const { traces, layoutExtras } = fig35Data(D, T);
+  Plotly.react('fig35', traces, mergeLayout(layoutExtras), plotlyCfg);
+  updateReadout35(D, T);
+}
+
+function updateReadout35(D_e9, T) {
+  document.getElementById('rd-Dfit').textContent = D_e9.toFixed(1) + ' ×10⁻⁹ m²/s';
+
+  const D_Aps = D_e9 * 0.1;
+  const m_amu = 63.5;
+  const ballCoeff = 3 * kB_SI * T / (m_amu * amu_to_kg) * 1e-4;
+  const tCross = (ballCoeff > 0) ? 6 * D_Aps / ballCoeff : 1;
+  document.getElementById('rd-tcross').textContent = tCross.toFixed(2) + ' ps';
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 3.1: LJ
+  document.getElementById('lj-eps').addEventListener('input', () => {
+    const eps = parseFloat(document.getElementById('lj-eps').value);
+    const sig = parseFloat(document.getElementById('lj-sig').value);
+    document.getElementById('lj-eps-val').textContent = eps.toFixed(3) + ' eV';
+    throttledDraw('lj', () => updateFig31(eps, sig));
+  });
+  document.getElementById('lj-sig').addEventListener('input', () => {
+    const eps = parseFloat(document.getElementById('lj-eps').value);
+    const sig = parseFloat(document.getElementById('lj-sig').value);
+    document.getElementById('lj-sig-val').textContent = sig.toFixed(2) + ' Å';
+    throttledDraw('lj', () => updateFig31(eps, sig));
+  });
+
+  // Fig 3.2: Maxwell-Boltzmann
+  document.getElementById('mb-T').addEventListener('input', () => {
+    const T = parseFloat(document.getElementById('mb-T').value);
+    const m = parseFloat(document.getElementById('mb-m').value);
+    document.getElementById('mb-T-val').textContent = T + ' K';
+    throttledDraw('mb', () => updateFig32(T, m));
+  });
+  document.getElementById('mb-m').addEventListener('input', () => {
+    const T = parseFloat(document.getElementById('mb-T').value);
+    const m = parseFloat(document.getElementById('mb-m').value);
+    document.getElementById('mb-m-val').textContent = m.toFixed(1) + ' amu';
+    throttledDraw('mb', () => updateFig32(T, m));
+  });
+
+  // Fig 3.3: Temperature Evolution
+  document.getElementById('th-Ttarget').addEventListener('input', () => {
+    const Tt = parseFloat(document.getElementById('th-Ttarget').value);
+    const Ti = parseFloat(document.getElementById('th-Tinit').value);
+    const tau = parseFloat(document.getElementById('th-tau').value);
+    const N = parseFloat(document.getElementById('th-N').value);
+    document.getElementById('th-Ttarget-val').textContent = Tt + ' K';
+    throttledDraw('th', () => updateFig33(Tt, Ti, tau, N));
+  });
+  document.getElementById('th-Tinit').addEventListener('input', () => {
+    const Tt = parseFloat(document.getElementById('th-Ttarget').value);
+    const Ti = parseFloat(document.getElementById('th-Tinit').value);
+    const tau = parseFloat(document.getElementById('th-tau').value);
+    const N = parseFloat(document.getElementById('th-N').value);
+    document.getElementById('th-Tinit-val').textContent = Ti + ' K';
+    throttledDraw('th', () => updateFig33(Tt, Ti, tau, N));
+  });
+  document.getElementById('th-tau').addEventListener('input', () => {
+    const Tt = parseFloat(document.getElementById('th-Ttarget').value);
+    const Ti = parseFloat(document.getElementById('th-Tinit').value);
+    const tau = parseFloat(document.getElementById('th-tau').value);
+    const N = parseFloat(document.getElementById('th-N').value);
+    document.getElementById('th-tau-val').textContent = tau.toFixed(1) + ' ps';
+    throttledDraw('th', () => updateFig33(Tt, Ti, tau, N));
+  });
+  document.getElementById('th-N').addEventListener('input', () => {
+    const Tt = parseFloat(document.getElementById('th-Ttarget').value);
+    const Ti = parseFloat(document.getElementById('th-Tinit').value);
+    const tau = parseFloat(document.getElementById('th-tau').value);
+    const N = parseFloat(document.getElementById('th-N').value);
+    document.getElementById('th-N-val').textContent = N;
+    throttledDraw('th', () => updateFig33(Tt, Ti, tau, N));
+  });
+
+  // Fig 3.4: Thermal Expansion
+  document.getElementById('te-a0').addEventListener('input', () => {
+    const a0 = parseFloat(document.getElementById('te-a0').value);
+    const alpha = parseFloat(document.getElementById('te-alpha').value);
+    document.getElementById('te-a0-val').textContent = a0.toFixed(3) + ' Å';
+    throttledDraw('te', () => updateFig34(a0, alpha));
+  });
+  document.getElementById('te-alpha').addEventListener('input', () => {
+    const a0 = parseFloat(document.getElementById('te-a0').value);
+    const alpha = parseFloat(document.getElementById('te-alpha').value);
+    document.getElementById('te-alpha-val').textContent = alpha.toFixed(2);
+    throttledDraw('te', () => updateFig34(a0, alpha));
+  });
+
+  // Fig 3.5: MSD
+  document.getElementById('msd-D').addEventListener('input', () => {
+    const D = parseFloat(document.getElementById('msd-D').value);
+    const T = parseFloat(document.getElementById('msd-T').value);
+    document.getElementById('msd-D-val').textContent = D.toFixed(1);
+    throttledDraw('msd', () => updateFig35(D, T));
+  });
+  document.getElementById('msd-T').addEventListener('input', () => {
+    const D = parseFloat(document.getElementById('msd-D').value);
+    const T = parseFloat(document.getElementById('msd-T').value);
+    document.getElementById('msd-T-val').textContent = T + ' K';
+    throttledDraw('msd', () => updateFig35(D, T));
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig31();
+  buildFig32();
+  buildFig33();
+  buildFig34();
+  buildFig35();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: 머신러닝 회귀와 Feature Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --text-caption: 13px;
+  --text-body: 16px;
+  --text-heading: 22px;
+  --text-heading-lg: 28px;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+  --radius-softbutton: 40px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-52: 52px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-112: 112px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  font-feature-settings: "calt","liga";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: 64px; background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-fog-border);
+  display: flex; align-items: center;
+  padding: 0 var(--spacing-40);
+}
+.nav-inner {
+  max-width: 1200px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { font-size: 14px; font-weight: 600; color: var(--color-void); text-decoration: none; letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: var(--spacing-24); list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--color-void); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--color-graphite); }
+.nav-badge { font-size: 13px; font-weight: 500; color: var(--color-graphite); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 6px 14px; }
+
+/* PAGE */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); }
+
+/* HERO */
+.hero { padding: var(--spacing-112) 0 var(--spacing-80); text-align: center; border-bottom: 1px solid var(--color-fog-border); }
+.hero-eyebrow { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-20); }
+.hero-title { font-size: clamp(36px,5vw,56px); font-weight: 600; color: var(--color-void); letter-spacing: -1.44px; line-height: 1.08; margin-bottom: var(--spacing-20); }
+.hero-subtitle { font-size: 18px; font-weight: 400; color: var(--color-graphite); line-height: 1.5; max-width: 520px; margin: 0 auto var(--spacing-40); }
+.hero-chips { display: flex; gap: var(--spacing-8); justify-content: center; flex-wrap: wrap; }
+.chip { font-size: 13px; font-weight: 500; color: var(--color-void); background: rgba(0,0,0,0.04); border-radius: var(--radius-softbutton); padding: 7px 16px; border: none; cursor: default; letter-spacing: 0.011em; }
+
+/* SECTION */
+.section { padding: var(--spacing-80) 0; border-bottom: 1px solid var(--color-fog-border); opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.section.visible { opacity: 1; transform: none; }
+@media print { .section { opacity: 1 !important; transform: none !important; } }
+.section-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: var(--spacing-12); }
+.section-title { font-size: var(--text-heading-lg); font-weight: 600; color: var(--color-void); line-height: 1.21; margin-bottom: var(--spacing-24); }
+.section-body { font-size: 16px; color: var(--color-graphite); line-height: 1.65; max-width: 680px; margin-bottom: var(--spacing-32); }
+.section-body p { margin-bottom: var(--spacing-12); }
+
+/* TWO-COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-64); align-items: start; }
+.two-col.reverse { direction: rtl; }
+.two-col.reverse > * { direction: ltr; }
+
+/* EQUATION */
+.eq-block { background: var(--color-chalk); border-radius: var(--radius-cards); padding: var(--spacing-24) var(--spacing-32); text-align: center; margin: var(--spacing-24) 0; overflow-x: auto; }
+.eq-block .katex-display { margin: 0 !important; font-size: 1.1em; }
+
+/* CONCEPT LIST */
+.concept-list { list-style: none; margin-top: var(--spacing-16); }
+.concept-list li { font-size: 15px; color: var(--color-graphite); line-height: 1.6; padding: var(--spacing-12) 0; border-bottom: 1px solid var(--color-fog-border); display: flex; gap: var(--spacing-12); align-items: flex-start; }
+.concept-list li:last-child { border-bottom: none; }
+.concept-list li::before { content: "\2014"; color: var(--color-ash); flex-shrink: 0; margin-top: 1px; }
+
+/* FIGURE CARD */
+.figure-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.figure-header { padding: var(--spacing-20) var(--spacing-24); border-bottom: 1px solid var(--color-fog-border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.figure-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-graphite); letter-spacing: 0.011em; text-transform: uppercase; }
+.figure-title { font-size: 14px; font-weight: 500; color: var(--color-void); }
+.figure-body { padding: var(--spacing-24); }
+
+/* PLOTLY CONTAINER */
+.plotly-container {
+  width: 100%;
+  min-height: 380px;
+  border: 1px solid var(--color-fog-border);
+  border-radius: var(--radius-cards);
+  overflow: hidden;
+}
+
+/* Plotly modebar */
+.modebar { opacity: 0.3; transition: opacity 0.2s; }
+.modebar:hover { opacity: 1; }
+
+/* SLIDERS */
+.controls { margin-top: var(--spacing-20); display: flex; flex-direction: column; gap: var(--spacing-16); }
+.control-row { display: flex; align-items: center; gap: var(--spacing-16); }
+.control-label { font-size: 13px; font-weight: 500; color: var(--color-void); min-width: 120px; white-space: nowrap; }
+.control-label sub { font-size: 10px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; height: 2px; background: var(--color-fog-border); border-radius: 1px; outline: none; cursor: pointer; transition: background 0.15s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); cursor: pointer; transition: transform 0.1s; }
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--color-void); border: none; cursor: pointer; }
+.control-value { font-size: 13px; font-weight: 600; color: var(--color-void); min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* READOUT */
+.readout { margin-top: var(--spacing-16); padding: var(--spacing-16) var(--spacing-20); background: var(--color-void); border-radius: var(--radius-cards); display: flex; gap: var(--spacing-32); flex-wrap: wrap; }
+.readout-item { display: flex; flex-direction: column; gap: 2px; }
+.readout-key { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; text-transform: uppercase; }
+.readout-val { font-size: 18px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+/* HIGHLIGHT */
+.highlight { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-24); margin-top: var(--spacing-24); }
+.highlight-title { font-size: 14px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); }
+.highlight-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* LEGEND */
+.legend { display: flex; gap: var(--spacing-20); margin-top: var(--spacing-12); flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--spacing-8); font-size: 13px; color: var(--color-graphite); }
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* TAKEAWAYS */
+.takeaways { padding: var(--spacing-80) 0; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--spacing-32); margin-top: var(--spacing-40); }
+.takeaway-card { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); padding: var(--spacing-32); }
+.takeaway-number { font-size: 40px; font-weight: 600; color: var(--color-fog-border); line-height: 1; margin-bottom: var(--spacing-16); letter-spacing: -0.03em; }
+.takeaway-title { font-size: 16px; font-weight: 600; color: var(--color-void); margin-bottom: var(--spacing-8); line-height: 1.3; }
+.takeaway-body { font-size: 14px; color: var(--color-graphite); line-height: 1.6; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--color-fog-border); padding: var(--spacing-40) 0; }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-40); display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+
+/* FULL FIGURE */
+.figure-full { border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; margin-top: var(--spacing-32); }
+
+/* CHALLENGE BUTTON & TOAST */
+.challenge-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #000; color: #fff;
+  font-size: 12px; font-weight: 600; font-family: var(--font-inter);
+  border: none; border-radius: 9999px;
+  padding: 6px 14px; cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+.challenge-btn:hover { opacity: 0.8; transform: scale(1.03); }
+.challenge-panel {
+  display: none; margin-top: 12px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.challenge-panel.open { display: block; }
+.challenge-goal { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 6px; }
+.challenge-desc { font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.challenge-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--color-graphite); }
+.challenge-status.success { color: #000; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #000; color: #fff;
+  font-size: 14px; font-weight: 500; font-family: var(--font-inter);
+  padding: 12px 24px; border-radius: 9999px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 999; max-width: 480px; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* GUIDED EXPLORATION */
+.explore-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--color-fog-border);
+  border-radius: 9999px; padding: 6px 14px;
+  font-size: 12px; font-weight: 500; font-family: var(--font-inter);
+  cursor: pointer; color: var(--color-graphite); margin-top: 12px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.explore-toggle:hover { border-color: #000; color: #000; }
+.explore-panel {
+  display: none; margin-top: 12px;
+  border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards);
+  padding: 16px 20px;
+}
+.explore-panel.open { display: block; }
+.explore-steps { list-style: none; counter-reset: step; }
+.explore-steps li { counter-increment: step; display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--color-fog-border); font-size: 13px; color: var(--color-graphite); line-height: 1.55; }
+.explore-steps li:last-child { border-bottom: none; }
+.explore-steps li::before { content: counter(step); font-size: 11px; font-weight: 700; color: #fff; background: #000; border-radius: 50%; min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.explore-insight { margin-top: 10px; padding: 10px 14px; background: #000; color: #fff; border-radius: var(--radius-cards); font-size: 13px; line-height: 1.5; }
+.explore-insight strong { font-weight: 600; }
+
+/* WHAT IF CARDS */
+.whatif-grid { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.whatif-card {
+  flex: 1; min-width: 200px;
+  background: #f1f1f1; border-radius: var(--radius-cards);
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s;
+}
+.whatif-card:hover { background: #e8e8e8; }
+.whatif-q { font-size: 13px; font-weight: 600; color: #000; margin-bottom: 4px; }
+.whatif-hint { font-size: 12px; color: var(--color-graphite); line-height: 1.5; display: none; margin-top: 6px; }
+.whatif-card.revealed .whatif-hint { display: block; }
+.whatif-arrow { font-size: 11px; color: var(--color-ash); margin-top: 4px; }
+.whatif-card.revealed .whatif-arrow { display: none; }
+
+/* QUIZ */
+.quiz-block { margin-top: 20px; border: 1px solid var(--color-fog-border); border-radius: var(--radius-cards); overflow: hidden; }
+.quiz-q { padding: 14px 18px; font-size: 14px; font-weight: 600; color: #000; background: #fafafa; border-bottom: 1px solid var(--color-fog-border); }
+.quiz-options { padding: 12px 18px; display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  font-size: 13px; padding: 8px 12px; border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog-border); cursor: pointer;
+  background: #fff; transition: background 0.12s, border-color 0.12s;
+  font-family: var(--font-inter); text-align: left;
+}
+.quiz-opt:hover { background: #f1f1f1; }
+.quiz-opt.correct { background: #000; color: #fff; border-color: #000; }
+.quiz-opt.wrong { background: #f1f1f1; color: var(--color-ash); text-decoration: line-through; }
+.quiz-explain { padding: 10px 18px 14px; font-size: 13px; color: var(--color-graphite); display: none; line-height: 1.55; }
+.quiz-explain.show { display: block; }
+
+/* TEXT WRAP FIX */
+p, .section-body p, .concept-list li, .highlight-body, .takeaway-body,
+.deriv-step-text, .deriv-meaning, .explore-insight, .whatif-hint,
+.challenge-desc, .quiz-explain {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--spacing-20); }
+  .page { padding: 0 var(--spacing-20); }
+  .two-col { grid-template-columns: 1fr; gap: var(--spacing-40); }
+  .hero { padding: var(--spacing-64) 0; }
+  .hero-title { font-size: 36px; letter-spacing: -0.8px; }
+  .takeaway-grid { grid-template-columns: 1fr; }
+  .control-row { flex-wrap: wrap; }
+  .control-label { min-width: 100%; }
+  .footer-inner { flex-direction: column; gap: var(--spacing-8); text-align: center; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">ML 회귀</a>
+    <ul class="nav-links">
+      <li><a href="#s41">4.1 회귀 기초</a></li>
+      <li><a href="#s42">4.2 과적합</a></li>
+      <li><a href="#s43">4.3 Feature</a></li>
+      <li><a href="#s44">4.4 CV</a></li>
+      <li><a href="#s45">4.5 Parity</a></li>
+    </ul>
+    <span class="nav-badge">Sim Tutorial Ch.4</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="page">
+  <section class="hero">
+    <p class="hero-eyebrow">움직이는 교과서 &middot; Interactive Textbook</p>
+    <h1 class="hero-title">머신러닝 회귀와 Feature Engineering</h1>
+    <p class="hero-subtitle">Choung, <em>Simulation Tutorials for Computational Materials Science</em>, Chapter 4. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</p>
+    <div class="hero-chips">
+      <span class="chip">Linear Regression</span>
+      <span class="chip">Feature Engineering</span>
+      <span class="chip">Overfitting</span>
+      <span class="chip">Cross-Validation</span>
+      <span class="chip">CO<sub>2</sub>RR</span>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 4.1 =================== -->
+  <section id="s41" class="section">
+    <div class="two-col">
+      <div>
+        <p class="section-label">Section 4.1</p>
+        <h2 class="section-title">회귀 분석 기초</h2>
+        <div class="section-body">
+          <p>선형 회귀(linear regression)는 머신러닝의 가장 기본적인 방법입니다. 독립변수 $x$와 종속변수 $y$ 사이의 선형 관계 $\hat{y} = mx + b$를 찾아내는 것이 목표입니다.</p>
+          <p>최소자승법(OLS)은 잔차(residual) $y_i - \hat{y}_i$의 제곱합을 최소화하여 최적의 기울기 $m$과 절편 $b$를 결정합니다. 결정계수 $R^2$는 모델이 데이터 분산을 얼마나 설명하는지를 나타냅니다.</p>
+          <p>촉매 과학에서는 d-band center, electronegativity 같은 descriptor가 CO 흡착 에너지와 선형 관계를 보이는 경우가 많습니다. 이런 물리적 descriptor를 feature로 사용하면 해석 가능한 모델을 만들 수 있습니다.</p>
+        </div>
+        <div class="eq-block">$$\hat{y} = mx + b, \quad R^2 = 1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum(y_i - \bar{y})^2}$$</div>
+        <ul class="concept-list">
+          <li>$m$: 기울기 (slope) &mdash; feature와 target 사이의 민감도</li>
+          <li>$b$: 절편 (intercept) &mdash; feature가 0일 때의 예측값</li>
+          <li>$R^2 = 1$이면 완벽한 예측, $R^2 = 0$이면 평균값만큼의 예측력</li>
+          <li>MAE (Mean Absolute Error): $\frac{1}{N}\sum|y_i - \hat{y}_i|$</li>
+        </ul>
+      </div>
+
+      <div>
+        <!-- Figure 4.1 -->
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 4.1</span>
+            <span class="figure-title">Interactive Linear Regression</span>
+            <button class="challenge-btn" onclick="toggleChallenge('ch41')">도전 과제</button>
+          </div>
+          <div class="challenge-panel" id="ch41">
+            <div class="challenge-goal">목표: R&#178; &ge; 0.95 달성하기</div>
+            <div class="challenge-desc">R&#178;가 0.95 이상이 되려면 noise &#963;를 얼마나 줄여야 할까요? 슬라이더를 조작하면서 찾아보세요.</div>
+            <div class="challenge-status" id="ch41-status">현재: 슬라이더를 조작해보세요</div>
+          </div>
+          <div class="figure-body">
+            <div id="fig41" class="plotly-container"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">Slope (m)</span>
+                <input type="range" id="sl-m" min="-30" max="30" value="15" step="1">
+                <span class="control-value" id="sl-m-val">1.5</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Intercept (b)</span>
+                <input type="range" id="sl-b" min="-50" max="50" value="-10" step="1">
+                <span class="control-value" id="sl-b-val">-1.0</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Noise (&#963;)</span>
+                <input type="range" id="sl-sig" min="0" max="30" value="8" step="1">
+                <span class="control-value" id="sl-sig-val">0.8</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">N points</span>
+                <input type="range" id="sl-n" min="10" max="100" value="30" step="1">
+                <span class="control-value" id="sl-n-val">30</span>
+              </div>
+            </div>
+            <div class="readout">
+              <div class="readout-item"><span class="readout-key">R&#178;</span><span class="readout-val" id="rd-r2">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">MAE</span><span class="readout-val" id="rd-mae">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">RMSE</span><span class="readout-val" id="rd-rmse">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">Fitted Slope</span><span class="readout-val" id="rd-fslope">&#8212;</span></div>
+            </div>
+            <div class="highlight">
+              <div class="highlight-title">Noise와 R&#178;의 관계</div>
+              <div class="highlight-body">noise &#963;가 작을수록 데이터가 직선에 가까워져 R&#178;가 1에 접근합니다. 실제 촉매 데이터에서는 DFT 계산 오차, 표면 구조 다양성 등이 noise 원인이 됩니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 4.2 =================== -->
+  <section id="s42" class="section">
+    <p class="section-label">Section 4.2</p>
+    <h2 class="section-title">다항 회귀와 과적합</h2>
+    <div class="two-col">
+      <div>
+        <div class="section-body">
+          <p>모델 복잡도(model complexity)를 높이면 training data에 더 잘 맞출 수 있지만, 새로운 데이터에 대한 예측력은 오히려 떨어질 수 있습니다. 이것이 과적합(overfitting) 문제입니다.</p>
+          <p>Bias-variance tradeoff는 머신러닝의 핵심 개념입니다. 단순한 모델은 bias가 크고(underfitting), 복잡한 모델은 variance가 큽니다(overfitting). 최적의 모델은 이 둘 사이의 균형점에 있습니다.</p>
+          <p>다항 회귀에서 degree를 높이면 training error는 계속 줄어들지만, test error는 U-자 곡선을 그립니다. 이 U-자 곡선의 최솟값이 최적의 모델 복잡도입니다.</p>
+        </div>
+        <div class="eq-block">$$\hat{y} = a_0 + a_1 x + a_2 x^2 + \cdots + a_d x^d$$</div>
+        <ul class="concept-list">
+          <li>Underfitting (degree 1): 진짜 패턴을 놓침, 높은 bias</li>
+          <li>Just right (degree 3~4): 패턴을 포착하되 noise는 무시</li>
+          <li>Overfitting (degree 15): noise까지 학습, 높은 variance</li>
+          <li>Training error &#8800; Test error &mdash; 반드시 별도 검증 필요</li>
+        </ul>
+      </div>
+
+      <div>
+        <!-- Figure 4.2 -->
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 4.2</span>
+            <span class="figure-title">Overfitting Demo</span>
+          </div>
+          <div class="figure-body">
+            <div id="fig42" class="plotly-container"></div>
+            <div id="fig42b" class="plotly-container" style="margin-top:16px;min-height:280px;"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">Polynomial Degree</span>
+                <input type="range" id="sl-deg" min="1" max="15" value="3" step="1">
+                <span class="control-value" id="sl-deg-val">3</span>
+              </div>
+            </div>
+            <div class="readout">
+              <div class="readout-item"><span class="readout-key">Degree</span><span class="readout-val" id="rd-deg">3</span></div>
+              <div class="readout-item"><span class="readout-key">Train RMSE</span><span class="readout-val" id="rd-train-rmse">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">Test RMSE</span><span class="readout-val" id="rd-test-rmse">&#8212;</span></div>
+            </div>
+            <div class="highlight">
+              <div class="highlight-title">과적합의 징후</div>
+              <div class="highlight-body">degree가 너무 높으면 training data의 noise까지 학습합니다. 그래프에서 fitted curve가 data point 사이에서 격렬하게 흔들리는 것이 과적합의 전형적인 모습입니다.</div>
+            </div>
+            <button class="explore-toggle" onclick="toggleExplore('ex42')">Step-by-step 탐색 &#9662;</button>
+            <div class="explore-panel" id="ex42">
+              <ol class="explore-steps">
+                <li>Degree = 1로 설정하세요. 직선이 sin 곡선을 전혀 따라가지 못합니다 (underfitting).</li>
+                <li>Degree = 3으로 올려보세요. 곡선의 전체적인 형태를 잘 포착합니다.</li>
+                <li>Degree = 7 이상으로 올려보세요. Training data에는 완벽하게 맞지만 곡선이 불안정해집니다.</li>
+                <li>아래 error plot을 관찰하세요. Test RMSE가 최소인 degree가 최적입니다.</li>
+              </ol>
+              <div class="explore-insight"><strong>Key Insight:</strong> Training error만 보면 항상 복잡한 모델이 좋아 보이지만, 실제 예측 성능(test error)은 적절한 복잡도에서 최적입니다. 이것이 cross-validation이 필요한 이유입니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 4.3 =================== -->
+  <section id="s43" class="section">
+    <p class="section-label">Section 4.3</p>
+    <h2 class="section-title">Feature Engineering</h2>
+    <div class="two-col">
+      <div>
+        <div class="section-body">
+          <p>Feature engineering은 ML 모델의 성능을 좌우하는 가장 중요한 단계입니다. CO<sub>2</sub>RR(이산화탄소 환원 반응) 촉매 연구에서는 다양한 물리/화학적 descriptor를 feature로 사용합니다.</p>
+          <p>d-band center는 전이금속 촉매의 CO 흡착 에너지를 예측하는 가장 강력한 descriptor입니다. Hammer-N&#248;rskov d-band model에 따르면 d-band center가 Fermi level에 가까울수록 흡착이 강해집니다.</p>
+          <p>좋은 feature를 선택하면 적은 수의 descriptor로도 높은 예측력을 얻을 수 있습니다. 반대로 물리적 의미가 없는 feature는 noise만 학습하게 됩니다.</p>
+        </div>
+        <ul class="concept-list">
+          <li>d-band center: 가장 중요한 descriptor, 전이금속의 반응성 결정</li>
+          <li>Electronegativity: 원소의 전자 끌어당기는 힘, 결합 극성 결정</li>
+          <li>Atomic radius: 원자 크기, 표면 구조와 흡착 사이트에 영향</li>
+          <li>Cohesive energy: 원자 간 결합력, 촉매 안정성 관련</li>
+          <li>Work function: 전자 방출에 필요한 에너지, 전하 이동 관련</li>
+        </ul>
+      </div>
+
+      <div>
+        <!-- Figure 4.3 -->
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 4.3</span>
+            <span class="figure-title">Feature Importance (CO<sub>2</sub>RR)</span>
+          </div>
+          <div class="figure-body">
+            <div id="fig43" class="plotly-container"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">Top N Features</span>
+                <input type="range" id="sl-topn" min="1" max="7" value="7" step="1">
+                <span class="control-value" id="sl-topn-val">7</span>
+              </div>
+            </div>
+            <div class="readout">
+              <div class="readout-item"><span class="readout-key">Cumulative Importance</span><span class="readout-val" id="rd-cumimp">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">R&#178; (Top N)</span><span class="readout-val" id="rd-r2topn">&#8212;</span></div>
+            </div>
+            <div class="highlight">
+              <div class="highlight-title">d-band center의 지배적 역할</div>
+              <div class="highlight-body">d-band center가 CO 흡착 에너지의 가장 중요한 descriptor입니다. 상위 3개 feature만으로도 전체 importance의 70% 이상을 차지합니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- What-if cards -->
+    <div class="whatif-grid" style="margin-top:32px;">
+      <div class="whatif-card" onclick="revealWhatif(this)">
+        <div class="whatif-q">만약 feature를 1개만 쓰면?</div>
+        <div class="whatif-hint">d-band center 하나로도 R&#178;~0.6 정도는 나오지만, 다중 회귀가 훨씬 정확합니다. 하나의 descriptor로는 촉매 반응의 복잡한 관계를 완전히 설명할 수 없습니다.</div>
+        <div class="whatif-arrow">클릭해서 확인 &#8594;</div>
+      </div>
+      <div class="whatif-card" onclick="revealWhatif(this)">
+        <div class="whatif-q">만약 training data가 10개뿐이면?</div>
+        <div class="whatif-hint">과적합 위험이 커지고, cross-validation의 fold당 sample이 너무 적어집니다. 일반적으로 feature 수의 5~10배 이상의 data가 필요합니다.</div>
+        <div class="whatif-arrow">클릭해서 확인 &#8594;</div>
+      </div>
+      <div class="whatif-card" onclick="revealWhatif(this)">
+        <div class="whatif-q">만약 descriptor에 물리적 의미가 없으면?</div>
+        <div class="whatif-hint">noise를 학습하게 되어 일반화 성능이 떨어집니다. 물리 기반 descriptor가 중요합니다. random feature를 넣으면 training R&#178;는 올라가도 test R&#178;는 내려갑니다.</div>
+        <div class="whatif-arrow">클릭해서 확인 &#8594;</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 4.4 =================== -->
+  <section id="s44" class="section">
+    <p class="section-label">Section 4.4</p>
+    <h2 class="section-title">Cross-Validation과 모델 평가</h2>
+    <div class="two-col">
+      <div>
+        <div class="section-body">
+          <p>k-fold cross-validation은 데이터를 k개의 fold로 나누어 각각을 test set으로 사용하는 방법입니다. 매 fold에서 나머지 k-1개 fold를 training에 사용하므로, 모든 데이터가 한 번씩 test에 사용됩니다.</p>
+          <p>Cross-validation의 장점은 data를 낭비하지 않으면서도 모델의 일반화 성능을 추정할 수 있다는 점입니다. k가 클수록 training data가 많아지지만 fold 간 상관관계가 높아집니다.</p>
+          <p>모델 선택에서 가장 중요한 것은 mean R&#178;뿐 아니라 R&#178;의 표준편차(std)도 확인하는 것입니다. std가 크면 모델이 데이터 분할에 민감하다는 의미입니다.</p>
+        </div>
+        <ul class="concept-list">
+          <li>k-fold CV: 데이터를 k등분, 각 fold를 돌아가며 test set으로 사용</li>
+          <li>Mean R&#178;: 모든 fold의 R&#178; 평균 &mdash; 일반화 성능의 추정치</li>
+          <li>Std R&#178;: fold 간 편차 &mdash; 모델 안정성의 지표</li>
+          <li>k = 5 또는 10이 일반적으로 사용됩니다</li>
+        </ul>
+      </div>
+
+      <div>
+        <!-- Figure 4.4 -->
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 4.4</span>
+            <span class="figure-title">Cross-Validation Visualization</span>
+          </div>
+          <div class="figure-body">
+            <div id="fig44" class="plotly-container" style="min-height:220px;"></div>
+            <div id="fig44b" class="plotly-container" style="margin-top:16px;min-height:280px;"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">k (folds)</span>
+                <input type="range" id="sl-k" min="3" max="10" value="5" step="1">
+                <span class="control-value" id="sl-k-val">5</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Noise (&#963;)</span>
+                <input type="range" id="sl-cv-sig" min="5" max="30" value="10" step="1">
+                <span class="control-value" id="sl-cv-sig-val">1.0</span>
+              </div>
+            </div>
+            <div class="readout">
+              <div class="readout-item"><span class="readout-key">Mean R&#178;</span><span class="readout-val" id="rd-mean-r2">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">Std R&#178;</span><span class="readout-val" id="rd-std-r2">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">Best Fold</span><span class="readout-val" id="rd-best-fold">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">Worst Fold</span><span class="readout-val" id="rd-worst-fold">&#8212;</span></div>
+            </div>
+            <button class="explore-toggle" onclick="toggleExplore('ex44')">Step-by-step 탐색 &#9662;</button>
+            <div class="explore-panel" id="ex44">
+              <ol class="explore-steps">
+                <li>k = 3으로 설정하세요. 각 fold의 test set(빨간 구간)이 전체의 1/3을 차지합니다.</li>
+                <li>k = 10으로 올려보세요. 더 많은 fold, 더 작은 test set, 더 많은 training data.</li>
+                <li>Noise를 높여보세요. fold 간 R&#178; 편차(std)가 커지는 것을 관찰하세요.</li>
+                <li>낮은 noise에서는 k에 관계없이 안정적인 R&#178;를 보입니다.</li>
+              </ol>
+              <div class="explore-insight"><strong>Key Insight:</strong> k가 클수록 training 데이터를 많이 쓰지만, 각 fold의 test set이 작아져 R&#178; 추정의 분산이 커질 수 있습니다. k = 5~10이 실용적인 선택입니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 1 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: R&#178; = 0.95인 모델은 반드시 좋은 모델인가요?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz41')">A) 항상 그렇다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz41')">B) Training set에서만 그럴 수 있다</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz41')">C) 불가능하다</button>
+      </div>
+      <div class="quiz-explain" id="quiz41">정답: B) Training set에서 R&#178; = 0.95여도 test set에서는 훨씬 낮을 수 있습니다. 과적합된 모델은 training data만 잘 맞추기 때문입니다. 반드시 cross-validation으로 test set 성능을 확인해야 합니다.</div>
+    </div>
+  </section>
+
+  <!-- =================== SECTION 4.5 =================== -->
+  <section id="s45" class="section">
+    <p class="section-label">Section 4.5</p>
+    <h2 class="section-title">Parity Plot &mdash; 예측 vs 실제</h2>
+    <div class="two-col">
+      <div>
+        <div class="section-body">
+          <p>Parity plot은 모델의 예측값($\hat{y}$)을 실제값($y$)에 대해 그린 산점도입니다. 완벽한 모델이라면 모든 점이 $y = x$ 직선 위에 위치합니다.</p>
+          <p>잔차(residual) 분석을 통해 모델의 체계적 오차(systematic bias)를 파악할 수 있습니다. bias가 있으면 점들이 $y = x$ 직선에서 한쪽으로 치우칩니다.</p>
+          <p>촉매 연구에서는 &plusmn;0.2 eV 이내의 예측 오차를 "화학적 정확도"(chemical accuracy)로 봅니다. Parity plot에서 이 범위를 시각적으로 표시하면 모델의 실용성을 빠르게 판단할 수 있습니다.</p>
+        </div>
+        <ul class="concept-list">
+          <li>Parity line ($y = x$): 이상적인 예측 기준선</li>
+          <li>&plusmn;0.2 eV band: 화학적 정확도의 기준</li>
+          <li>Systematic bias: 점들이 parity line 위/아래로 치우침</li>
+          <li>MAE &lt; 0.1 eV: 매우 정확한 모델의 기준</li>
+        </ul>
+      </div>
+
+      <div>
+        <!-- Figure 4.5 -->
+        <div class="figure-card">
+          <div class="figure-header">
+            <span class="figure-label">Figure 4.5</span>
+            <span class="figure-title">Parity Plot</span>
+            <button class="challenge-btn" onclick="toggleChallenge('ch45')">도전 과제</button>
+          </div>
+          <div class="challenge-panel" id="ch45">
+            <div class="challenge-goal">목표: MAE &lt; 0.1 eV 달성하기</div>
+            <div class="challenge-desc">bias를 0으로, noise를 최소로 만들어 MAE &lt; 0.1 eV을 달성해보세요.</div>
+            <div class="challenge-status" id="ch45-status">현재: 슬라이더를 조작해보세요</div>
+          </div>
+          <div class="figure-body">
+            <div id="fig45" class="plotly-container"></div>
+            <div class="controls">
+              <div class="control-row">
+                <span class="control-label">Noise (&#963;)</span>
+                <input type="range" id="sl-pp-sig" min="0" max="150" value="30" step="1">
+                <span class="control-value" id="sl-pp-sig-val">0.30</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">Systematic Bias</span>
+                <input type="range" id="sl-pp-bias" min="0" max="50" value="0" step="1">
+                <span class="control-value" id="sl-pp-bias-val">0.00</span>
+              </div>
+              <div class="control-row">
+                <span class="control-label">N Points</span>
+                <input type="range" id="sl-pp-n" min="20" max="100" value="40" step="1">
+                <span class="control-value" id="sl-pp-n-val">40</span>
+              </div>
+            </div>
+            <div class="readout">
+              <div class="readout-item"><span class="readout-key">MAE</span><span class="readout-val" id="rd-pp-mae">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">RMSE</span><span class="readout-val" id="rd-pp-rmse">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">Max Error</span><span class="readout-val" id="rd-pp-maxerr">&#8212;</span></div>
+              <div class="readout-item"><span class="readout-key">Within 0.2 eV</span><span class="readout-val" id="rd-pp-within">&#8212;</span></div>
+            </div>
+            <div class="highlight">
+              <div class="highlight-title">Parity plot 읽는 법</div>
+              <div class="highlight-body">점들이 y = x 직선에 밀집할수록 좋은 모델입니다. 파란 band(&plusmn;0.2 eV) 안에 점이 많을수록 화학적으로 의미 있는 정확도를 갖는 모델입니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz 2 -->
+    <div class="quiz-block" style="margin-top:32px; max-width:600px;">
+      <div class="quiz-q">Q: Feature importance가 가장 높은 descriptor로만 모델을 만들면?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz42')">A) 최고 성능</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'quiz42')">B) 과소적합 (underfitting)</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'quiz42')">C) 과적합 (overfitting)</button>
+      </div>
+      <div class="quiz-explain" id="quiz42">정답: B) 하나의 feature만으로는 복잡한 관계를 표현하기 어렵습니다. d-band center 하나로는 R&#178; ~ 0.6 정도만 가능하며, 나머지 분산을 설명하려면 추가 descriptor가 필요합니다.</div>
+    </div>
+  </section>
+
+  <!-- =================== TAKEAWAYS =================== -->
+  <section class="takeaways section">
+    <p class="section-label">Key Takeaways</p>
+    <h2 class="section-title">Chapter 4 핵심 메시지</h2>
+    <div class="takeaway-grid">
+      <div class="takeaway-card">
+        <div class="takeaway-number">01</div>
+        <div class="takeaway-title">과적합 경계</div>
+        <div class="takeaway-body">모델 복잡도를 높이면 training error는 줄지만 test error는 커질 수 있습니다. Bias-variance tradeoff를 항상 고려해야 합니다.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">02</div>
+        <div class="takeaway-title">Feature가 핵심</div>
+        <div class="takeaway-body">물리적으로 의미 있는 descriptor가 데이터 양보다 중요합니다. d-band center 같은 물리 기반 feature가 모델의 해석성과 정확도를 모두 높입니다.</div>
+      </div>
+      <div class="takeaway-card">
+        <div class="takeaway-number">03</div>
+        <div class="takeaway-title">검증 필수</div>
+        <div class="takeaway-body">Cross-validation과 parity plot으로 반드시 모델을 검증해야 합니다. Training R&#178;만으로는 모델의 일반화 성능을 알 수 없습니다.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">Choung &mdash; <em>Simulation Tutorials</em>, Chapter 4</span>
+    <span class="footer-text">움직이는 교과서 &middot; Interactive Edition</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTS & HELPERS
+// ============================================================
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// Seeded RNG for reproducible data
+function mulberry32(a) {
+  return function() {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function gaussianRNG(rng) {
+  var u = 0, v = 0;
+  while (u === 0) u = rng();
+  while (v === 0) v = rng();
+  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+}
+
+// ============================================================
+// PLOTLY CONFIG (global)
+// ============================================================
+const plotlyCfg = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['sendDataToCloud', 'lasso2d', 'select2d', 'toImage'],
+  displaylogo: false
+};
+
+const baseLayout = {
+  font: { family: 'Inter, sans-serif', size: 12, color: '#000' },
+  paper_bgcolor: '#fff',
+  plot_bgcolor: '#fafafa',
+  margin: { t: 20, r: 20, b: 50, l: 60 },
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', linecolor: '#000', linewidth: 1 }
+};
+
+function mergeLayout(extra) {
+  var merged = Object.assign({}, baseLayout, extra, {
+    xaxis: Object.assign({}, baseLayout.xaxis, extra.xaxis || {}),
+    yaxis: Object.assign({}, baseLayout.yaxis, extra.yaxis || {}),
+    font: Object.assign({}, baseLayout.font, extra.font || {})
+  });
+  if (extra.yaxis2) merged.yaxis2 = extra.yaxis2;
+  if (extra.xaxis2) merged.xaxis2 = extra.xaxis2;
+  return merged;
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function showToast(msg) {
+  var t = document.getElementById('global-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2400);
+}
+function toggleChallenge(id) { document.getElementById(id).classList.toggle('open'); }
+function toggleExplore(id) { document.getElementById(id).classList.toggle('open'); }
+function revealWhatif(card) { card.classList.toggle('revealed'); }
+function answerQuiz(btn, correct, explainId) {
+  var siblings = btn.parentElement.children;
+  for (var i = 0; i < siblings.length; i++) {
+    siblings[i].disabled = true;
+    siblings[i].style.pointerEvents = 'none';
+  }
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  document.getElementById(explainId).classList.add('show');
+  if (correct) showToast('정답입니다!');
+}
+
+const rafPending = {};
+function throttledDraw(key, fn) {
+  if (rafPending[key]) return;
+  rafPending[key] = true;
+  requestAnimationFrame(function() { fn(); rafPending[key] = false; });
+}
+
+// ============================================================
+// LINEAR ALGEBRA HELPERS
+// ============================================================
+// Solve normal equations: X^T X a = X^T y via Gauss elimination
+function polyfit(xs, ys, deg) {
+  var n = xs.length;
+  var m = deg + 1;
+  // Build X^T X
+  var XtX = [];
+  var Xty = [];
+  var i, j, k;
+  for (i = 0; i < m; i++) {
+    XtX[i] = [];
+    for (j = 0; j < m; j++) {
+      var s = 0;
+      for (k = 0; k < n; k++) s += Math.pow(xs[k], i) * Math.pow(xs[k], j);
+      XtX[i][j] = s;
+    }
+    var sy = 0;
+    for (k = 0; k < n; k++) sy += Math.pow(xs[k], i) * ys[k];
+    Xty[i] = sy;
+  }
+  // Gauss elimination
+  for (i = 0; i < m; i++) {
+    var maxRow = i;
+    for (k = i + 1; k < m; k++) {
+      if (Math.abs(XtX[k][i]) > Math.abs(XtX[maxRow][i])) maxRow = k;
+    }
+    var tmpR = XtX[i]; XtX[i] = XtX[maxRow]; XtX[maxRow] = tmpR;
+    var tmpV = Xty[i]; Xty[i] = Xty[maxRow]; Xty[maxRow] = tmpV;
+
+    if (Math.abs(XtX[i][i]) < 1e-12) continue;
+    for (k = i + 1; k < m; k++) {
+      var f = XtX[k][i] / XtX[i][i];
+      for (j = i; j < m; j++) XtX[k][j] -= f * XtX[i][j];
+      Xty[k] -= f * Xty[i];
+    }
+  }
+  // Back substitution
+  var coeffs = new Array(m).fill(0);
+  for (i = m - 1; i >= 0; i--) {
+    if (Math.abs(XtX[i][i]) < 1e-12) { coeffs[i] = 0; continue; }
+    var s2 = Xty[i];
+    for (j = i + 1; j < m; j++) s2 -= XtX[i][j] * coeffs[j];
+    coeffs[i] = s2 / XtX[i][i];
+  }
+  return coeffs;
+}
+
+function polyeval(coeffs, x) {
+  var y = 0;
+  for (var i = 0; i < coeffs.length; i++) y += coeffs[i] * Math.pow(x, i);
+  return y;
+}
+
+function linearFit(xs, ys) {
+  var n = xs.length;
+  var sx = 0, sy = 0, sxy = 0, sxx = 0;
+  for (var i = 0; i < n; i++) { sx += xs[i]; sy += ys[i]; sxy += xs[i]*ys[i]; sxx += xs[i]*xs[i]; }
+  var denom = n * sxx - sx * sx;
+  if (Math.abs(denom) < 1e-15) return { m: 0, b: sy / n };
+  var m = (n * sxy - sx * sy) / denom;
+  var b = (sy - m * sx) / n;
+  return { m: m, b: b };
+}
+
+function calcStats(ys, yhat) {
+  var n = ys.length;
+  var ybar = 0;
+  for (var i = 0; i < n; i++) ybar += ys[i];
+  ybar /= n;
+  var ss_res = 0, ss_tot = 0, ae = 0, maxe = 0;
+  for (var i = 0; i < n; i++) {
+    var e = ys[i] - yhat[i];
+    ss_res += e * e;
+    ss_tot += (ys[i] - ybar) * (ys[i] - ybar);
+    ae += Math.abs(e);
+    if (Math.abs(e) > maxe) maxe = Math.abs(e);
+  }
+  var r2 = ss_tot > 0 ? 1 - ss_res / ss_tot : 0;
+  return { r2: r2, mae: ae / n, rmse: Math.sqrt(ss_res / n), maxerr: maxe };
+}
+
+// ============================================================
+// FIGURE 4.1: Interactive Linear Regression
+// ============================================================
+// Persistent random seed for fig41
+var fig41Seed = 12345;
+var fig41RNG = mulberry32(fig41Seed);
+var fig41NoiseBank = [];
+var fig41XBank = [];
+(function() {
+  for (var i = 0; i < 100; i++) {
+    fig41XBank.push(fig41RNG() * 6 - 3);
+    fig41NoiseBank.push(gaussianRNG(fig41RNG));
+  }
+})();
+
+function fig41Data(m, b, sig, N) {
+  var xs = [], ys = [], yhat = [];
+  for (var i = 0; i < N; i++) {
+    var x = fig41XBank[i];
+    var y = m * x + b + sig * fig41NoiseBank[i];
+    xs.push(x); ys.push(y);
+  }
+  var fit = linearFit(xs, ys);
+  for (var i = 0; i < N; i++) yhat.push(fit.m * xs[i] + fit.b);
+  var stats = calcStats(ys, yhat);
+
+  // Residual lines
+  var residShapes = [];
+  for (var i = 0; i < N; i++) {
+    residShapes.push({
+      type: 'line', x0: xs[i], x1: xs[i], y0: ys[i], y1: yhat[i],
+      xref: 'x', yref: 'y',
+      line: { color: '#ddd', width: 1 }
+    });
+  }
+
+  // Fitted line trace
+  var xsorted = xs.slice().sort(function(a,b){return a-b;});
+  var lineX = [xsorted[0], xsorted[xsorted.length-1]];
+  var lineY = [fit.m * lineX[0] + fit.b, fit.m * lineX[1] + fit.b];
+
+  var traces = [
+    { x: xs, y: ys, type: 'scatter', mode: 'markers',
+      marker: { color: '#000', size: 7 }, name: 'Data',
+      hovertemplate: 'x=%{x:.2f}<br>y=%{y:.2f}<extra></extra>' },
+    { x: lineX, y: lineY, type: 'scatter', mode: 'lines',
+      line: { color: '#c0392b', width: 2.5 }, name: 'Fitted line' }
+  ];
+
+  var layoutExtras = {
+    xaxis: { title: 'x' },
+    yaxis: { title: 'y' },
+    showlegend: false,
+    shapes: residShapes
+  };
+
+  return { traces: traces, layoutExtras: layoutExtras, stats: stats, fitSlope: fit.m };
+}
+
+function buildFig41() {
+  var result = fig41Data(1.5, -1, 0.8, 30);
+  Plotly.newPlot('fig41', result.traces, mergeLayout(result.layoutExtras), plotlyCfg);
+  updateFig41Readouts(result.stats, result.fitSlope);
+}
+
+function updateFig41(m, b, sig, N) {
+  var result = fig41Data(m, b, sig, N);
+  Plotly.react('fig41', result.traces, mergeLayout(result.layoutExtras), plotlyCfg);
+  updateFig41Readouts(result.stats, result.fitSlope);
+  // Challenge check
+  var statusEl = document.getElementById('ch41-status');
+  if (result.stats.r2 >= 0.95) {
+    statusEl.textContent = 'R² = ' + result.stats.r2.toFixed(4) + ' ≥ 0.95 — 달성!';
+    statusEl.className = 'challenge-status success';
+    showToast('R² ≥ 0.95 달성! 축하합니다!');
+  } else {
+    statusEl.textContent = '현재 R² = ' + result.stats.r2.toFixed(4);
+    statusEl.className = 'challenge-status';
+  }
+}
+
+function updateFig41Readouts(stats, fitSlope) {
+  document.getElementById('rd-r2').textContent = stats.r2.toFixed(4);
+  document.getElementById('rd-mae').textContent = stats.mae.toFixed(3);
+  document.getElementById('rd-rmse').textContent = stats.rmse.toFixed(3);
+  document.getElementById('rd-fslope').textContent = fitSlope.toFixed(3);
+}
+
+// ============================================================
+// FIGURE 4.2: Overfitting Demo
+// ============================================================
+// Generate fixed training and test data
+var fig42Seed = 42;
+var fig42RNG = mulberry32(fig42Seed);
+var fig42TrainX = [], fig42TrainY = [];
+var fig42TestX = [], fig42TestY = [];
+(function() {
+  for (var i = 0; i < 20; i++) {
+    var x = fig42RNG();
+    var y = Math.sin(2 * Math.PI * x) + 0.3 * gaussianRNG(fig42RNG);
+    fig42TrainX.push(x);
+    fig42TrainY.push(y);
+  }
+  for (var i = 0; i < 50; i++) {
+    var x = fig42RNG();
+    var y = Math.sin(2 * Math.PI * x) + 0.3 * gaussianRNG(fig42RNG);
+    fig42TestX.push(x);
+    fig42TestY.push(y);
+  }
+})();
+
+// Precompute all degree errors for the U-curve
+var fig42AllErrors = [];
+(function() {
+  for (var d = 1; d <= 15; d++) {
+    var coeffs = polyfit(fig42TrainX, fig42TrainY, d);
+    var trainPred = fig42TrainX.map(function(x) { return polyeval(coeffs, x); });
+    var testPred = fig42TestX.map(function(x) { return polyeval(coeffs, x); });
+    var trainStats = calcStats(fig42TrainY, trainPred);
+    var testStats = calcStats(fig42TestY, testPred);
+    fig42AllErrors.push({ degree: d, trainRMSE: trainStats.rmse, testRMSE: testStats.rmse });
+  }
+})();
+
+function fig42Data(deg) {
+  var coeffs = polyfit(fig42TrainX, fig42TrainY, deg);
+
+  // True function trace
+  var trueX = [], trueY = [];
+  for (var i = 0; i <= 200; i++) {
+    var x = i / 200;
+    trueX.push(x);
+    trueY.push(Math.sin(2 * Math.PI * x));
+  }
+
+  // Fitted curve
+  var fitX = [], fitY = [];
+  for (var i = 0; i <= 200; i++) {
+    var x = i / 200;
+    fitX.push(x);
+    fitY.push(clamp(polyeval(coeffs, x), -3, 3));
+  }
+
+  var traces = [
+    { x: fig42TrainX, y: fig42TrainY, type: 'scatter', mode: 'markers',
+      marker: { color: '#000', size: 7 }, name: 'Training data' },
+    { x: trueX, y: trueY, type: 'scatter', mode: 'lines',
+      line: { color: '#999', width: 2, dash: 'dash' }, name: 'True: sin(2πx)' },
+    { x: fitX, y: fitY, type: 'scatter', mode: 'lines',
+      line: { color: '#c0392b', width: 2.5 }, name: 'Fitted (deg=' + deg + ')' }
+  ];
+
+  var layoutExtras = {
+    xaxis: { title: 'x', range: [-0.05, 1.05] },
+    yaxis: { title: 'y', range: [-2, 2] },
+    showlegend: true,
+    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  };
+
+  var trainPred = fig42TrainX.map(function(x) { return polyeval(coeffs, x); });
+  var testPred = fig42TestX.map(function(x) { return polyeval(coeffs, x); });
+  var trainStats = calcStats(fig42TrainY, trainPred);
+  var testStats = calcStats(fig42TestY, testPred);
+
+  return { traces: traces, layoutExtras: layoutExtras, trainRMSE: trainStats.rmse, testRMSE: testStats.rmse };
+}
+
+function fig42ErrorData(currentDeg) {
+  var degs = [], trainRs = [], testRs = [];
+  for (var i = 0; i < fig42AllErrors.length; i++) {
+    degs.push(fig42AllErrors[i].degree);
+    trainRs.push(fig42AllErrors[i].trainRMSE);
+    testRs.push(fig42AllErrors[i].testRMSE);
+  }
+
+  var traces = [
+    { x: degs, y: trainRs, type: 'scatter', mode: 'lines+markers',
+      line: { color: '#000', width: 2 }, marker: { size: 5, color: '#000' }, name: 'Train RMSE' },
+    { x: degs, y: testRs, type: 'scatter', mode: 'lines+markers',
+      line: { color: '#c0392b', width: 2 }, marker: { size: 5, color: '#c0392b' }, name: 'Test RMSE' },
+    { x: [currentDeg], y: [fig42AllErrors[currentDeg-1].testRMSE], type: 'scatter', mode: 'markers',
+      marker: { size: 14, color: '#c0392b', symbol: 'circle-open', line: { width: 3, color: '#c0392b' } },
+      showlegend: false }
+  ];
+
+  var layoutExtras = {
+    xaxis: { title: 'Polynomial Degree', dtick: 1 },
+    yaxis: { title: 'RMSE', range: [0, Math.max(1.5, testRs[testRs.length-1] * 1.1)] },
+    showlegend: true,
+    legend: { x: 0.55, y: 0.98, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 },
+    margin: { t: 20, r: 20, b: 50, l: 60 }
+  };
+
+  return { traces: traces, layoutExtras: layoutExtras };
+}
+
+function buildFig42() {
+  var result = fig42Data(3);
+  Plotly.newPlot('fig42', result.traces, mergeLayout(result.layoutExtras), plotlyCfg);
+  var errResult = fig42ErrorData(3);
+  Plotly.newPlot('fig42b', errResult.traces, mergeLayout(errResult.layoutExtras), plotlyCfg);
+  document.getElementById('rd-deg').textContent = '3';
+  document.getElementById('rd-train-rmse').textContent = result.trainRMSE.toFixed(4);
+  document.getElementById('rd-test-rmse').textContent = result.testRMSE.toFixed(4);
+}
+
+function updateFig42(deg) {
+  var result = fig42Data(deg);
+  Plotly.react('fig42', result.traces, mergeLayout(result.layoutExtras), plotlyCfg);
+  var errResult = fig42ErrorData(deg);
+  Plotly.react('fig42b', errResult.traces, mergeLayout(errResult.layoutExtras), plotlyCfg);
+  document.getElementById('rd-deg').textContent = deg;
+  document.getElementById('rd-train-rmse').textContent = result.trainRMSE.toFixed(4);
+  document.getElementById('rd-test-rmse').textContent = result.testRMSE.toFixed(4);
+}
+
+// ============================================================
+// FIGURE 4.3: Feature Importance Bar Chart
+// ============================================================
+var featureData = [
+  { name: 'd-band center', importance: 0.35 },
+  { name: 'Electronegativity', importance: 0.22 },
+  { name: 'Atomic radius', importance: 0.15 },
+  { name: 'Cohesive energy', importance: 0.12 },
+  { name: 'Work function', importance: 0.08 },
+  { name: 'Valence electrons', importance: 0.05 },
+  { name: 'Ionization energy', importance: 0.03 }
+];
+
+// Simulated R^2 for subsets (cumulative feature addition)
+var featureR2 = [0.60, 0.78, 0.86, 0.91, 0.94, 0.96, 0.97];
+
+function fig43Data(topN) {
+  var names = [], importances = [], colors = [];
+  // Horizontal bar: sorted ascending for display (top feature at top)
+  for (var i = featureData.length - 1; i >= 0; i--) {
+    names.push(featureData[i].name);
+    importances.push(featureData[i].importance);
+    colors.push(i < topN ? '#000' : '#e5e7eb');
+  }
+
+  var cumImp = 0;
+  for (var i = 0; i < topN; i++) cumImp += featureData[i].importance;
+
+  var traces = [{
+    y: names, x: importances, type: 'bar', orientation: 'h',
+    marker: { color: colors },
+    text: importances.map(function(v) { return (v * 100).toFixed(0) + '%'; }),
+    textposition: 'outside',
+    textfont: { size: 11, color: '#000' },
+    hovertemplate: '%{y}: %{x:.2f}<extra></extra>'
+  }];
+
+  var layoutExtras = {
+    xaxis: { title: 'Feature Importance', range: [0, 0.45] },
+    yaxis: { automargin: true },
+    showlegend: false,
+    margin: { t: 20, r: 60, b: 50, l: 130 }
+  };
+
+  return { traces: traces, layoutExtras: layoutExtras, cumImp: cumImp, r2: featureR2[topN - 1] };
+}
+
+function buildFig43() {
+  var result = fig43Data(7);
+  Plotly.newPlot('fig43', result.traces, mergeLayout(result.layoutExtras), plotlyCfg);
+  document.getElementById('rd-cumimp').textContent = (result.cumImp * 100).toFixed(0) + '%';
+  document.getElementById('rd-r2topn').textContent = result.r2.toFixed(2);
+}
+
+function updateFig43(topN) {
+  var result = fig43Data(topN);
+  Plotly.react('fig43', result.traces, mergeLayout(result.layoutExtras), plotlyCfg);
+  document.getElementById('rd-cumimp').textContent = (result.cumImp * 100).toFixed(0) + '%';
+  document.getElementById('rd-r2topn').textContent = result.r2.toFixed(2);
+}
+
+// ============================================================
+// FIGURE 4.4: Cross-Validation Visualization
+// ============================================================
+var fig44Seed = 99;
+var fig44RNG = mulberry32(fig44Seed);
+var fig44BaseX = [], fig44BaseNoise = [];
+(function() {
+  for (var i = 0; i < 60; i++) {
+    fig44BaseX.push(fig44RNG() * 4 - 2);
+    fig44BaseNoise.push(gaussianRNG(fig44RNG));
+  }
+})();
+
+function fig44Data(k, sigma) {
+  var N = 60;
+  // Generate data
+  var xs = fig44BaseX.slice(0, N);
+  var ys = [];
+  for (var i = 0; i < N; i++) {
+    ys.push(1.5 * xs[i] - 0.5 + sigma * fig44BaseNoise[i]);
+  }
+
+  // k-fold split visualization (horizontal bars)
+  var foldBarTraces = [];
+  var foldSize = Math.floor(N / k);
+  var foldR2s = [];
+
+  for (var fold = 0; fold < k; fold++) {
+    var testStart = fold * foldSize;
+    var testEnd = (fold === k - 1) ? N : (fold + 1) * foldSize;
+
+    // For fold bars: train is gray, test is red
+    // Each fold is a horizontal bar
+    foldBarTraces.push({
+      x: [testStart, testEnd - testStart],
+      y: ['Fold ' + (fold + 1)],
+      type: 'bar', orientation: 'h',
+      base: [testStart],
+      marker: { color: '#c0392b' },
+      width: 0.6,
+      showlegend: fold === 0,
+      name: fold === 0 ? 'Test' : '',
+      legendgroup: 'test',
+      hoverinfo: 'skip'
+    });
+
+    // Compute R2 for this fold
+    var trainX = [], trainY = [], testX = [], testY = [];
+    for (var i = 0; i < N; i++) {
+      if (i >= testStart && i < testEnd) {
+        testX.push(xs[i]); testY.push(ys[i]);
+      } else {
+        trainX.push(xs[i]); trainY.push(ys[i]);
+      }
+    }
+    var fit = linearFit(trainX, trainY);
+    var testPred = testX.map(function(x) { return fit.m * x + fit.b; });
+    var stats = calcStats(testY, testPred);
+    foldR2s.push(stats.r2);
+  }
+
+  // Fold split layout
+  var foldYLabels = [];
+  for (var fold = 0; fold < k; fold++) foldYLabels.push('Fold ' + (fold + 1));
+
+  // Build train bars (background gray)
+  var trainBars = [];
+  for (var fold = 0; fold < k; fold++) {
+    var testStart = fold * foldSize;
+    var testEnd = (fold === k - 1) ? N : (fold + 1) * foldSize;
+    // Before test
+    if (testStart > 0) {
+      trainBars.push({
+        x: [testStart],
+        y: ['Fold ' + (fold + 1)],
+        type: 'bar', orientation: 'h',
+        base: [0],
+        marker: { color: '#e5e7eb' },
+        width: 0.6,
+        showlegend: fold === 0,
+        name: fold === 0 ? 'Train' : '',
+        legendgroup: 'train',
+        hoverinfo: 'skip'
+      });
+    }
+    // After test
+    if (testEnd < N) {
+      trainBars.push({
+        x: [N - testEnd],
+        y: ['Fold ' + (fold + 1)],
+        type: 'bar', orientation: 'h',
+        base: [testEnd],
+        marker: { color: '#e5e7eb' },
+        width: 0.6,
+        showlegend: false,
+        legendgroup: 'train',
+        hoverinfo: 'skip'
+      });
+    }
+  }
+
+  var allFoldTraces = trainBars.concat(foldBarTraces);
+  var foldLayoutExtras = {
+    xaxis: { title: 'Sample Index', range: [0, N] },
+    yaxis: { automargin: true },
+    showlegend: true,
+    legend: { x: 0.7, y: 1.05, orientation: 'h', bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 },
+    barmode: 'overlay',
+    margin: { t: 30, r: 20, b: 50, l: 70 },
+    height: 220
+  };
+
+  // R2 per fold line plot
+  var meanR2 = 0;
+  for (var i = 0; i < foldR2s.length; i++) meanR2 += foldR2s[i];
+  meanR2 /= foldR2s.length;
+
+  var stdR2 = 0;
+  for (var i = 0; i < foldR2s.length; i++) stdR2 += (foldR2s[i] - meanR2) * (foldR2s[i] - meanR2);
+  stdR2 = Math.sqrt(stdR2 / foldR2s.length);
+
+  var bestFold = 0, worstFold = 0;
+  for (var i = 1; i < foldR2s.length; i++) {
+    if (foldR2s[i] > foldR2s[bestFold]) bestFold = i;
+    if (foldR2s[i] < foldR2s[worstFold]) worstFold = i;
+  }
+
+  var foldLabels = [];
+  for (var i = 0; i < k; i++) foldLabels.push(i + 1);
+
+  var r2Traces = [
+    { x: foldLabels, y: foldR2s, type: 'scatter', mode: 'lines+markers',
+      line: { color: '#000', width: 2 }, marker: { size: 7, color: '#000' }, name: 'Fold R²' },
+    { x: [foldLabels[0], foldLabels[foldLabels.length-1]], y: [meanR2, meanR2],
+      type: 'scatter', mode: 'lines',
+      line: { color: '#c0392b', width: 2, dash: 'dash' }, name: 'Mean R²' }
+  ];
+
+  var r2LayoutExtras = {
+    xaxis: { title: 'Fold', dtick: 1 },
+    yaxis: { title: 'R²', range: [Math.max(0, meanR2 - 4 * Math.max(stdR2, 0.05)), Math.min(1.05, meanR2 + 4 * Math.max(stdR2, 0.05))] },
+    showlegend: true,
+    legend: { x: 0.6, y: 0.02, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 },
+    margin: { t: 20, r: 20, b: 50, l: 60 }
+  };
+
+  return {
+    foldTraces: allFoldTraces, foldLayout: foldLayoutExtras,
+    r2Traces: r2Traces, r2Layout: r2LayoutExtras,
+    meanR2: meanR2, stdR2: stdR2,
+    bestFold: bestFold + 1, bestR2: foldR2s[bestFold],
+    worstFold: worstFold + 1, worstR2: foldR2s[worstFold]
+  };
+}
+
+function buildFig44() {
+  var result = fig44Data(5, 1.0);
+  Plotly.newPlot('fig44', result.foldTraces, mergeLayout(result.foldLayout), plotlyCfg);
+  Plotly.newPlot('fig44b', result.r2Traces, mergeLayout(result.r2Layout), plotlyCfg);
+  updateFig44Readouts(result);
+}
+
+function updateFig44(k, sigma) {
+  var result = fig44Data(k, sigma);
+  Plotly.react('fig44', result.foldTraces, mergeLayout(result.foldLayout), plotlyCfg);
+  Plotly.react('fig44b', result.r2Traces, mergeLayout(result.r2Layout), plotlyCfg);
+  updateFig44Readouts(result);
+}
+
+function updateFig44Readouts(r) {
+  document.getElementById('rd-mean-r2').textContent = r.meanR2.toFixed(4);
+  document.getElementById('rd-std-r2').textContent = r.stdR2.toFixed(4);
+  document.getElementById('rd-best-fold').textContent = 'Fold ' + r.bestFold + ' (' + r.bestR2.toFixed(3) + ')';
+  document.getElementById('rd-worst-fold').textContent = 'Fold ' + r.worstFold + ' (' + r.worstR2.toFixed(3) + ')';
+}
+
+// ============================================================
+// FIGURE 4.5: Parity Plot
+// ============================================================
+var fig45Seed = 77;
+var fig45RNG = mulberry32(fig45Seed);
+var fig45TrueBank = [], fig45NoiseBank = [];
+(function() {
+  for (var i = 0; i < 100; i++) {
+    fig45TrueBank.push(fig45RNG() * 3 - 3); // uniform(-3, 0)
+    fig45NoiseBank.push(gaussianRNG(fig45RNG));
+  }
+})();
+
+function fig45Data(sigma, bias, N) {
+  var yTrue = [], yPred = [];
+  for (var i = 0; i < N; i++) {
+    var yt = fig45TrueBank[i];
+    var yp = yt + bias + sigma * fig45NoiseBank[i];
+    yTrue.push(yt);
+    yPred.push(yp);
+  }
+
+  var errors = [];
+  var withinCount = 0;
+  for (var i = 0; i < N; i++) {
+    var e = Math.abs(yPred[i] - yTrue[i]);
+    errors.push(e);
+    if (e <= 0.2) withinCount++;
+  }
+  var mae = 0, mse = 0, maxerr = 0;
+  for (var i = 0; i < N; i++) {
+    mae += errors[i];
+    mse += errors[i] * errors[i];
+    if (errors[i] > maxerr) maxerr = errors[i];
+  }
+  mae /= N;
+  var rmse = Math.sqrt(mse / N);
+  var withinPct = (withinCount / N * 100);
+
+  // Band fill
+  var bandX = [-3.5, 0.5, 0.5, -3.5];
+  var bandYupper = [-3.5 + 0.2, 0.5 + 0.2, 0.5 + 0.2, -3.5 + 0.2];
+  var bandYlower = [-3.5 - 0.2, 0.5 - 0.2, 0.5 - 0.2, -3.5 - 0.2];
+
+  var traces = [
+    // +/- 0.2 eV band
+    { x: [-3.5, 0.5, 0.5, -3.5], y: [-3.5 + 0.2, 0.5 + 0.2, 0.5 - 0.2, -3.5 - 0.2],
+      type: 'scatter', mode: 'none', fill: 'toself',
+      fillcolor: 'rgba(41,128,185,0.12)', name: '±0.2 eV',
+      hoverinfo: 'skip' },
+    // y=x line
+    { x: [-3.5, 0.5], y: [-3.5, 0.5], type: 'scatter', mode: 'lines',
+      line: { color: '#999', width: 1.5, dash: 'dash' }, name: 'y = x', hoverinfo: 'skip' },
+    // scatter points
+    { x: yTrue, y: yPred, type: 'scatter', mode: 'markers',
+      marker: { color: '#000', size: 7 }, name: 'Predictions',
+      hovertemplate: 'True=%{x:.2f} eV<br>Pred=%{y:.2f} eV<extra></extra>' }
+  ];
+
+  var layoutExtras = {
+    xaxis: { title: 'True E_ads (eV)', range: [-3.5, 0.5], scaleanchor: 'y' },
+    yaxis: { title: 'Predicted E_ads (eV)', range: [-3.5, 0.5] },
+    showlegend: true,
+    legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.8)', bordercolor: '#e5e7eb', borderwidth: 1 }
+  };
+
+  return { traces: traces, layoutExtras: layoutExtras, mae: mae, rmse: rmse, maxerr: maxerr, withinPct: withinPct };
+}
+
+function buildFig45() {
+  var result = fig45Data(0.3, 0, 40);
+  Plotly.newPlot('fig45', result.traces, mergeLayout(result.layoutExtras), plotlyCfg);
+  updateFig45Readouts(result);
+}
+
+function updateFig45(sigma, bias, N) {
+  var result = fig45Data(sigma, bias, N);
+  Plotly.react('fig45', result.traces, mergeLayout(result.layoutExtras), plotlyCfg);
+  updateFig45Readouts(result);
+  // Challenge check
+  var statusEl = document.getElementById('ch45-status');
+  if (result.mae < 0.1) {
+    statusEl.textContent = 'MAE = ' + result.mae.toFixed(3) + ' eV < 0.1 eV — 달성!';
+    statusEl.className = 'challenge-status success';
+    showToast('MAE < 0.1 eV 달성! 축하합니다!');
+  } else {
+    statusEl.textContent = '현재 MAE = ' + result.mae.toFixed(3) + ' eV';
+    statusEl.className = 'challenge-status';
+  }
+}
+
+function updateFig45Readouts(r) {
+  document.getElementById('rd-pp-mae').textContent = r.mae.toFixed(3) + ' eV';
+  document.getElementById('rd-pp-rmse').textContent = r.rmse.toFixed(3) + ' eV';
+  document.getElementById('rd-pp-maxerr').textContent = r.maxerr.toFixed(3) + ' eV';
+  document.getElementById('rd-pp-within').textContent = r.withinPct.toFixed(0) + '%';
+}
+
+// ============================================================
+// SLIDER EVENT SETUP
+// ============================================================
+function setupSliders() {
+  // Fig 4.1 sliders
+  function readFig41() {
+    var m = parseFloat(document.getElementById('sl-m').value) / 10;
+    var b = parseFloat(document.getElementById('sl-b').value) / 10;
+    var sig = parseFloat(document.getElementById('sl-sig').value) / 10;
+    var N = parseInt(document.getElementById('sl-n').value);
+    return { m: m, b: b, sig: sig, N: N };
+  }
+
+  document.getElementById('sl-m').addEventListener('input', function() {
+    var p = readFig41();
+    document.getElementById('sl-m-val').textContent = p.m.toFixed(1);
+    throttledDraw('f41', function() { updateFig41(p.m, p.b, p.sig, p.N); });
+  });
+  document.getElementById('sl-b').addEventListener('input', function() {
+    var p = readFig41();
+    document.getElementById('sl-b-val').textContent = p.b.toFixed(1);
+    throttledDraw('f41', function() { updateFig41(p.m, p.b, p.sig, p.N); });
+  });
+  document.getElementById('sl-sig').addEventListener('input', function() {
+    var p = readFig41();
+    document.getElementById('sl-sig-val').textContent = p.sig.toFixed(1);
+    throttledDraw('f41', function() { updateFig41(p.m, p.b, p.sig, p.N); });
+  });
+  document.getElementById('sl-n').addEventListener('input', function() {
+    var p = readFig41();
+    document.getElementById('sl-n-val').textContent = p.N;
+    throttledDraw('f41', function() { updateFig41(p.m, p.b, p.sig, p.N); });
+  });
+
+  // Fig 4.2 slider
+  document.getElementById('sl-deg').addEventListener('input', function() {
+    var deg = parseInt(document.getElementById('sl-deg').value);
+    document.getElementById('sl-deg-val').textContent = deg;
+    throttledDraw('f42', function() { updateFig42(deg); });
+  });
+
+  // Fig 4.3 slider
+  document.getElementById('sl-topn').addEventListener('input', function() {
+    var topN = parseInt(document.getElementById('sl-topn').value);
+    document.getElementById('sl-topn-val').textContent = topN;
+    throttledDraw('f43', function() { updateFig43(topN); });
+  });
+
+  // Fig 4.4 sliders
+  document.getElementById('sl-k').addEventListener('input', function() {
+    var k = parseInt(document.getElementById('sl-k').value);
+    var sig = parseFloat(document.getElementById('sl-cv-sig').value) / 10;
+    document.getElementById('sl-k-val').textContent = k;
+    throttledDraw('f44', function() { updateFig44(k, sig); });
+  });
+  document.getElementById('sl-cv-sig').addEventListener('input', function() {
+    var k = parseInt(document.getElementById('sl-k').value);
+    var sig = parseFloat(document.getElementById('sl-cv-sig').value) / 10;
+    document.getElementById('sl-cv-sig-val').textContent = sig.toFixed(1);
+    throttledDraw('f44', function() { updateFig44(k, sig); });
+  });
+
+  // Fig 4.5 sliders
+  document.getElementById('sl-pp-sig').addEventListener('input', function() {
+    var sig = parseFloat(document.getElementById('sl-pp-sig').value) / 100;
+    var bias = parseFloat(document.getElementById('sl-pp-bias').value) / 100;
+    var N = parseInt(document.getElementById('sl-pp-n').value);
+    document.getElementById('sl-pp-sig-val').textContent = sig.toFixed(2);
+    throttledDraw('f45', function() { updateFig45(sig, bias, N); });
+  });
+  document.getElementById('sl-pp-bias').addEventListener('input', function() {
+    var sig = parseFloat(document.getElementById('sl-pp-sig').value) / 100;
+    var bias = parseFloat(document.getElementById('sl-pp-bias').value) / 100;
+    var N = parseInt(document.getElementById('sl-pp-n').value);
+    document.getElementById('sl-pp-bias-val').textContent = bias.toFixed(2);
+    throttledDraw('f45', function() { updateFig45(sig, bias, N); });
+  });
+  document.getElementById('sl-pp-n').addEventListener('input', function() {
+    var sig = parseFloat(document.getElementById('sl-pp-sig').value) / 100;
+    var bias = parseFloat(document.getElementById('sl-pp-bias').value) / 100;
+    var N = parseInt(document.getElementById('sl-pp-n').value);
+    document.getElementById('sl-pp-n-val').textContent = N;
+    throttledDraw('f45', function() { updateFig45(sig, bias, N); });
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig41();
+  buildFig42();
+  buildFig43();
+  buildFig44();
+  buildFig45();
+  setupSliders();
+}
+
+// Scroll reveal
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(function(s) { observer.observe(s); });
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.add('visible'); });
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>
