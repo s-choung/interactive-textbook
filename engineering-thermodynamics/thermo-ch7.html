@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Exergy Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">Exergy Analysis</a>
+    <ul class="nav-links">
+      <li><a href="#s71">7.1</a></li>
+      <li><a href="#s72">7.2</a></li>
+      <li><a href="#s73">7.3</a></li>
+      <li><a href="#s74">7.4</a></li>
+      <li><a href="#s75">7.5</a></li>
+      <li><a href="#s76">7.6</a></li>
+      <li><a href="#s77">7.7</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.7</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">엑서지 해석</span>
+    <span class="lang-en" style="display:none;">Exergy Analysis</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 7. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 7. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <span class="chip">엑서지</span>
+    <span class="chip">사장 상태</span>
+    <span class="chip">비가역성</span>
+    <span class="chip">엑서지 파괴</span>
+    <span class="chip">제2법칙 효율</span>
+    <span class="chip">흐름 엑서지</span>
+    <span class="chip">열경제학</span>
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+
+<!-- ============ Section 7.1 ============ -->
+<section id="s71" class="section">
+  <p class="section-label">Section 7.1</p>
+  <h2 class="section-title">
+    <span class="lang-ko">엑서지의 도입</span>
+    <span class="lang-en" style="display:none;">Introducing Exergy</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">열역학 제1법칙은 에너지가 보존된다고 선언하지만, 에너지의 질(quality)에 대해서는 아무것도 말해 주지 않는다. 고온 열원의 100 kJ과 주변 환경 온도의 100 kJ은 열역학적 장부상 동일하지만, 일로 변환할 수 있는 능력은 전혀 다르다. 엑서지(exergy)는 바로 이 차이를 정량화하는 열역학적 성질로, 시스템이 주어진 환경과 완전히 평형에 도달하면서 이론적으로 생산할 수 있는 최대 유용 일을 의미한다. 에너지는 보존되지만 엑서지는 모든 실제 과정에서 비가역성에 의해 파괴되며, 이 파괴된 엑서지가 곧 자원 낭비의 척도가 된다.</span>
+      <span class="lang-en" style="display:none;">The first law of thermodynamics declares that energy is conserved, yet says nothing about its quality. 100 kJ from a high-temperature source and 100 kJ at ambient temperature are bookkeeping equals, yet their capacity to produce work differs profoundly. Exergy quantifies this difference: it is the maximum theoretical useful work obtainable as a system comes into complete equilibrium with its environment. While energy is conserved, exergy is destroyed in every real process due to irreversibilities — and this destruction measures the true waste of resources.</span>
+    </p>
+  </div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>에너지 보존 vs 엑서지 파괴</strong>: 제1법칙에 의해 에너지 총량은 불변이지만, 제2법칙에 의해 에너지의 일 변환 능력(엑서지)은 비가역성이 존재하는 한 반드시 감소한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Energy conservation vs. exergy destruction</strong>: The first law guarantees that total energy is unchanged, but the second law ensures that the work-producing ability (exergy) always diminishes whenever irreversibilities are present.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>엑서지 분석의 목적</strong>: 시스템 내 어디에서 얼마만큼의 자원이 낭비되는지를 각 구성기기 수준에서 정량적으로 파악하여, 성능 개선의 우선순위를 정하는 데 활용한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Purpose of exergy analysis</strong>: Quantify where and how much resource waste occurs at the component level, enabling rational prioritization of performance improvements.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 7.2 ============ -->
+<section id="s72" class="section">
+  <p class="section-label">Section 7.2</p>
+  <h2 class="section-title">
+    <span class="lang-ko">엑서지의 개념화</span>
+    <span class="lang-en" style="display:none;">Conceptualizing Exergy</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">엑서지를 정의하려면 먼저 기준이 되는 환경(environment)을 설정해야 한다. 환경은 온도 $T_0$, 압력 $p_0$로 특정되는 거대한 단순 압축성 계로, 내부적으로 균일하며 열적·역학적 평형 상태에 있다. 시스템이 이 환경과 모든 면에서 평형에 도달한 상태를 사장 상태(dead state)라 하며, 이때 시스템의 온도, 압력, 화학 조성이 모두 환경과 같아 더 이상 아무런 자발적 변화도 일어나지 않는다. 엑서지는 시스템이 현재 상태에서 사장 상태로 이행하면서 환경과만 열·일 교환을 통해 산출할 수 있는 최대 이론 일이다.</span>
+      <span class="lang-en" style="display:none;">Defining exergy requires first specifying a reference environment characterized by temperature $T_0$ and pressure $p_0$ — a large simple compressible system that is internally uniform and in thermal and mechanical equilibrium. The state at which a system is in complete equilibrium with this environment is called the dead state: temperature, pressure, and chemical composition all match the environment, and no further spontaneous change can occur. Exergy is the maximum theoretical work obtainable as the system transitions from its current state to the dead state through heat and work interactions with the environment alone.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$E = (U - U_0) + p_0(V - V_0) - T_0(S - S_0) + \text{KE} + \text{PE}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>환경과 사장 상태</strong>: 환경($T_0$, $p_0$)은 무한 크기의 열·일 저장소 역할을 하며, 사장 상태에서 시스템의 엑서지는 정확히 0이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Environment and dead state</strong>: The environment ($T_0$, $p_0$) acts as an infinite heat and work reservoir; at the dead state the system's exergy is exactly zero.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>최대 이론 일</strong>: 엑서지는 내부에너지 변화, 환경 압력이 하는 일($p_0 \Delta V$), 환경 온도에 의한 비가용 에너지($T_0 \Delta S$)를 모두 고려한 종합 지표이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Maximum theoretical work</strong>: Exergy accounts for the internal energy change, the boundary work exchanged with the environment ($p_0 \Delta V$), and the unavailable energy due to ambient temperature ($T_0 \Delta S$).</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure 7.2: Dead State Explorer -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 7.2</span>
+      <span class="figure-title">
+        <span class="lang-ko">사장 상태와 엑서지 비교</span>
+        <span class="lang-en" style="display:none;">Dead State Explorer</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig72" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">환경 온도 $T_0$</span>
+            <span class="lang-en" style="display:none;">Environment temp $T_0$</span>
+          </span>
+          <input type="range" id="sl_T0_72" min="250" max="350" value="298" step="5">
+          <span class="control-value" id="val_T0_72">298 K</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">시스템 온도 $T$</span>
+            <span class="lang-en" style="display:none;">System temp $T$</span>
+          </span>
+          <input type="range" id="sl_T_72" min="300" max="1200" value="600" step="50">
+          <span class="control-value" id="val_T_72">600 K</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">비엑서지 $e$ (kJ/kg)</span>
+          <span class="readout-key lang-en" style="display:none;">Specific exergy $e$ (kJ/kg)</span>
+          <span class="readout-val" id="ro_e72">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">$(u - u_0)$ 항</span>
+          <span class="readout-key lang-en" style="display:none;">$(u - u_0)$ term</span>
+          <span class="readout-val" id="ro_uu0">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">$-T_0(s - s_0)$ 항</span>
+          <span class="readout-key lang-en" style="display:none;">$-T_0(s - s_0)$ term</span>
+          <span class="readout-val" id="ro_T0s">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 7.3 ============ -->
+<section id="s73" class="section">
+  <p class="section-label">Section 7.3</p>
+  <h2 class="section-title">
+    <span class="lang-ko">시스템의 엑서지</span>
+    <span class="lang-en" style="display:none;">Exergy of a System</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">밀폐계의 비엑서지(specific exergy)는 단위 질량당 엑서지로, 내부에너지·압력·엔트로피 변화와 운동에너지·위치에너지를 모두 포함한다. 비엑서지는 상태량이므로 초기와 최종 상태만 알면 그 변화를 계산할 수 있으며, 이는 엑서지 수지(balance)를 세우는 데 핵심적인 역할을 한다. 사장 상태가 기준점이므로, 환경 조건($T_0$, $p_0$)이 달라지면 같은 시스템 상태라도 엑서지 값이 달라진다는 점을 기억해야 한다.</span>
+      <span class="lang-en" style="display:none;">The specific exergy of a closed system is the exergy per unit mass, encompassing changes in internal energy, pressure, entropy, and kinetic and potential energy. Because specific exergy is a property, its change depends only on initial and final states — a key feature for constructing exergy balances. Since the dead state serves as the reference, the same system state yields a different exergy value when the environment conditions ($T_0$, $p_0$) change.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$e = (u - u_0) + p_0(v - v_0) - T_0(s - s_0) + \frac{V^2}{2} + gz$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>비엑서지는 상태량</strong>: 시스템 상태와 환경 상태가 정해지면 비엑서지의 값은 유일하게 결정된다. 경로에 무관하므로 엑서지 변화 계산이 직관적이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Specific exergy is a property</strong>: Once the system state and the environment are fixed, specific exergy is uniquely determined. Being path-independent makes exergy change calculations straightforward.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>운동·위치에너지 항</strong>: $\frac{V^2}{2}$와 $gz$는 완전히 일로 변환 가능하므로, 엑서지 정의에 그대로 포함된다. 이들은 환경 조건에 무관하다.</span>
+      <span class="lang-en" style="display:none;"><strong>Kinetic and potential energy terms</strong>: $\frac{V^2}{2}$ and $gz$ are fully convertible to work, so they enter the exergy definition directly and are independent of the environment.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 7.4 ============ -->
+<section id="s74" class="section">
+  <p class="section-label">Section 7.4</p>
+  <h2 class="section-title">
+    <span class="lang-ko">밀폐계 엑서지 수지</span>
+    <span class="lang-en" style="display:none;">Closed System Exergy Balance</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">밀폐계에 대한 엑서지 수지는 에너지 수지와 유사한 구조를 가지지만, 비가역성에 의한 엑서지 파괴항 $E_d$가 추가된다. 열전달 엑서지 $E_q$는 열이 전달되는 경계 온도 $T_b$에 의존하며, 카르노 인자 $(1 - T_0/T_b)$가 해당 열에너지 중 일로 변환 가능한 비율을 나타낸다. 일 엑서지 $E_w$는 시스템이 수행한 유용 일에서 환경 압력에 의한 일($p_0 \Delta V$)을 뺀 값이다. 엑서지 파괴 $E_d = T_0 \sigma$는 항상 양수이거나 0이며, 과정의 비가역성 정도를 직접 반영한다.</span>
+      <span class="lang-en" style="display:none;">The exergy balance for a closed system parallels the energy balance but includes an exergy destruction term $E_d$ due to irreversibilities. The heat transfer exergy $E_q$ depends on the boundary temperature $T_b$ where heat crosses, with the Carnot factor $(1 - T_0/T_b)$ representing the work-convertible fraction. The work exergy $E_w$ is the useful work minus the environment pressure work ($p_0 \Delta V$). The exergy destruction $E_d = T_0 \sigma$ is always non-negative and directly reflects the degree of irreversibility.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$E_2 - E_1 = E_q - E_w - E_d$$</div>
+  <div class="eq-block">$$E_q = \int \left(1 - \frac{T_0}{T_b}\right)\delta Q$$</div>
+  <div class="eq-block">$$E_d = T_0 \sigma$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>카르노 인자</strong>: $(1 - T_0/T_b)$는 온도 $T_b$에서 전달되는 열의 일 변환 가능 비율이다. $T_b$가 $T_0$에 가까울수록 엑서지 전달량은 0에 수렴한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Carnot factor</strong>: $(1 - T_0/T_b)$ is the work-convertible fraction of heat transferred at temperature $T_b$. As $T_b$ approaches $T_0$, the exergy transfer vanishes.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>엑서지 파괴 $E_d$</strong>: 엔트로피 생성률 $\sigma$와 환경 온도 $T_0$의 곱이다. 가역 과정에서만 $E_d = 0$이고, 모든 실제 과정에서는 $E_d > 0$이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Exergy destruction $E_d$</strong>: The product of entropy generation $\sigma$ and environment temperature $T_0$. Only in reversible processes does $E_d = 0$; in all real processes $E_d > 0$.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 7.5 ============ -->
+<section id="s75" class="section">
+  <p class="section-label">Section 7.5</p>
+  <h2 class="section-title">
+    <span class="lang-ko">정상상태 검사체적 엑서지 수지</span>
+    <span class="lang-en" style="display:none;">Exergy Rate Balance for Control Volumes at Steady State</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">개방계(검사체적)에서는 질량이 경계를 드나들므로, 밀폐계의 비엑서지 대신 흐름 엑서지(flow exergy) $e_f$를 사용한다. 흐름 엑서지는 엔탈피 기반으로 정의되며, 흐르는 유체가 단위 질량당 갖는 일 잠재력을 나타낸다. 정상상태에서 검사체적의 엑서지 수지는 열전달 엑서지, 축일, 유입·유출 흐름 엑서지, 그리고 엑서지 파괴로 구성된다. 이 수지식은 터빈, 압축기, 열교환기, 밸브 등 다양한 기기의 엑서지 효율 분석에 직접 적용된다.</span>
+      <span class="lang-en" style="display:none;">In open systems (control volumes) mass crosses the boundary, so flow exergy $e_f$ replaces the closed-system specific exergy. Flow exergy is enthalpy-based and represents the work potential per unit mass of a flowing fluid. At steady state the control volume exergy balance comprises heat transfer exergy, shaft work, inlet and exit flow exergies, and exergy destruction. This balance is directly applied to analyze turbines, compressors, heat exchangers, valves, and other devices.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$e_f = (h - h_0) - T_0(s - s_0) + \frac{V^2}{2} + gz$$</div>
+  <div class="eq-block">$$0 = \sum_j \left(1 - \frac{T_0}{T_j}\right)\dot{Q}_j - \dot{W}_{cv} + \sum_i \dot{m}_i e_{fi} - \sum_e \dot{m}_e e_{fe} - \dot{E}_d$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>흐름 엑서지</strong>: 밀폐계 비엑서지에서 $u + p_0 v$가 $h$로 바뀐 형태이다. 흐름 일(flow work, $pv$)이 이미 엔탈피에 포함되어 있기 때문이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Flow exergy</strong>: Obtained from the closed-system specific exergy by replacing $u + p_0 v$ with $h$, since flow work ($pv$) is already embedded in enthalpy.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>단열 밸브의 엑서지 파괴</strong>: 밸브에서는 $h_1 = h_2$이고 열전달·축일이 없으므로, 엑서지 파괴는 순전히 엔트로피 증가($s_2 > s_1$)에 의해 발생한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Exergy destruction in an adiabatic valve</strong>: With $h_1 = h_2$ and no heat transfer or shaft work, exergy destruction arises solely from entropy increase ($s_2 > s_1$).</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure 7.1: Exergy Flow and Destruction -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 7.1</span>
+      <span class="figure-title">
+        <span class="lang-ko">엑서지 흐름 및 파괴 시각화</span>
+        <span class="lang-en" style="display:none;">Exergy Flow and Destruction Visualization</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig71" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">입구 온도 $T_1$</span>
+            <span class="lang-en" style="display:none;">Inlet temp $T_1$</span>
+          </span>
+          <input type="range" id="sl_T1_71" min="400" max="600" value="500" step="10">
+          <span class="control-value" id="val_T1_71">500 °C</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">출구 압력 $p_2$</span>
+            <span class="lang-en" style="display:none;">Exit pressure $p_2$</span>
+          </span>
+          <input type="range" id="sl_p2_71" min="1" max="30" value="5" step="1">
+          <span class="control-value" id="val_p2_71">5 bar</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">출력 $\dot{W}$ (kJ/kg)</span>
+          <span class="readout-key lang-en" style="display:none;">Work output $\dot{W}$ (kJ/kg)</span>
+          <span class="readout-val" id="ro_W71">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">엑서지 파괴율 (%)</span>
+          <span class="readout-key lang-en" style="display:none;">Exergy destruction (%)</span>
+          <span class="readout-val" id="ro_Ed71">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">엑서지 효율 &epsilon; (%)</span>
+          <span class="readout-key lang-en" style="display:none;">Exergetic eff. &epsilon; (%)</span>
+          <span class="readout-val" id="ro_eps71">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 7.6 ============ -->
+<section id="s76" class="section">
+  <p class="section-label">Section 7.6</p>
+  <h2 class="section-title">
+    <span class="lang-ko">엑서지 효율 (제2법칙 효율)</span>
+    <span class="lang-en" style="display:none;">Exergetic (Second Law) Efficiency</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">에너지(제1법칙) 효율만으로는 시스템의 열역학적 성능을 완전히 평가할 수 없다. 예를 들어, 전기 저항 히터는 에너지 효율이 거의 100%이지만, 고급 전기에너지를 저온 열에너지로 변환하는 것이므로 엑서지 관점에서는 매우 비효율적이다. 엑서지 효율(제2법칙 효율)은 공급된 엑서지 중 실제로 유용한 목적에 쓰인 비율을 나타내며, 공급 온도와 사용 온도의 정합(matching) 정도를 직접 반영한다. 터빈에서는 흐름 엑서지 감소 대비 실제 축일의 비율이, 열교환기에서는 고온 측 엑서지 감소 대비 저온 측 엑서지 증가의 비율이 엑서지 효율이 된다.</span>
+      <span class="lang-en" style="display:none;">Energy (first-law) efficiency alone cannot fully assess thermodynamic performance. An electric resistance heater, for instance, achieves nearly 100% energy efficiency, yet converting high-quality electricity to low-temperature heat is highly wasteful from an exergy standpoint. Exergetic (second-law) efficiency represents the fraction of supplied exergy that serves a useful purpose, directly reflecting the degree of temperature matching between source and use. For a turbine it is the ratio of actual shaft work to the decrease in flow exergy; for a heat exchanger it is the ratio of cold-side exergy gain to hot-side exergy decrease.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\varepsilon = \eta \cdot \frac{1 - T_0/T_u}{1 - T_0/T_s}$$</div>
+  <div class="eq-block">$$\varepsilon_{\text{turbine}} = \frac{\dot{W}_{cv}/\dot{m}}{e_{f1} - e_{f2}}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>온도 정합</strong>: 엑서지 효율 식에서 $(1 - T_0/T_u)/(1 - T_0/T_s)$ 항은 사용온도($T_u$)가 공급온도($T_s$)에 가까울수록 1에 접근하여, 에너지 효율과 엑서지 효율이 비슷해진다.</span>
+      <span class="lang-en" style="display:none;"><strong>Temperature matching</strong>: The factor $(1 - T_0/T_u)/(1 - T_0/T_s)$ approaches unity as the use temperature ($T_u$) nears the source temperature ($T_s$), making energy and exergetic efficiencies comparable.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>기기별 정의</strong>: 터빈($\varepsilon = \dot{W}/(\dot{m} \Delta e_f)$), 압축기($\varepsilon = \dot{m} \Delta e_f / \dot{W}$), 열교환기($\varepsilon = \Delta e_{f,\text{cold}} / \Delta e_{f,\text{hot}}$) 등 각 기기의 목적에 맞게 분자·분모를 설정한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Device-specific definitions</strong>: Turbine ($\varepsilon = \dot{W}/(\dot{m} \Delta e_f)$), compressor ($\varepsilon = \dot{m} \Delta e_f / \dot{W}$), heat exchanger ($\varepsilon = \Delta e_{f,\text{cold}} / \Delta e_{f,\text{hot}}$) — numerator and denominator match each device's purpose.</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure 7.3: Second Law Efficiency vs Use Temperature -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 7.3</span>
+      <span class="figure-title">
+        <span class="lang-ko">제2법칙 효율 vs 사용온도</span>
+        <span class="lang-en" style="display:none;">Second Law Efficiency vs Use Temperature</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig73" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">공급원 온도 $T_s$</span>
+            <span class="lang-en" style="display:none;">Source temp $T_s$</span>
+          </span>
+          <input type="range" id="sl_Ts_73" min="1000" max="3000" value="2000" step="100">
+          <span class="control-value" id="val_Ts_73">2000 K</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">에너지 효율 $\eta$</span>
+            <span class="lang-en" style="display:none;">Energy efficiency $\eta$</span>
+          </span>
+          <input type="range" id="sl_eta_73" min="50" max="100" value="90" step="5">
+          <span class="control-value" id="val_eta_73">0.90</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">난방 &epsilon; (%)</span>
+          <span class="readout-key lang-en" style="display:none;">Heating &epsilon; (%)</span>
+          <span class="readout-val" id="ro_eps_heat">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">공정증기 &epsilon; (%)</span>
+          <span class="readout-key lang-en" style="display:none;">Process steam &epsilon; (%)</span>
+          <span class="readout-val" id="ro_eps_steam">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">공업로 &epsilon; (%)</span>
+          <span class="readout-key lang-en" style="display:none;">Furnace &epsilon; (%)</span>
+          <span class="readout-val" id="ro_eps_furnace">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 7.7 ============ -->
+<section id="s77" class="section">
+  <p class="section-label">Section 7.7</p>
+  <h2 class="section-title">
+    <span class="lang-ko">열경제학</span>
+    <span class="lang-en" style="display:none;">Thermoeconomics</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">열경제학(thermoeconomics)은 엑서지 분석과 경제성 분석을 결합하여, 열시스템 각 구성기기의 제품 비용을 엑서지 기반으로 할당하는 방법론이다. 종래의 에너지 기반 비용 할당은 에너지의 질적 차이를 반영하지 못하지만, 엑서지 코스팅(exergy costing)은 각 에너지 스트림의 일 잠재력에 비례하여 비용을 배분한다. 기기 수준에서 엑서지 파괴 비용과 설비 투자 비용의 합이 제품 엑서지의 단위비용을 결정하며, 이를 통해 가장 비용-효과적인 개선 대상을 식별할 수 있다.</span>
+      <span class="lang-en" style="display:none;">Thermoeconomics combines exergy analysis with economic analysis to allocate product costs on an exergy basis across system components. Conventional energy-based cost allocation ignores quality differences, whereas exergy costing distributes costs in proportion to the work potential of each energy stream. At the component level, the sum of the cost of exergy destruction and the capital investment cost determines the unit cost of the product exergy, enabling identification of the most cost-effective improvement targets.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$c_e = \frac{c_1}{\varepsilon} + \frac{\dot{Z}_t}{\dot{W}_e}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>엑서지 코스팅</strong>: 각 유체 스트림에 단위 엑서지당 비용($c$, ₩/kJ)을 부여하고, 기기별 비용 수지식을 세운다. 연료 엑서지 비용과 자본 비용의 합이 제품 엑서지 비용을 결정한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Exergy costing</strong>: Assign a cost per unit exergy ($c$, $/kJ) to each stream and write cost balance equations for each component. The sum of fuel exergy cost and capital cost determines the product exergy cost.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>설계 최적화</strong>: 엑서지 파괴를 줄이면 연료비는 절감되지만 설비비가 증가한다. 열경제학은 이 트레이드오프의 최적점을 찾는 체계적 도구를 제공한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Design optimization</strong>: Reducing exergy destruction saves fuel costs but increases capital costs. Thermoeconomics provides a systematic framework for finding the optimum trade-off.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Quiz Section ============ -->
+<section id="quiz" class="section">
+  <p class="section-label">Self-Check</p>
+  <h2 class="section-title">
+    <span class="lang-ko">개념 확인 퀴즈</span>
+    <span class="lang-en" style="display:none;">Concept Check Quiz</span>
+  </h2>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q1.</strong> 사장 상태(dead state)에서 시스템의 엑서지는?</span>
+      <span class="lang-en" style="display:none;"><strong>Q1.</strong> What is the exergy of a system at its dead state?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q71')">
+        <span class="lang-ko">시스템의 내부에너지와 같다</span>
+        <span class="lang-en" style="display:none;">Equal to the system's internal energy</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q71')">
+        <span class="lang-ko">정확히 0이다</span>
+        <span class="lang-en" style="display:none;">Exactly zero</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q71')">
+        <span class="lang-ko">환경의 엔탈피와 같다</span>
+        <span class="lang-en" style="display:none;">Equal to the environment's enthalpy</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q71')">
+        <span class="lang-ko">음의 값을 가질 수 있다</span>
+        <span class="lang-en" style="display:none;">Can be negative</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q71-explain">
+      <span class="lang-ko">사장 상태에서 시스템은 환경과 완전히 평형이므로 더 이상 자발적으로 일을 생산할 수 없다. 따라서 엑서지는 정확히 0이다.</span>
+      <span class="lang-en" style="display:none;">At the dead state, the system is in complete equilibrium with the environment and can no longer spontaneously produce work. Therefore its exergy is exactly zero.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q2.</strong> 에너지와 엑서지의 가장 큰 차이점은?</span>
+      <span class="lang-en" style="display:none;"><strong>Q2.</strong> What is the key difference between energy and exergy?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q72')">
+        <span class="lang-ko">에너지는 상태량이 아니지만 엑서지는 상태량이다</span>
+        <span class="lang-en" style="display:none;">Energy is not a property but exergy is</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q72')">
+        <span class="lang-ko">엑서지는 항상 에너지보다 크다</span>
+        <span class="lang-en" style="display:none;">Exergy is always greater than energy</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q72')">
+        <span class="lang-ko">에너지는 보존되지만 엑서지는 비가역성에 의해 파괴된다</span>
+        <span class="lang-en" style="display:none;">Energy is conserved but exergy is destroyed by irreversibilities</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q72')">
+        <span class="lang-ko">엑서지는 열에너지만 고려한다</span>
+        <span class="lang-en" style="display:none;">Exergy only considers thermal energy</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q72-explain">
+      <span class="lang-ko">제1법칙에 의해 에너지는 보존되지만, 제2법칙에 의해 엑서지는 실제 과정에서 비가역성이 존재하는 한 반드시 파괴된다. $E_d = T_0 \sigma \geq 0$.</span>
+      <span class="lang-en" style="display:none;">The first law conserves energy, but the second law dictates that exergy is destroyed whenever irreversibilities are present: $E_d = T_0 \sigma \geq 0$.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q3.</strong> 엑서지 파괴 $E_d = T_0 \sigma$에서 $\sigma$가 의미하는 것은?</span>
+      <span class="lang-en" style="display:none;"><strong>Q3.</strong> In $E_d = T_0 \sigma$, what does $\sigma$ represent?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q73')">
+        <span class="lang-ko">열전달량</span>
+        <span class="lang-en" style="display:none;">Heat transfer amount</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q73')">
+        <span class="lang-ko">일 출력</span>
+        <span class="lang-en" style="display:none;">Work output</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q73')">
+        <span class="lang-ko">엔트로피 생성</span>
+        <span class="lang-en" style="display:none;">Entropy generation</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q73')">
+        <span class="lang-ko">엑서지 효율</span>
+        <span class="lang-en" style="display:none;">Exergetic efficiency</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q73-explain">
+      <span class="lang-ko">$\sigma$는 과정 중 발생하는 엔트로피 생성(entropy generation)이다. 제2법칙에 의해 항상 $\sigma \geq 0$이며, 이것이 엑서지 파괴의 근원이다.</span>
+      <span class="lang-en" style="display:none;">$\sigma$ is the entropy generated during the process. By the second law $\sigma \geq 0$, and this is the root cause of exergy destruction.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q4.</strong> 에너지 효율이 90%인 가정용 보일러(공급 $T_s = 2000\,$K, 사용 $T_u = 350\,$K, $T_0 = 300\,$K)의 엑서지 효율은 약?</span>
+      <span class="lang-en" style="display:none;"><strong>Q4.</strong> A home boiler has 90% energy efficiency ($T_s = 2000$ K, $T_u = 350$ K, $T_0 = 300$ K). Approximate exergetic efficiency?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q74')">
+        <span class="lang-ko">약 90%</span>
+        <span class="lang-en" style="display:none;">About 90%</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q74')">
+        <span class="lang-ko">약 50%</span>
+        <span class="lang-en" style="display:none;">About 50%</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q74')">
+        <span class="lang-ko">약 15%</span>
+        <span class="lang-en" style="display:none;">About 15%</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q74')">
+        <span class="lang-ko">약 5%</span>
+        <span class="lang-en" style="display:none;">About 5%</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q74-explain">
+      <span class="lang-ko">$\varepsilon = 0.9 \times \frac{1 - 300/350}{1 - 300/2000} = 0.9 \times \frac{0.143}{0.85} \approx 15.1\%$. 에너지 효율이 높아도 사용 온도가 공급 온도보다 훨씬 낮으면 엑서지 효율은 매우 낮다.</span>
+      <span class="lang-en" style="display:none;">$\varepsilon = 0.9 \times \frac{1 - 300/350}{1 - 300/2000} = 0.9 \times \frac{0.143}{0.85} \approx 15.1\%$. Even high energy efficiency gives poor exergetic efficiency when the use temperature is far below the source temperature.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ What-if Section ============ -->
+<section id="whatif" class="section">
+  <p class="section-label">What If?</p>
+  <h2 class="section-title">
+    <span class="lang-ko">사고 실험</span>
+    <span class="lang-en" style="display:none;">Thought Experiments</span>
+  </h2>
+
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">단열 밸브에서는 열전달도 축일도 없는데, 왜 엑서지가 파괴될까?</span>
+        <span class="lang-en" style="display:none;">In an adiabatic valve there is no heat transfer or shaft work — so why is exergy destroyed?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">단열 밸브에서는 $h_1 = h_2$이지만, 압력 강하에 의해 엔트로피가 증가한다($s_2 > s_1$). 엑서지 파괴는 $E_d = T_0(s_2 - s_1) > 0$이다. 에너지는 보존되지만, 유체의 일 잠재력(압력 에너지)이 내부 마찰에 의해 비가역적으로 열로 전환되어 엑서지가 감소한다.</span>
+        <span class="lang-en" style="display:none;">In an adiabatic valve $h_1 = h_2$ but the pressure drop causes an entropy increase ($s_2 > s_1$). Exergy destruction is $E_d = T_0(s_2 - s_1) > 0$. Energy is conserved but the fluid's work potential (pressure energy) is irreversibly converted to heat via internal friction, reducing exergy.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 환경 온도 $T_0$가 크게 올라가면 시스템의 엑서지는 어떻게 변할까?</span>
+        <span class="lang-en" style="display:none;">What happens to a system's exergy if the environment temperature $T_0$ increases significantly?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">$T_0$가 시스템 온도에 가까워질수록, $-T_0(s - s_0)$ 항의 절대값이 커지면서 엑서지가 감소한다. 극단적으로 $T_0 = T$이면 열적 엑서지가 0에 수렴한다. 사장 상태 자체가 변하므로, 동일한 물리적 시스템이라도 더 더운 환경에서는 일 잠재력이 줄어든다. Figure 7.2 슬라이더로 직접 확인해 보자.</span>
+        <span class="lang-en" style="display:none;">As $T_0$ approaches the system temperature, the magnitude of the $-T_0(s - s_0)$ term grows, reducing exergy. In the extreme where $T_0 = T$, thermal exergy vanishes. The dead state itself shifts, so the same physical system has less work potential in a hotter environment. Try the Figure 7.2 slider to see this directly.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">열교환기의 온도차를 줄이면 엑서지 파괴는 줄지만, 설비 비용은 어떻게 될까?</span>
+        <span class="lang-en" style="display:none;">Reducing the temperature difference in a heat exchanger lowers exergy destruction — but what happens to equipment cost?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">온도차($\Delta T$)를 줄이면 엔트로피 생성이 감소하여 엑서지 파괴가 줄어든다. 그러나 같은 열전달량을 확보하려면 전열 면적이 $\Delta T$에 반비례하여 증가해야 하므로 설비비가 급격히 상승한다. 열경제학은 이 "연료비 절감 vs 설비비 증가"의 트레이드오프에서 전체 비용을 최소화하는 최적 $\Delta T$를 찾아준다.</span>
+        <span class="lang-en" style="display:none;">Reducing $\Delta T$ lowers entropy generation and hence exergy destruction. However, maintaining the same heat transfer rate requires heat transfer area that increases inversely with $\Delta T$, driving up equipment costs. Thermoeconomics finds the optimal $\Delta T$ that minimizes total cost in this "fuel savings vs. capital increase" trade-off.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Takeaways ============ -->
+<section class="takeaways">
+  <h2 class="section-title">Key Takeaways</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">01</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">엑서지 ≠ 에너지</span>
+        <span class="lang-en" style="display:none;">Exergy ≠ Energy</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">에너지는 보존되지만 엑서지는 비가역성에 의해 파괴된다. $T_0 \sigma$가 자원 낭비의 척도이다.</span>
+        <span class="lang-en" style="display:none;">Energy is conserved but exergy is destroyed. $T_0 \sigma$ measures resource waste.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">02</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">사장 상태가 기준이다</span>
+        <span class="lang-en" style="display:none;">Dead State Sets the Baseline</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">환경 조건($T_0$, $p_0$)이 달라지면 같은 시스템이라도 엑서지 값이 달라진다.</span>
+        <span class="lang-en" style="display:none;">Changing $T_0$ and $p_0$ changes the exergy of the same system state.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">03</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">엑서지 효율이 진짜 효율</span>
+        <span class="lang-en" style="display:none;">Exergetic Efficiency Reveals True Performance</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">에너지 효율 100%에 가까워도 엑서지 효율은 낮을 수 있다. 온도 정합이 핵심이다.</span>
+        <span class="lang-en" style="display:none;">Near-100% energy efficiency can still mean poor exergetic efficiency.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.7</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC: Exergy Analysis
+// ============================================================
+
+// Ideal gas properties for air (used in Fig 7.1 and 7.2)
+const cv_air = 0.718;   // kJ/(kg·K)
+const cp_air = 1.005;   // kJ/(kg·K)
+const R_air  = 0.287;   // kJ/(kg·K)
+const gamma  = 1.4;
+
+// ============ Figure 7.1: Exergy Flow and Destruction (Turbine) ============
+
+function calcTurbineExergy(T1_C, p2_bar) {
+  // Model: Steam turbine with simplified ideal-gas-like properties for superheated steam
+  // Inlet: p1 = 60 bar (fixed), T1 variable (400-600 C)
+  // Outlet: p2 variable (1-30 bar), isentropic efficiency eta_t = 0.85
+  // Environment: T0 = 298.15 K, p0 = 1.01325 bar
+  // Using superheated steam approximation: cp_steam ~ 2.1 kJ/(kg·K), gamma_steam ~ 1.3
+
+  var T0 = 298.15;          // K
+  var p1 = 60;              // bar
+  var p2 = p2_bar;
+  var T1 = T1_C + 273.15;  // K
+  var eta_t = 0.85;
+
+  var cp_s = 2.1;           // kJ/(kg·K) for superheated steam
+  var gamma_s = 1.3;
+  var R_s = cp_s * (gamma_s - 1) / gamma_s; // ~0.485 kJ/(kg·K)
+
+  // Dead state enthalpy/entropy reference (saturated liquid at ~25C)
+  // h0 ~ 104.9 kJ/kg, s0 ~ 0.3674 kJ/(kg·K) (water at 25C, 1 bar)
+  var h0 = 104.9;
+  var s0 = 0.3674;
+
+  // Inlet state: superheated steam at p1, T1
+  // Using h1 ~ h_ref + cp_s * (T1 - T_ref), with T_ref = 373.15 K (100C), h_ref ~ 2676 kJ/kg, s_ref ~ 7.354 kJ/(kg·K) at 1 bar
+  // For higher pressures, adjust: h1 = 2800 + cp_s * (T1 - 573.15) approximately for p=60bar, T_sat~275C
+  var T_sat1 = 275 + 273.15; // approximate sat temp at 60 bar
+  var h_sat_g1 = 2784;       // approximate h_g at 60 bar
+  var s_sat_g1 = 5.89;       // approximate s_g at 60 bar
+
+  var h1 = h_sat_g1 + cp_s * (T1 - T_sat1);
+  var s1 = s_sat_g1 + cp_s * Math.log(T1 / T_sat1) - R_s * Math.log(p1 / p1); // s1 at p1
+
+  // Isentropic exit: s2s = s1
+  // T2s = T1 * (p2/p1)^((gamma-1)/gamma)
+  var T2s = T1 * Math.pow(p2 / p1, (gamma_s - 1) / gamma_s);
+  var h2s = h1 + cp_s * (T2s - T1); // = h1 - cp_s*(T1 - T2s)
+
+  // Actual exit
+  var h2 = h1 - eta_t * (h1 - h2s);
+  var T2 = T1 - eta_t * (T1 - T2s);
+
+  // Entropy at exit (actual)
+  var s2 = s1 + cp_s * Math.log(T2 / T1) - R_s * Math.log(p2 / p1);
+
+  // Flow exergies
+  var ef1 = (h1 - h0) - T0 * (s1 - s0);
+  var ef2 = (h2 - h0) - T0 * (s2 - s0);
+
+  // Work output
+  var w = h1 - h2;
+
+  // Exergy destruction
+  var ed = T0 * (s2 - s1);
+
+  // Exergy of input flow
+  var delta_ef = ef1 - ef2;
+
+  // Fractions relative to input exergy (ef1 - ef2 + ed = w + ed... but let's use ef1 as base)
+  // Actually: ef1 = w + ef2 + ed (exergy balance for adiabatic turbine)
+  // We want fractions of the inlet flow exergy ef1:
+  var frac_work = w / ef1 * 100;
+  var frac_dest = ed / ef1 * 100;
+  var frac_exit = ef2 / ef1 * 100;
+
+  // Exergetic efficiency
+  var eps = w / (ef1 - ef2) * 100;
+
+  return {
+    w: w,
+    ed: ed,
+    ef1: ef1,
+    ef2: ef2,
+    delta_ef: delta_ef,
+    frac_work: frac_work,
+    frac_dest: frac_dest,
+    frac_exit: frac_exit,
+    eps: eps,
+    T2: T2
+  };
+}
+
+function buildFig71() {
+  updateFig71();
+}
+
+function updateFig71() {
+  var T1_C = parseFloat(document.getElementById('sl_T1_71').value);
+  var p2 = parseFloat(document.getElementById('sl_p2_71').value);
+
+  document.getElementById('val_T1_71').textContent = T1_C + ' °C';
+  document.getElementById('val_p2_71').textContent = p2 + ' bar';
+
+  var r = calcTurbineExergy(T1_C, p2);
+
+  // Waterfall / stacked bar: inlet exergy = work + exit exergy + destruction
+  // Show as stacked horizontal bar
+  var trWork = {
+    x: [r.frac_work],
+    y: ['Exergy'],
+    name: 'Useful Work',
+    type: 'bar',
+    orientation: 'h',
+    marker: { color: '#3b82f6' },
+    text: [r.frac_work.toFixed(1) + '%'],
+    textposition: 'inside',
+    insidetextfont: { color: '#fff', size: 13 }
+  };
+  var trDest = {
+    x: [r.frac_dest],
+    y: ['Exergy'],
+    name: 'Exergy Destruction',
+    type: 'bar',
+    orientation: 'h',
+    marker: { color: '#ef4444' },
+    text: [r.frac_dest.toFixed(1) + '%'],
+    textposition: 'inside',
+    insidetextfont: { color: '#fff', size: 13 }
+  };
+  var trExit = {
+    x: [r.frac_exit],
+    y: ['Exergy'],
+    name: 'Exit Flow Exergy',
+    type: 'bar',
+    orientation: 'h',
+    marker: { color: '#a3a3a3' },
+    text: [r.frac_exit.toFixed(1) + '%'],
+    textposition: 'inside',
+    insidetextfont: { color: '#fff', size: 13 }
+  };
+
+  Plotly.newPlot('fig71', [trWork, trDest, trExit], {
+    ...plotlyLayout,
+    barmode: 'stack',
+    xaxis: { ...plotlyLayout.xaxis, title: '% of Inlet Flow Exergy', range: [0, 100] },
+    yaxis: { ...plotlyLayout.yaxis, title: '' },
+    margin: { t: 32, r: 24, b: 48, l: 16 },
+    showlegend: true,
+    legend: { orientation: 'h', x: 0.0, y: 1.15, bgcolor: 'rgba(255,255,255,0.85)' },
+    height: 200
+  }, plotlyConfig);
+
+  document.getElementById('ro_W71').textContent = r.w.toFixed(1) + ' kJ/kg';
+  document.getElementById('ro_Ed71').textContent = r.frac_dest.toFixed(1) + '%';
+  document.getElementById('ro_eps71').textContent = r.eps.toFixed(1) + '%';
+}
+
+// ============ Figure 7.2: Dead State Explorer ============
+
+function calcDeadStateExergy(T0_K, T_K) {
+  // Ideal gas (air): cv = 0.718, cp = 1.005, R = 0.287 kJ/(kg·K)
+  // At constant pressure p = p0 (no pressure difference), so p0(v-v0) term vanishes
+  // when we consider v = RT/p0 and v0 = RT0/p0, then p0(v - v0) = R(T - T0)
+  // u - u0 = cv * (T - T0)
+  // s - s0 = cp * ln(T/T0) - R * ln(p/p0) = cp * ln(T/T0) for p = p0
+  // e = (u - u0) + p0(v - v0) - T0(s - s0) = cv*(T-T0) + R*(T-T0) - T0*cp*ln(T/T0)
+  //   = cp*(T-T0) - T0*cp*ln(T/T0)    [since cv + R = cp]
+
+  var uu0 = cv_air * (T_K - T0_K);
+  var p0vv0 = R_air * (T_K - T0_K);
+  var ss0 = cp_air * Math.log(T_K / T0_K);  // at p = p0
+  var T0ss0 = -T0_K * ss0;
+
+  var e = uu0 + p0vv0 + T0ss0; // = cp*(T-T0) - T0*cp*ln(T/T0)
+
+  return {
+    e: e,
+    uu0: uu0,
+    p0vv0: p0vv0,
+    T0ss0: T0ss0
+  };
+}
+
+function buildFig72() {
+  updateFig72();
+}
+
+function updateFig72() {
+  var T0 = parseFloat(document.getElementById('sl_T0_72').value);
+  var T = parseFloat(document.getElementById('sl_T_72').value);
+
+  document.getElementById('val_T0_72').textContent = T0 + ' K';
+  document.getElementById('val_T_72').textContent = T + ' K';
+
+  // Compute for a range of system temperatures at current T0
+  var temps = [];
+  var e_vals = [];
+  var uu0_vals = [];
+  var p0vv0_vals = [];
+  var T0ss0_vals = [];
+  var step = 25;
+  var t = T0 + step;
+  while (t <= 1200) {
+    var r = calcDeadStateExergy(T0, t);
+    temps.push(t);
+    e_vals.push(r.e);
+    uu0_vals.push(r.uu0);
+    p0vv0_vals.push(r.p0vv0);
+    T0ss0_vals.push(r.T0ss0);
+    t += step;
+  }
+
+  // Current point
+  var rc = calcDeadStateExergy(T0, T);
+
+  var trUU0 = {
+    x: temps, y: uu0_vals,
+    name: '(u - u₀)',
+    type: 'scatter', mode: 'lines',
+    line: { color: '#f59e0b', width: 2 }
+  };
+  var trP0V = {
+    x: temps, y: p0vv0_vals,
+    name: 'p₀(v - v₀)',
+    type: 'scatter', mode: 'lines',
+    line: { color: '#10b981', width: 2 }
+  };
+  var trT0S = {
+    x: temps, y: T0ss0_vals,
+    name: '−T₀(s − s₀)',
+    type: 'scatter', mode: 'lines',
+    line: { color: '#ef4444', width: 2, dash: 'dash' }
+  };
+  var trE = {
+    x: temps, y: e_vals,
+    name: 'e (total)',
+    type: 'scatter', mode: 'lines',
+    line: { color: '#3b82f6', width: 3 }
+  };
+
+  // Current operating point marker
+  var trPt = {
+    x: [T], y: [rc.e],
+    mode: 'markers',
+    marker: { color: '#3b82f6', size: 12, symbol: 'circle', line: { color: '#fff', width: 2 } },
+    showlegend: false
+  };
+
+  Plotly.newPlot('fig72', [trUU0, trP0V, trT0S, trE, trPt], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'System Temperature T (K)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Specific Exergy Components (kJ/kg)' },
+    showlegend: true,
+    legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.85)' }
+  }, plotlyConfig);
+
+  document.getElementById('ro_e72').textContent = rc.e.toFixed(1);
+  document.getElementById('ro_uu0').textContent = rc.uu0.toFixed(1) + ' kJ/kg';
+  document.getElementById('ro_T0s').textContent = rc.T0ss0.toFixed(1) + ' kJ/kg';
+}
+
+// ============ Figure 7.3: Second Law Efficiency vs Use Temperature ============
+
+function calcEpsilon(eta, T0, Ts, Tu) {
+  // epsilon = eta * (1 - T0/Tu) / (1 - T0/Ts)
+  if (Tu <= T0 || Ts <= T0) return 0;
+  return eta * (1 - T0 / Tu) / (1 - T0 / Ts);
+}
+
+function buildFig73() {
+  updateFig73();
+}
+
+function updateFig73() {
+  var Ts = parseFloat(document.getElementById('sl_Ts_73').value);
+  var eta = parseFloat(document.getElementById('sl_eta_73').value) / 100;
+  var T0 = 298.15;
+
+  document.getElementById('val_Ts_73').textContent = Ts + ' K';
+  document.getElementById('val_eta_73').textContent = eta.toFixed(2);
+
+  // Sweep Tu from 310 to 2000 K
+  var Tu_vals = [];
+  var eps_vals = [];
+  var tu = 310;
+  while (tu <= 2000) {
+    Tu_vals.push(tu);
+    eps_vals.push(calcEpsilon(eta, T0, Ts, tu) * 100);
+    tu += 10;
+  }
+
+  var trLine = {
+    x: Tu_vals, y: eps_vals,
+    mode: 'lines', name: 'ε (%)',
+    line: { color: '#8b5cf6', width: 3 }
+  };
+
+  // Region annotations: heating (~350K), process steam (~450K), furnace (~1200K)
+  var Tu_heat = 350;
+  var Tu_steam = 450;
+  var Tu_furnace = 1200;
+
+  var eps_heat = calcEpsilon(eta, T0, Ts, Tu_heat) * 100;
+  var eps_steam = calcEpsilon(eta, T0, Ts, Tu_steam) * 100;
+  var eps_furnace = calcEpsilon(eta, T0, Ts, Tu_furnace) * 100;
+
+  var trPts = {
+    x: [Tu_heat, Tu_steam, Tu_furnace],
+    y: [eps_heat, eps_steam, eps_furnace],
+    mode: 'markers+text',
+    marker: { color: ['#f59e0b', '#10b981', '#ef4444'], size: 12, line: { color: '#fff', width: 2 } },
+    text: ['Heating', 'Steam', 'Furnace'],
+    textposition: ['top center', 'top center', 'top center'],
+    textfont: { size: 12 },
+    showlegend: false
+  };
+
+  // Vertical reference lines for regions
+  var shapes = [
+    { type: 'line', x0: Tu_heat, x1: Tu_heat, y0: 0, y1: eps_heat, line: { color: '#f59e0b', width: 1, dash: 'dot' } },
+    { type: 'line', x0: Tu_steam, x1: Tu_steam, y0: 0, y1: eps_steam, line: { color: '#10b981', width: 1, dash: 'dot' } },
+    { type: 'line', x0: Tu_furnace, x1: Tu_furnace, y0: 0, y1: eps_furnace, line: { color: '#ef4444', width: 1, dash: 'dot' } }
+  ];
+
+  Plotly.newPlot('fig73', [trLine, trPts], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'Use Temperature Tᵤ (K)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Exergetic Efficiency ε (%)', range: [0, 100] },
+    shapes: shapes,
+    showlegend: false
+  }, plotlyConfig);
+
+  document.getElementById('ro_eps_heat').textContent = eps_heat.toFixed(1);
+  document.getElementById('ro_eps_steam').textContent = eps_steam.toFixed(1);
+  document.getElementById('ro_eps_furnace').textContent = eps_furnace.toFixed(1);
+}
+
+// ============ Slider Setup ============
+
+function setupSliders() {
+  // Fig 7.1 sliders
+  document.getElementById('sl_T1_71').addEventListener('input', function() {
+    throttledDraw('fig71', updateFig71);
+  });
+  document.getElementById('sl_p2_71').addEventListener('input', function() {
+    throttledDraw('fig71', updateFig71);
+  });
+
+  // Fig 7.2 sliders
+  document.getElementById('sl_T0_72').addEventListener('input', function() {
+    throttledDraw('fig72', updateFig72);
+  });
+  document.getElementById('sl_T_72').addEventListener('input', function() {
+    throttledDraw('fig72', updateFig72);
+  });
+
+  // Fig 7.3 sliders
+  document.getElementById('sl_Ts_73').addEventListener('input', function() {
+    throttledDraw('fig73', updateFig73);
+  });
+  document.getElementById('sl_eta_73').addEventListener('input', function() {
+    throttledDraw('fig73', updateFig73);
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig71();
+  buildFig72();
+  buildFig73();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

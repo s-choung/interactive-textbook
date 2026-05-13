@@ -122,7 +122,7 @@ body {
   background: var(--color-void); z-index: 100; width: 0%;
 }
 
-.page { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+.page { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
 .books {
   padding: 80px 0;
   opacity: 0; transform: translateY(32px);
@@ -133,7 +133,7 @@ body {
   font-size: 13px; font-weight: 500; color: var(--color-graphite);
   letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: 32px;
 }
-.book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .book-card {
   position: relative; border-radius: 16px; padding: 36px 28px;
   text-decoration: none; color: inherit; transition: transform 0.2s;
@@ -179,6 +179,9 @@ footer {
 }
 .footer-text { font-size: 13px; color: var(--color-graphite); }
 .footer-text a { color: var(--color-void); text-decoration: none; }
+@media (max-width: 900px) {
+  .book-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 640px) {
   .page { padding: 0 20px; }
   .hero-content { padding: 0 20px; }
@@ -190,6 +193,10 @@ footer {
 </head>
 <body>
 <div class="scroll-progress" id="progressBar"></div>
+<div class="lang-toggle">
+  <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+  <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+</div>
 
 <div class="hero-scroll-container" id="heroContainer">
   <div class="hero-sticky">
@@ -221,13 +228,19 @@ footer {
     <div class="book-grid">
       <a href="fundamental-concepts-in-heterogeneous-catalysis/" class="book-card">
         <div class="book-num">01</div>
-        <div class="book-title">Fundamental Concepts in Heterogeneous Catalysis</div>
+        <div class="book-title">
+          <span class="lang-ko">불균일 촉매의 기초 개념</span>
+          <span class="lang-en" style="display:none;">Fundamental Concepts in Heterogeneous Catalysis</span>
+        </div>
         <div class="book-author">Norskov, Bligaard, Kleis (2014)</div>
         <div class="book-meta">
           <div class="book-meta-item"><span class="book-meta-num">10</span> chapters</div>
           <div class="book-meta-item"><span class="book-meta-num">41</span> figures</div>
         </div>
-        <div class="book-desc">표면 평형, 속도론, BEP/Scaling, Volcano, d-band, Microkinetics, 전기촉매, 촉매 스크리닝까지.</div>
+        <div class="book-desc">
+          <span class="lang-ko">표면 평형, 속도론, BEP/Scaling, Volcano, d-band, Microkinetics, 전기촉매, 촉매 스크리닝까지.</span>
+          <span class="lang-en" style="display:none;">Surface equilibria, kinetics, BEP/Scaling, Volcano, d-band, Microkinetics, electrocatalysis, and catalyst screening.</span>
+        </div>
         <div class="book-tags">
           <span class="book-tag">Langmuir</span><span class="book-tag">BEP</span><span class="book-tag">Volcano</span><span class="book-tag">d-band</span><span class="book-tag">CHE</span>
         </div>
@@ -235,15 +248,81 @@ footer {
       </a>
       <a href="simulation-tutorials/" class="book-card">
         <div class="book-num">02</div>
-        <div class="book-title">Computational Materials Science Tutorials</div>
+        <div class="book-title">
+          <span class="lang-ko">계산재료과학 튜토리얼</span>
+          <span class="lang-en" style="display:none;">Computational Materials Science Tutorials</span>
+        </div>
         <div class="book-author">Simulation_tutorials (2024)</div>
         <div class="book-meta">
           <div class="book-meta-item"><span class="book-meta-num">5</span> chapters</div>
           <div class="book-meta-item"><span class="book-meta-num">27</span> figures</div>
         </div>
-        <div class="book-desc">DFT 기초, 표면 모델링, 분자동역학, ML 회귀, ML Potentials까지. 12개 노트북을 5개 챕터로 재구성.</div>
+        <div class="book-desc">
+          <span class="lang-ko">DFT 기초, 표면 모델링, 분자동역학, ML 회귀, ML Potentials까지. 12개 노트북을 5개 챕터로 재구성.</span>
+          <span class="lang-en" style="display:none;">DFT basics, surface modeling, molecular dynamics, ML regression, and ML Potentials. 12 notebooks reorganized into 5 chapters.</span>
+        </div>
         <div class="book-tags">
           <span class="book-tag">DFT</span><span class="book-tag">MD</span><span class="book-tag">ML Regression</span><span class="book-tag">MLP</span><span class="book-tag">MACE</span>
+        </div>
+        <div class="book-arrow">Open textbook &#8594;</div>
+      </a>
+      <a href="engineering-thermodynamics/" class="book-card">
+        <div class="book-num">03</div>
+        <div class="book-title">
+          <span class="lang-ko">공학 열역학</span>
+          <span class="lang-en" style="display:none;">Fundamentals of Engineering Thermodynamics</span>
+        </div>
+        <div class="book-author">Moran, Shapiro, Boettner, Bailey — 9th Ed. (2018)</div>
+        <div class="book-meta">
+          <div class="book-meta-item"><span class="book-meta-num">14</span> chapters</div>
+          <div class="book-meta-item"><span class="book-meta-num">0</span> figures</div>
+        </div>
+        <div class="book-desc">
+          <span class="lang-ko">열역학 1·2법칙, p-v-T 상태면, Rankine·Brayton 사이클, 엑서지, 습공기선도, 연소, 상평형까지.</span>
+          <span class="lang-en" style="display:none;">First &amp; Second Laws, p-v-T surfaces, Rankine &amp; Brayton cycles, exergy, psychrometrics, combustion, and phase equilibrium.</span>
+        </div>
+        <div class="book-tags">
+          <span class="book-tag">Carnot</span><span class="book-tag">Rankine</span><span class="book-tag">Brayton</span><span class="book-tag">Exergy</span><span class="book-tag">COP</span>
+        </div>
+        <div class="book-arrow">Open textbook &#8594;</div>
+      </a>
+      <a href="physical-chemistry/" class="book-card">
+        <div class="book-num">04</div>
+        <div class="book-title">
+          <span class="lang-ko">물리화학</span>
+          <span class="lang-en" style="display:none;">Atkins' Physical Chemistry</span>
+        </div>
+        <div class="book-author">Atkins, de Paula, Keeler — 11th Ed. (2018)</div>
+        <div class="book-meta">
+          <div class="book-meta-item"><span class="book-meta-num">19</span> chapters</div>
+          <div class="book-meta-item"><span class="book-meta-num">0</span> figures</div>
+        </div>
+        <div class="book-desc">
+          <span class="lang-ko">기체, 열역학 법칙, 양자역학, 원자·분자 구조, 분광학, 통계열역학, 반응속도론, 표면화학까지.</span>
+          <span class="lang-en" style="display:none;">Gases, thermodynamic laws, quantum theory, atomic &amp; molecular structure, spectroscopy, statistical thermodynamics, kinetics, and surface chemistry.</span>
+        </div>
+        <div class="book-tags">
+          <span class="book-tag">Maxwell-Boltzmann</span><span class="book-tag">Orbitals</span><span class="book-tag">Partition Function</span><span class="book-tag">Arrhenius</span>
+        </div>
+        <div class="book-arrow">Open textbook &#8594;</div>
+      </a>
+      <a href="chemical-reaction-engineering/" class="book-card">
+        <div class="book-num">05</div>
+        <div class="book-title">
+          <span class="lang-ko">화학반응공학</span>
+          <span class="lang-en" style="display:none;">Elements of Chemical Reaction Engineering</span>
+        </div>
+        <div class="book-author">H. Scott Fogler — 5th Ed. (2016)</div>
+        <div class="book-meta">
+          <div class="book-meta-item"><span class="book-meta-num">18</span> chapters</div>
+          <div class="book-meta-item"><span class="book-meta-num">0</span> figures</div>
+        </div>
+        <div class="book-desc">
+          <span class="lang-ko">몰수지, 반응기 설계(CSTR/PFR), 속도식, 다중 반응, 비등온, 물질전달, RTD, 비이상 반응기까지.</span>
+          <span class="lang-en" style="display:none;">Mole balances, reactor design (CSTR/PFR), rate laws, multiple reactions, nonisothermal, mass transfer, RTD, and nonideal reactors.</span>
+        </div>
+        <div class="book-tags">
+          <span class="book-tag">Levenspiel</span><span class="book-tag">CSTR</span><span class="book-tag">PFR</span><span class="book-tag">Thiele</span><span class="book-tag">RTD</span>
         </div>
         <div class="book-arrow">Open textbook &#8594;</div>
       </a>

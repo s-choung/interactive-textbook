@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: 열역학 제2법칙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">열역학 제2법칙</a>
+    <ul class="nav-links">
+      <li><a href="#s51">5.1</a></li>
+      <li><a href="#s52">5.2</a></li>
+      <li><a href="#s53">5.3</a></li>
+      <li><a href="#s56">5.6</a></li>
+      <li><a href="#s57">5.7</a></li>
+      <li><a href="#s510">5.10</a></li>
+      <li><a href="#s511">5.11</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.5</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">열역학 제2법칙</span>
+    <span class="lang-en" style="display:none;">The Second Law of Thermodynamics</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 5. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 5. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <span class="chip">비가역성</span>
+    <span class="chip">카르노 효율</span>
+    <span class="chip">엔트로피</span>
+    <span class="chip">Kelvin-Planck 서술</span>
+    <span class="chip">열역학 사이클</span>
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+
+<!-- ===== Section 5.1 ===== -->
+<section id="s51" class="section">
+  <p class="section-label">Section 5.1</p>
+  <h2 class="section-title">
+    <span class="lang-ko">제2법칙의 도입</span>
+    <span class="lang-en" style="display:none;">Introducing the Second Law</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">제1법칙(에너지 보존)은 에너지의 총량이 일정하다는 것만 보장할 뿐, 어떤 과정이 실제로 일어날 수 있는지에 대해서는 아무것도 말해 주지 않는다. 예컨대 뜨거운 커피가 차가운 방에서 식는 과정은 자연스럽지만, 식은 커피가 저절로 뜨거워지는 과정은 제1법칙에 위배되지 않음에도 결코 관찰되지 않는다. 제2법칙은 바로 이러한 과정의 방향성을 규정하며, 두 시스템 사이에 불균형이 존재할 때 일을 얻을 수 있는 기회가 존재하고, 비제어 과정에서 이 기회가 비가역적으로 사라진다는 사실을 정량적으로 기술한다.</span>
+      <span class="lang-en" style="display:none;">The first law (energy conservation) guarantees only that total energy remains constant; it says nothing about whether a process can actually occur. For instance, hot coffee cooling in a cold room is natural, yet cold coffee spontaneously reheating — though not violating the first law — is never observed. The second law governs this directionality: whenever an imbalance exists between two systems, an opportunity to extract work arises, and in uncontrolled processes that opportunity is irreversibly lost.</span>
+    </p>
+  </div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>과정의 방향성</strong>: 자연계의 모든 자발적 과정에는 고유한 진행 방향이 있으며, 에너지 보존만으로는 이를 설명할 수 없다</span>
+      <span class="lang-en" style="display:none;"><strong>Directionality of Processes</strong>: Every spontaneous process in nature has an inherent direction that energy conservation alone cannot explain</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>일의 기회</strong>: 두 시스템 간 불균형(온도차, 압력차 등)이 있을 때 일을 추출할 기회가 존재하며, 비제어 과정에서 이 기회는 영구적으로 소멸한다</span>
+      <span class="lang-en" style="display:none;"><strong>Work Opportunity</strong>: When an imbalance (temperature difference, pressure difference, etc.) exists between two systems, an opportunity to extract work arises; in uncontrolled processes this opportunity is permanently destroyed</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>제2법칙의 역할</strong>: 과정의 진행 방향을 예측하고, 평형 조건을 결정하며, 사이클의 이론적 최대 성능을 평가하는 데 사용된다</span>
+      <span class="lang-en" style="display:none;"><strong>Role of the Second Law</strong>: Used to predict process direction, determine equilibrium conditions, and evaluate the theoretical maximum performance of cycles</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 5.2 ===== -->
+<section id="s52" class="section">
+  <p class="section-label">Section 5.2</p>
+  <h2 class="section-title">
+    <span class="lang-ko">제2법칙의 서술</span>
+    <span class="lang-en" style="display:none;">Statements of the Second Law</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">제2법칙은 역사적으로 여러 동치 서술로 표현되어 왔다. Clausius 서술은 열이 저절로 저온체에서 고온체로 이동하는 것이 불가능하다고 선언하며, Kelvin-Planck 서술은 단일 열원에서 열을 받아 그 전부를 일로 변환하는 사이클이 존재할 수 없음을 말한다. 보다 현대적인 엔트로피 서술은 어떤 과정에서도 엔트로피가 파괴(감소)될 수 없다고 정리한다. 이 세 가지 서술은 서로 동치이며, 하나를 부정하면 나머지도 모두 부정된다.</span>
+      <span class="lang-en" style="display:none;">The second law has historically been expressed in several equivalent statements. The Clausius statement declares that heat cannot spontaneously flow from a colder body to a hotter one. The Kelvin-Planck statement asserts that no cycle can receive heat from a single reservoir and convert it entirely into work. The more modern entropy statement summarizes that entropy can never be destroyed in any process. These three statements are equivalent — negating one negates them all.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$W_{\text{cycle}} \leq 0 \quad (\text{single reservoir})$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>Clausius 서술</strong>: 외부 효과 없이 냉체에서 온체로 열만 이동하는 것은 불가능하다</span>
+      <span class="lang-en" style="display:none;"><strong>Clausius Statement</strong>: It is impossible to transfer heat from a colder body to a hotter body without producing any other effect</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>Kelvin-Planck 서술</strong>: 단일 열원과 열을 교환하면서 사이클로 순일(net work)을 생산하는 것은 불가능하다</span>
+      <span class="lang-en" style="display:none;"><strong>Kelvin-Planck Statement</strong>: It is impossible for a cycle exchanging heat with a single reservoir to produce net work</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>엔트로피 서술</strong>: 어떤 과정에서도 우주의 엔트로피 총량이 감소하는 것은 불가능하다</span>
+      <span class="lang-en" style="display:none;"><strong>Entropy Statement</strong>: It is impossible for the total entropy of the universe to decrease in any process</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 5.3 ===== -->
+<section id="s53" class="section">
+  <p class="section-label">Section 5.3</p>
+  <h2 class="section-title">
+    <span class="lang-ko">비가역 과정과 가역 과정</span>
+    <span class="lang-en" style="display:none;">Irreversible and Reversible Processes</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">실제 세계에서 관찰되는 거의 모든 과정은 비가역적이다. 마찰, 유한 온도차를 통한 열전달, 비제한 팽창, 서로 다른 물질의 자발적 혼합 등은 모두 비가역성의 원인이 된다. 가역 과정은 시스템과 주위를 동시에 원래 상태로 되돌릴 수 있는 이상적인 극한으로, 실제로는 구현 불가능하지만 성능 비교의 기준선으로서 핵심적인 역할을 한다. 내부 가역 과정(준평형 과정)과 외부 비가역성을 분리하면, 복잡한 실제 시스템의 분석을 크게 단순화할 수 있다.</span>
+      <span class="lang-en" style="display:none;">Nearly every process observed in the real world is irreversible. Friction, heat transfer across finite temperature differences, unrestrained expansion, and spontaneous mixing of different substances all introduce irreversibilities. A reversible process — an idealized limit where both the system and surroundings can be simultaneously restored to their initial states — is physically unattainable, yet it serves as the essential benchmark for performance comparison. Separating internal reversibility (quasi-equilibrium processes) from external irreversibilities greatly simplifies the analysis of complex real systems.</span>
+    </p>
+  </div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>비가역성의 원인</strong>: 마찰, 유한 온도차 열전달, 비제한 팽창, 자발적 혼합, 전기 저항, 비탄성 변형 등</span>
+      <span class="lang-en" style="display:none;"><strong>Sources of Irreversibility</strong>: Friction, heat transfer across finite temperature differences, unrestrained expansion, spontaneous mixing, electrical resistance, inelastic deformation, etc.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>가역 과정</strong>: 시스템과 주위 모두를 원래 상태로 되돌릴 수 있는 이상적 극한으로, 내부 가역 과정은 준평형(quasi-equilibrium) 과정과 동의어이다</span>
+      <span class="lang-en" style="display:none;"><strong>Reversible Process</strong>: An idealized limit where both system and surroundings can return to their original states; internally reversible processes are synonymous with quasi-equilibrium processes</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>내부/외부 비가역성</strong>: 시스템 경계 내부에서 발생하는 비가역성과 경계 외부(주위)에서 발생하는 비가역성을 구분하면 분석이 단순해진다</span>
+      <span class="lang-en" style="display:none;"><strong>Internal vs. External Irreversibility</strong>: Distinguishing between irreversibilities occurring inside the system boundary and those in the surroundings simplifies engineering analysis</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 5.6 ===== -->
+<section id="s56" class="section">
+  <p class="section-label">Section 5.6</p>
+  <h2 class="section-title">
+    <span class="lang-ko">두 열원 사이 동력 사이클의 제2법칙</span>
+    <span class="lang-en" style="display:none;">Second Law Aspects of Power Cycles with Two Reservoirs</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">고온 열원($T_H$)에서 열 $Q_H$를 받아 일부를 일 $W_{\text{cycle}}$로 변환하고 나머지 $Q_C$를 저온 열원($T_C$)으로 방출하는 동력 사이클에서, 열효율은 결코 100%에 도달할 수 없다. 카르노의 추론에 의하면 비가역 사이클의 효율은 같은 열원 쌍 사이에서 작동하는 가역 사이클의 효율보다 항상 낮고, 같은 열원 쌍 사이에서 작동하는 모든 가역 사이클은 동일한 효율을 갖는다. 이로부터 두 열원의 절대 온도만으로 최대 효율이 결정된다.</span>
+      <span class="lang-en" style="display:none;">In a power cycle that receives heat $Q_H$ from a hot reservoir at $T_H$, converts part of it to work $W_{\text{cycle}}$, and rejects the remainder $Q_C$ to a cold reservoir at $T_C$, the thermal efficiency can never reach 100%. Carnot's corollaries state that an irreversible cycle always has lower efficiency than a reversible cycle operating between the same two reservoirs, and all reversible cycles operating between the same reservoirs share the same efficiency. From this, the maximum efficiency is determined solely by the absolute temperatures of the two reservoirs.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$\eta = \frac{W_{\text{cycle}}}{Q_H} = 1 - \frac{Q_C}{Q_H}$$</div>
+  <div class="eq-block">$$\eta_{\text{max}} = 1 - \frac{T_C}{T_H}$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>열효율의 상한</strong>: 모든 동력 사이클에서 $Q_C > 0$이므로 열효율은 반드시 100% 미만이다</span>
+      <span class="lang-en" style="display:none;"><strong>Upper Bound on Thermal Efficiency</strong>: Since $Q_C > 0$ in every power cycle, thermal efficiency must always be less than 100%</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>카르노 추론 1</strong>: 비가역 사이클의 효율은 같은 두 열원 사이에서 작동하는 가역 사이클의 효율보다 항상 작다</span>
+      <span class="lang-en" style="display:none;"><strong>Carnot Corollary 1</strong>: The efficiency of an irreversible cycle is always less than that of a reversible cycle operating between the same two reservoirs</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>카르노 추론 2</strong>: 같은 두 열원 사이에서 작동하는 모든 가역 사이클은 동일한 효율을 갖는다</span>
+      <span class="lang-en" style="display:none;"><strong>Carnot Corollary 2</strong>: All reversible cycles operating between the same two reservoirs have identical efficiency</span>
+    </li>
+  </ul>
+
+  <!-- Figure: Carnot Efficiency Explorer -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 5.1</span>
+      <span class="figure-title">
+        <span class="lang-ko">카르노 효율 탐색기</span>
+        <span class="lang-en" style="display:none;">Carnot Efficiency Explorer</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig_carnot_eff" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">$T_H$</span>
+          <input type="range" id="slider_TH_eff" min="300" max="2000" value="1000" step="10">
+          <span class="control-value" id="val_TH_eff">1000 K</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">$T_C$</span>
+          <input type="range" id="slider_TC_eff" min="200" max="500" value="300" step="5">
+          <span class="control-value" id="val_TC_eff">300 K</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">최대 효율</span>
+          <span class="readout-key lang-en" style="display:none;">Max Efficiency</span>
+          <span class="readout-val" id="ro_eta_max">70.0%</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">$Q_C / Q_H$ 비</span>
+          <span class="readout-key lang-en" style="display:none;">$Q_C / Q_H$ Ratio</span>
+          <span class="readout-val" id="ro_qc_qh">0.300</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Section 5.7 ===== -->
+<section id="s57" class="section">
+  <p class="section-label">Section 5.7</p>
+  <h2 class="section-title">
+    <span class="lang-ko">냉동 및 열펌프 사이클의 제2법칙</span>
+    <span class="lang-en" style="display:none;">Second Law Aspects of Refrigeration and Heat Pump Cycles</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">냉동기와 열펌프는 동력 사이클의 역방향 운전에 해당하며, 외부에서 일을 공급받아 저온 열원에서 고온 열원으로 열을 이동시킨다. 냉동 사이클의 성능은 냉동 COP($\beta$), 열펌프 사이클의 성능은 열펌프 COP($\gamma$)로 정량화한다. 가역 사이클에서 이 값들은 두 열원의 절대 온도만의 함수로 표현되며, 이것이 각각의 이론적 최대값이 된다. $T_H$와 $T_C$의 차이가 작을수록 COP가 급격히 증가함을 확인할 수 있다.</span>
+      <span class="lang-en" style="display:none;">Refrigerators and heat pumps operate in the reverse direction of a power cycle: they receive work input to transfer heat from a cold reservoir to a hot one. The performance of a refrigeration cycle is quantified by the refrigeration COP ($\beta$), while the heat pump cycle uses the heat pump COP ($\gamma$). For reversible cycles, these values are functions of the absolute temperatures alone and represent the theoretical maxima. As the difference between $T_H$ and $T_C$ shrinks, the COP increases sharply.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$\beta = \frac{Q_C}{Q_H - Q_C}, \quad \beta_{\text{max}} = \frac{T_C}{T_H - T_C}$$</div>
+  <div class="eq-block">$$\gamma = \frac{Q_H}{Q_H - Q_C}, \quad \gamma_{\text{max}} = \frac{T_H}{T_H - T_C}$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>냉동 COP ($\beta$)</strong>: 저온 열원에서 제거한 열량을 투입 일로 나눈 값으로, 가역 한계는 $T_C / (T_H - T_C)$이다</span>
+      <span class="lang-en" style="display:none;"><strong>Refrigeration COP ($\beta$)</strong>: Heat removed from the cold reservoir divided by work input; the reversible limit is $T_C / (T_H - T_C)$</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>열펌프 COP ($\gamma$)</strong>: 고온 열원으로 전달한 열량을 투입 일로 나눈 값으로, 가역 한계는 $T_H / (T_H - T_C)$이다</span>
+      <span class="lang-en" style="display:none;"><strong>Heat Pump COP ($\gamma$)</strong>: Heat delivered to the hot reservoir divided by work input; the reversible limit is $T_H / (T_H - T_C)$</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>$\beta$와 $\gamma$의 관계</strong>: 항상 $\gamma = \beta + 1$이 성립하므로, 열펌프 COP는 반드시 1보다 크다</span>
+      <span class="lang-en" style="display:none;"><strong>Relationship between $\beta$ and $\gamma$</strong>: Since $\gamma = \beta + 1$ always holds, the heat pump COP is always greater than 1</span>
+    </li>
+  </ul>
+
+  <!-- Figure: COP Explorer -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 5.2</span>
+      <span class="figure-title">
+        <span class="lang-ko">냉동기 & 열펌프 COP 탐색기</span>
+        <span class="lang-en" style="display:none;">Refrigeration & Heat Pump COP Explorer</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig_cop" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">$T_H$</span>
+          <input type="range" id="slider_TH_cop" min="280" max="350" value="300" step="1">
+          <span class="control-value" id="val_TH_cop">300 K</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">$T_C$</span>
+          <input type="range" id="slider_TC_cop" min="200" max="290" value="260" step="1">
+          <span class="control-value" id="val_TC_cop">260 K</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">냉동 COP ($\beta_{\text{max}}$)</span>
+          <span class="readout-key lang-en" style="display:none;">Refrig. COP ($\beta_{\text{max}}$)</span>
+          <span class="readout-val" id="ro_beta">6.50</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">열펌프 COP ($\gamma_{\text{max}}$)</span>
+          <span class="readout-key lang-en" style="display:none;">Heat Pump COP ($\gamma_{\text{max}}$)</span>
+          <span class="readout-val" id="ro_gamma">7.50</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Section 5.10 ===== -->
+<section id="s510" class="section">
+  <p class="section-label">Section 5.10</p>
+  <h2 class="section-title">
+    <span class="lang-ko">카르노 사이클</span>
+    <span class="lang-en" style="display:none;">Carnot Cycle</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">카르노 사이클은 두 등온 과정과 두 단열 과정, 총 4개의 내부 가역 과정으로 구성된 이상적 사이클이다. 등온 팽창에서 고온 열원으로부터 열을 흡수하고, 단열 팽창으로 온도를 낮추며, 등온 압축에서 저온 열원으로 열을 방출하고, 단열 압축으로 초기 상태에 복귀한다. 이 사이클은 기체 피스톤-실린더 장치뿐 아니라 증기 동력 장치에서도 구현 가능하며, 역방향 운전 시 카르노 냉동 또는 열펌프 사이클이 된다.</span>
+      <span class="lang-en" style="display:none;">The Carnot cycle is an ideal cycle comprising four internally reversible processes: two isothermal and two adiabatic. During isothermal expansion, heat is absorbed from the hot reservoir; adiabatic expansion then lowers the temperature; isothermal compression rejects heat to the cold reservoir; and adiabatic compression returns the system to its initial state. This cycle can be realized in both gas piston-cylinder arrangements and vapor power systems, and when operated in reverse it becomes a Carnot refrigeration or heat pump cycle.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$\frac{Q_C}{Q_H}\bigg|_{\text{rev}} = \frac{T_C}{T_H}$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>4단계 구성</strong>: 등온 팽창 → 단열 팽창 → 등온 압축 → 단열 압축의 네 내부 가역 과정으로 이루어진다</span>
+      <span class="lang-en" style="display:none;"><strong>Four-Step Composition</strong>: Consists of four internally reversible processes — isothermal expansion, adiabatic expansion, isothermal compression, and adiabatic compression</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>매체 독립성</strong>: 기체뿐 아니라 상변화를 이용한 증기 동력 장치에서도 카르노 사이클을 구현할 수 있다</span>
+      <span class="lang-en" style="display:none;"><strong>Working-Fluid Independence</strong>: The Carnot cycle can be implemented not only with gases but also with vapor power systems using phase change</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>역방향 운전</strong>: 사이클을 역으로 운전하면 카르노 냉동기 또는 카르노 열펌프가 되며, 최대 COP를 달성한다</span>
+      <span class="lang-en" style="display:none;"><strong>Reverse Operation</strong>: Running the cycle in reverse yields a Carnot refrigerator or heat pump, achieving the maximum COP</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 5.11 ===== -->
+<section id="s511" class="section">
+  <p class="section-label">Section 5.11</p>
+  <h2 class="section-title">
+    <span class="lang-ko">클라우지우스 부등식</span>
+    <span class="lang-en" style="display:none;">Clausius Inequality</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">클라우지우스 부등식은 제2법칙을 수학적으로 가장 일반화한 형태이다. 임의의 사이클에 대해, 경계 온도 $T_b$로 나눈 미소 열전달량 $\delta Q$를 한 바퀴 적분한 값은 0 이하가 된다. 이때 도입되는 $\sigma_{\text{cycle}}$은 사이클 전체에서 발생한 비가역성의 총량을 나타내며, 가역 사이클에서는 0, 비가역 사이클에서는 양수가 된다. $\sigma_{\text{cycle}} < 0$이 되는 사이클은 물리적으로 불가능하다.</span>
+      <span class="lang-en" style="display:none;">The Clausius inequality is the most general mathematical formulation of the second law. For any cycle, the integral of the differential heat transfer $\delta Q$ divided by the boundary temperature $T_b$ over the entire cycle is less than or equal to zero. The quantity $\sigma_{\text{cycle}}$ represents the total irreversibility generated during the cycle: it equals zero for reversible cycles, is positive for irreversible ones, and a negative value implies an impossible process.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$\oint \frac{\delta Q}{T_b} = -\sigma_{\text{cycle}}, \quad \sigma_{\text{cycle}} \geq 0$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>클라우지우스 적분</strong>: 사이클 경계에서의 열전달을 경계 온도로 나누어 적분한 값으로, 사이클의 가역/비가역 여부를 판별한다</span>
+      <span class="lang-en" style="display:none;"><strong>Clausius Integral</strong>: The cyclic integral of heat transfer divided by boundary temperature, used to determine whether a cycle is reversible or irreversible</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>$\sigma_{\text{cycle}}$의 의미</strong>: $\sigma_{\text{cycle}} = 0$이면 가역, $\sigma_{\text{cycle}} > 0$이면 비가역이며, $\sigma_{\text{cycle}} < 0$인 사이클은 존재할 수 없다</span>
+      <span class="lang-en" style="display:none;"><strong>Meaning of $\sigma_{\text{cycle}}$</strong>: $\sigma_{\text{cycle}} = 0$ indicates reversibility, $\sigma_{\text{cycle}} > 0$ indicates irreversibility, and $\sigma_{\text{cycle}} < 0$ is impossible</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Quiz ===== -->
+<section class="section">
+  <p class="section-label">Self-Check Quiz</p>
+  <h2 class="section-title">
+    <span class="lang-ko">확인 문제</span>
+    <span class="lang-en" style="display:none;">Check Your Understanding</span>
+  </h2>
+
+  <!-- Quiz 1 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">$T_H = 800\;\text{K}$, $T_C = 300\;\text{K}$인 카르노 동력 사이클의 최대 열효율은?</span>
+      <span class="lang-en" style="display:none;">What is the maximum thermal efficiency of a Carnot power cycle operating between $T_H = 800\;\text{K}$ and $T_C = 300\;\text{K}$?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')">37.5%</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')">50.0%</button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q1')">62.5%</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')">75.0%</button>
+    </div>
+    <div class="quiz-explain" id="q1-explain">
+      <span class="lang-ko">$\eta_{\text{max}} = 1 - 300/800 = 0.625 = 62.5\%$</span>
+      <span class="lang-en" style="display:none;">$\eta_{\text{max}} = 1 - T_C/T_H = 1 - 300/800 = 0.625 = 62.5\%$</span>
+    </div>
+  </div>
+
+  <!-- Quiz 2 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">어떤 발전 사이클이 단일 열원에서 열을 받아 동일한 양의 순일을 생산한다고 주장한다. 이 주장은?</span>
+      <span class="lang-en" style="display:none;">A power cycle claims to produce net work equal to the heat received from a single thermal reservoir. This claim is:</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">
+        <span class="lang-ko">제1법칙 위반</span>
+        <span class="lang-en" style="display:none;">Violates the first law</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q2')">
+        <span class="lang-ko">Kelvin-Planck 서술 위반</span>
+        <span class="lang-en" style="display:none;">Violates the Kelvin-Planck statement</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">
+        <span class="lang-ko">Clausius 서술 위반</span>
+        <span class="lang-en" style="display:none;">Violates the Clausius statement</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">
+        <span class="lang-ko">가능하다</span>
+        <span class="lang-en" style="display:none;">Possible</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q2-explain">
+      <span class="lang-ko">단일 열원에서 열을 받아 순일을 생산하는 사이클은 Kelvin-Planck 서술에 의해 불가능하다.</span>
+      <span class="lang-en" style="display:none;">A cycle producing net work from a single reservoir violates the Kelvin-Planck statement.</span>
+    </div>
+  </div>
+
+  <!-- Quiz 3 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">$T_C = 268\;\text{K}$, $T_H = 295\;\text{K}$ 사이에서 작동하는 냉동기의 최대 COP에 가장 가까운 값은?</span>
+      <span class="lang-en" style="display:none;">What is the maximum COP of a refrigerator operating between $T_C = 268\;\text{K}$ and $T_H = 295\;\text{K}$?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">5.0</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">7.5</button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q3')">9.9</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">12.3</button>
+    </div>
+    <div class="quiz-explain" id="q3-explain">
+      <span class="lang-ko">$\beta_{\text{max}} = 268 / (295 - 268) = 268 / 27 \approx 9.9$</span>
+      <span class="lang-en" style="display:none;">$\beta_{\text{max}} = T_C / (T_H - T_C) = 268 / 27 \approx 9.9$</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== What-if Cards ===== -->
+<section class="section">
+  <p class="section-label">What If?</p>
+  <h2 class="section-title">
+    <span class="lang-ko">사고 실험</span>
+    <span class="lang-en" style="display:none;">Thought Experiments</span>
+  </h2>
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 카르노 사이클의 저온 열원 온도를 0 K까지 낮출 수 있다면?</span>
+        <span class="lang-en" style="display:none;">What if the cold reservoir temperature of a Carnot cycle could be lowered to 0 K?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 →</span>
+        <span class="lang-en" style="display:none;">Click to reveal →</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">열효율이 100%가 되지만, 열역학 제3법칙에 의해 절대영도 도달은 불가능하므로 이론적 극한일 뿐이다.</span>
+        <span class="lang-en" style="display:none;">Efficiency would reach 100%, but the third law makes absolute zero unattainable — it remains a theoretical limit.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 마찰이 전혀 없는 세상이라면 모든 과정이 가역적일까?</span>
+        <span class="lang-en" style="display:none;">If friction did not exist, would all processes be reversible?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 →</span>
+        <span class="lang-en" style="display:none;">Click to reveal →</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">아니다. 유한 온도차 열전달, 비제한 팽창, 자발적 혼합 등 마찰 외에도 비가역성 원인이 다수 존재한다.</span>
+        <span class="lang-en" style="display:none;">No. Heat transfer across finite temperature differences, unrestrained expansion, and spontaneous mixing are additional sources of irreversibility.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Takeaways ===== -->
+<section class="takeaways">
+  <h2 class="section-title">Key Takeaways</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">01</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">자연은 방향성이 있다</span>
+        <span class="lang-en" style="display:none;">Nature Has Directionality</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">에너지는 보존되지만 모든 변환이 가능한 것은 아니다. 제2법칙은 과정의 방향과 한계를 규정한다.</span>
+        <span class="lang-en" style="display:none;">Energy is conserved, but not all transformations are possible. The second law governs the direction and limits of processes.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">02</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">카르노 효율은 넘을 수 없는 상한</span>
+        <span class="lang-en" style="display:none;">Carnot Efficiency Is the Unsurpassable Upper Bound</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">같은 두 열원 사이에서 작동하는 모든 동력 사이클의 열효율은 $1 - T_C/T_H$를 초과할 수 없다.</span>
+        <span class="lang-en" style="display:none;">No power cycle operating between two reservoirs can exceed the thermal efficiency of $1 - T_C/T_H$.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">03</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">비가역성은 성능 저하의 근본 원인</span>
+        <span class="lang-en" style="display:none;">Irreversibilities Are the Root Cause of Performance Degradation</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">마찰, 유한 온도차 열전달 등 비가역성이 있으면 실제 성능은 이론적 최대값에 미치지 못하며, 그 차이를 정량화하는 것이 공학적 핵심이다.</span>
+        <span class="lang-en" style="display:none;">Friction, heat transfer across finite temperature differences, and other irreversibilities prevent real systems from reaching theoretical maxima; quantifying this gap is an engineering imperative.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.5</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES (모든 챕터 공통)
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC: Ch.5 The Second Law of Thermodynamics
+// ============================================================
+
+// --- Figure 5.1: Carnot Efficiency Explorer ---
+function buildFigCarnotEff() {
+  const TH = 1000, TC = 300;
+  // Generate eta vs T_H curve at fixed T_C
+  const thVals = [];
+  const etaVals = [];
+  for (let t = 300; t <= 2000; t += 10) {
+    thVals.push(t);
+    etaVals.push((1 - TC / t) * 100);
+  }
+
+  const traceCurve = {
+    x: thVals, y: etaVals,
+    mode: 'lines', name: 'eta vs T_H',
+    line: { color: '#6366f1', width: 2.5 }
+  };
+
+  const tracePoint = {
+    x: [TH], y: [(1 - TC / TH) * 100],
+    mode: 'markers', name: 'Current',
+    marker: { color: '#ef4444', size: 12, symbol: 'circle' },
+    showlegend: false
+  };
+
+  Plotly.newPlot('fig_carnot_eff', [traceCurve, tracePoint], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'T_H (K)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'eta_max (%)', range: [0, 100] },
+    showlegend: false
+  }, plotlyConfig);
+}
+
+function updateFigCarnotEff() {
+  const TH = +document.getElementById('slider_TH_eff').value;
+  const TC = +document.getElementById('slider_TC_eff').value;
+
+  document.getElementById('val_TH_eff').textContent = TH + ' K';
+  document.getElementById('val_TC_eff').textContent = TC + ' K';
+
+  const eta = Math.max(0, (1 - TC / TH) * 100);
+  const ratio = TC / TH;
+
+  document.getElementById('ro_eta_max').textContent = eta.toFixed(1) + '%';
+  document.getElementById('ro_qc_qh').textContent = ratio.toFixed(3);
+
+  // Rebuild curve for current TC
+  const thVals = [];
+  const etaVals = [];
+  for (let t = Math.max(TC + 1, 300); t <= 2000; t += 10) {
+    thVals.push(t);
+    etaVals.push((1 - TC / t) * 100);
+  }
+
+  throttledDraw('carnotEff', () => {
+    Plotly.react('fig_carnot_eff', [
+      { x: thVals, y: etaVals, mode: 'lines', line: { color: '#6366f1', width: 2.5 }, showlegend: false },
+      { x: [TH], y: [eta], mode: 'markers', marker: { color: '#ef4444', size: 12 }, showlegend: false }
+    ], {
+      ...plotlyLayout,
+      xaxis: { ...plotlyLayout.xaxis, title: 'T_H (K)' },
+      yaxis: { ...plotlyLayout.yaxis, title: 'eta_max (%)', range: [0, 100] },
+      showlegend: false
+    }, plotlyConfig);
+  });
+}
+
+// --- Figure 5.2: COP Explorer ---
+function buildFigCOP() {
+  const TH = 300, TC = 260;
+  // Generate beta & gamma vs TC curve at fixed TH
+  const tcVals = [];
+  const betaVals = [];
+  const gammaVals = [];
+  for (let t = 200; t < TH; t += 1) {
+    tcVals.push(t);
+    const diff = TH - t;
+    betaVals.push(t / diff);
+    gammaVals.push(TH / diff);
+  }
+
+  const traceBeta = {
+    x: tcVals, y: betaVals,
+    mode: 'lines', name: 'beta_max (Refrig.)',
+    line: { color: '#3b82f6', width: 2.5 }
+  };
+
+  const traceGamma = {
+    x: tcVals, y: gammaVals,
+    mode: 'lines', name: 'gamma_max (Heat Pump)',
+    line: { color: '#f59e0b', width: 2.5 }
+  };
+
+  const diff0 = TH - TC;
+  const tracePtBeta = {
+    x: [TC], y: [TC / diff0],
+    mode: 'markers', marker: { color: '#3b82f6', size: 12, symbol: 'diamond' },
+    showlegend: false
+  };
+  const tracePtGamma = {
+    x: [TC], y: [TH / diff0],
+    mode: 'markers', marker: { color: '#f59e0b', size: 12, symbol: 'diamond' },
+    showlegend: false
+  };
+
+  Plotly.newPlot('fig_cop', [traceBeta, traceGamma, tracePtBeta, tracePtGamma], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'T_C (K)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'COP', range: [0, 30] },
+    legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.8)' }
+  }, plotlyConfig);
+}
+
+function updateFigCOP() {
+  const TH = +document.getElementById('slider_TH_cop').value;
+  const TC = +document.getElementById('slider_TC_cop').value;
+
+  document.getElementById('val_TH_cop').textContent = TH + ' K';
+  document.getElementById('val_TC_cop').textContent = TC + ' K';
+
+  const diff = TH - TC;
+  const beta = diff > 0 ? TC / diff : Infinity;
+  const gamma = diff > 0 ? TH / diff : Infinity;
+
+  document.getElementById('ro_beta').textContent = isFinite(beta) ? beta.toFixed(2) : '∞';
+  document.getElementById('ro_gamma').textContent = isFinite(gamma) ? gamma.toFixed(2) : '∞';
+
+  // Rebuild curves for current TH
+  const tcVals = [];
+  const betaVals = [];
+  const gammaVals = [];
+  for (let t = 200; t < TH; t += 1) {
+    tcVals.push(t);
+    const d = TH - t;
+    betaVals.push(t / d);
+    gammaVals.push(TH / d);
+  }
+
+  // Cap y-axis at reasonable value
+  const yMax = Math.min(Math.max(beta * 1.5, gamma * 1.5, 15), 50);
+
+  throttledDraw('cop', () => {
+    Plotly.react('fig_cop', [
+      { x: tcVals, y: betaVals, mode: 'lines', name: 'beta_max (Refrig.)', line: { color: '#3b82f6', width: 2.5 } },
+      { x: tcVals, y: gammaVals, mode: 'lines', name: 'gamma_max (Heat Pump)', line: { color: '#f59e0b', width: 2.5 } },
+      { x: [TC], y: [Math.min(beta, yMax)], mode: 'markers', marker: { color: '#3b82f6', size: 12, symbol: 'diamond' }, showlegend: false },
+      { x: [TC], y: [Math.min(gamma, yMax)], mode: 'markers', marker: { color: '#f59e0b', size: 12, symbol: 'diamond' }, showlegend: false }
+    ], {
+      ...plotlyLayout,
+      xaxis: { ...plotlyLayout.xaxis, title: 'T_C (K)' },
+      yaxis: { ...plotlyLayout.yaxis, title: 'COP', range: [0, yMax] },
+      legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.8)' }
+    }, plotlyConfig);
+  });
+}
+
+// --- Slider Setup ---
+function setupSliders() {
+  document.getElementById('slider_TH_eff').addEventListener('input', updateFigCarnotEff);
+  document.getElementById('slider_TC_eff').addEventListener('input', updateFigCarnotEff);
+  document.getElementById('slider_TH_cop').addEventListener('input', updateFigCOP);
+  document.getElementById('slider_TC_cop').addEventListener('input', updateFigCOP);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFigCarnotEff(); buildFigCOP(); setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

@@ -96,6 +96,21 @@ footer {
 .footer-text { font-size: 13px; color: var(--color-graphite); }
 .footer-text a { color: var(--color-void); text-decoration: none; }
 
+.lang-toggle {
+  position: fixed; top: 24px; right: 32px; z-index: 10;
+  display: flex; gap: 0;
+  border: 1px solid rgba(0,0,0,0.10); border-radius: 9999px;
+  overflow: hidden; background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+}
+.lang-btn {
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 6px 14px; border: none; cursor: pointer;
+  background: transparent; color: var(--color-ash);
+  transition: all 0.15s;
+}
+.lang-btn.active { background: var(--color-void); color: #fff; }
+
 @media (max-width: 640px) {
   .page { padding: 0 20px; }
   .hero { padding: 64px 0 48px; }
@@ -107,11 +122,21 @@ footer {
 </style>
 </head>
 <body>
+<div class="lang-toggle">
+  <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+  <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+</div>
 <div class="page">
   <section class="hero">
     <p class="hero-eyebrow"><a href="../" style="color:inherit;text-decoration:none;">&#8592; Collection</a> &nbsp;·&nbsp; Computational Materials Science</p>
-    <h1 class="hero-title">Simulation Tutorials</h1>
-    <p class="hero-subtitle">DFT, 표면과학, 분자동역학, 머신러닝까지. 12개 Jupyter 노트북을 5개 인터랙티브 챕터로 재구성했습니다.</p>
+    <h1 class="hero-title">
+      <span class="lang-ko">계산재료과학 튜토리얼</span>
+      <span class="lang-en" style="display:none;">Simulation Tutorials</span>
+    </h1>
+    <p class="hero-subtitle">
+      <span class="lang-ko">DFT, 표면과학, 분자동역학, 머신러닝까지. 12개 Jupyter 노트북을 5개 인터랙티브 챕터로 재구성했습니다.</span>
+      <span class="lang-en" style="display:none;">From DFT to surface science, molecular dynamics, and machine learning. 12 Jupyter notebooks reorganized into 5 interactive chapters.</span>
+    </p>
     <div class="hero-stats">
       <div class="hero-stat"><div class="hero-stat-num">5</div><div class="hero-stat-label">Chapters</div></div>
       <div class="hero-stat"><div class="hero-stat-num">27</div><div class="hero-stat-label">Interactive Figures</div></div>
@@ -127,7 +152,10 @@ footer {
         <div class="ch-num">01</div>
         <div class="ch-info">
           <div class="ch-title">Python &amp; DFT Basics</div>
-          <div class="ch-desc">Python 기초부터 ASE/GPAW 기반 DFT 계산까지. K-point 수렴, cutoff 수렴, Birch-Murnaghan 상태방정식을 인터랙티브하게 탐색합니다.</div>
+          <div class="ch-desc">
+            <span class="lang-ko">Python 기초부터 ASE/GPAW 기반 DFT 계산까지. K-point 수렴, cutoff 수렴, Birch-Murnaghan 상태방정식을 인터랙티브하게 탐색합니다.</span>
+            <span class="lang-en" style="display:none;">From Python basics to ASE/GPAW-based DFT calculations. Interactively explore k-point convergence, cutoff convergence, and the Birch-Murnaghan equation of state.</span>
+          </div>
           <div class="ch-tags"><span class="ch-tag">DFT</span><span class="ch-tag">K-point</span><span class="ch-tag">Cutoff</span><span class="ch-tag">EOS</span></div>
         </div>
         <div class="ch-arrow">&#8594;</div>
@@ -136,7 +164,10 @@ footer {
         <div class="ch-num">02</div>
         <div class="ch-info">
           <div class="ch-title">Surface Science &amp; Adsorption</div>
-          <div class="ch-desc">촉매 표면 slab 구성, surface energy 수렴, 흡착 자리 비교, coverage 효과를 시각적으로 이해합니다.</div>
+          <div class="ch-desc">
+            <span class="lang-ko">촉매 표면 slab 구성, surface energy 수렴, 흡착 자리 비교, coverage 효과를 시각적으로 이해합니다.</span>
+            <span class="lang-en" style="display:none;">Visually understand slab construction, surface energy convergence, adsorption site comparison, and coverage effects.</span>
+          </div>
           <div class="ch-tags"><span class="ch-tag">Slab Model</span><span class="ch-tag">Surface Energy</span><span class="ch-tag">Adsorption</span></div>
         </div>
         <div class="ch-arrow">&#8594;</div>
@@ -145,7 +176,10 @@ footer {
         <div class="ch-num">03</div>
         <div class="ch-info">
           <div class="ch-title">Molecular Dynamics</div>
-          <div class="ch-desc">Lennard-Jones 포텐셜부터 NPT 앙상블, Maxwell-Boltzmann 분포, 열팽창 계수, MSD 분석까지 MD의 핵심.</div>
+          <div class="ch-desc">
+            <span class="lang-ko">Lennard-Jones 포텐셜부터 NPT 앙상블, Maxwell-Boltzmann 분포, 열팽창 계수, MSD 분석까지 MD의 핵심.</span>
+            <span class="lang-en" style="display:none;">Core MD concepts from Lennard-Jones potential to NPT ensemble, Maxwell-Boltzmann distribution, thermal expansion, and MSD analysis.</span>
+          </div>
           <div class="ch-tags"><span class="ch-tag">LJ Potential</span><span class="ch-tag">NPT</span><span class="ch-tag">Maxwell-Boltzmann</span><span class="ch-tag">MSD</span></div>
         </div>
         <div class="ch-arrow">&#8594;</div>
@@ -154,7 +188,10 @@ footer {
         <div class="ch-num">04</div>
         <div class="ch-info">
           <div class="ch-title">ML Regression &amp; Feature Engineering</div>
-          <div class="ch-desc">선형 회귀, 과적합, feature importance, cross-validation을 CO<sub>2</sub>RR 데이터로 실습합니다.</div>
+          <div class="ch-desc">
+            <span class="lang-ko">선형 회귀, 과적합, feature importance, cross-validation을 CO<sub>2</sub>RR 데이터로 실습합니다.</span>
+            <span class="lang-en" style="display:none;">Hands-on linear regression, overfitting, feature importance, and cross-validation with CO<sub>2</sub>RR data.</span>
+          </div>
           <div class="ch-tags"><span class="ch-tag">Regression</span><span class="ch-tag">Overfitting</span><span class="ch-tag">Cross-Validation</span><span class="ch-tag">Parity Plot</span></div>
         </div>
         <div class="ch-arrow">&#8594;</div>
@@ -163,7 +200,10 @@ footer {
         <div class="ch-num">05</div>
         <div class="ch-info">
           <div class="ch-title">Machine Learning Potentials</div>
-          <div class="ch-desc">MACE/Open Catalyst 기반 MLP의 원리, DFT 대비 속도, 벤치마킹, CatBench 촉매 스크리닝까지.</div>
+          <div class="ch-desc">
+            <span class="lang-ko">MACE/Open Catalyst 기반 MLP의 원리, DFT 대비 속도, 벤치마킹, CatBench 촉매 스크리닝까지.</span>
+            <span class="lang-en" style="display:none;">Principles of MACE/Open Catalyst MLPs, speed vs DFT, benchmarking, and CatBench catalyst screening.</span>
+          </div>
           <div class="ch-tags"><span class="ch-tag">MACE</span><span class="ch-tag">MLP</span><span class="ch-tag">Training Curve</span><span class="ch-tag">Screening</span></div>
         </div>
         <div class="ch-arrow">&#8594;</div>
@@ -176,5 +216,13 @@ footer {
   <p class="footer-text">Based on Simulation_tutorials (12 Jupyter Notebooks)</p>
   <p class="footer-text" style="margin-top:8px;">움직이는 교과서 · <a href="https://schoung.com">Seokhyun Choung</a></p>
 </footer>
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+</script>
 </body>
 </html>

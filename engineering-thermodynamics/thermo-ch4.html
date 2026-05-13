@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Control Volume Analysis Using Energy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">Control Volume Analysis Using Energy</a>
+    <ul class="nav-links">
+      <li><a href="#s41">4.1-4.3</a></li>
+      <li><a href="#s44">4.4-4.5</a></li>
+      <li><a href="#s46">4.6</a></li>
+      <li><a href="#s47">4.7-4.8</a></li>
+      <li><a href="#s49">4.9-4.10</a></li>
+      <li><a href="#s411">4.11</a></li>
+      <li><a href="#s412">4.12</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.4</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">에너지를 이용한 검사체적 해석</span>
+    <span class="lang-en" style="display:none;">Control Volume Analysis Using Energy</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 4. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 4. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <span class="chip">질량 보존</span>
+    <span class="chip">에너지 수지</span>
+    <span class="chip">노즐·디퓨저</span>
+    <span class="chip">터빈·압축기</span>
+    <span class="chip">열교환기</span>
+    <span class="chip">교축 과정</span>
+    <span class="chip">과도 해석</span>
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+
+<!-- ============ Section 4.1-4.3: Mass Balance ============ -->
+<section id="s41" class="section">
+  <p class="section-label">Section 4.1 – 4.3</p>
+  <h2 class="section-title">
+    <span class="lang-ko">검사체적의 질량 보존</span>
+    <span class="lang-en" style="display:none;">Conservation of Mass for a Control Volume</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">검사체적(control volume)은 물질이 경계를 통해 자유롭게 드나드는 열린 시스템이다. 질량 보존 원리를 검사체적에 적용하면, 내부 질량의 시간 변화율은 유입 질량유량의 합에서 유출 질량유량의 합을 뺀 것과 같다. 일차원 유동 모델에서는 각 입·출구의 질량유량을 단면적, 속도, 비체적(또는 밀도)으로 표현할 수 있다.</span>
+      <span class="lang-en" style="display:none;">A control volume is an open system where matter freely crosses the boundary. Applying conservation of mass to a control volume, the time rate of change of mass inside equals the sum of inlet mass flow rates minus the sum of exit mass flow rates. In a one-dimensional flow model, each port's mass flow rate can be expressed in terms of cross-sectional area, velocity, and specific volume (or density).</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\frac{dm_{cv}}{dt} = \sum_i \dot{m}_i - \sum_e \dot{m}_e$$</div>
+  <div class="eq-block">$$\dot{m} = \frac{AV}{v} = \rho A V$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>질량 수지식</strong>: 검사체적 내부 질량의 시간 변화율 = 유입 질량유량 - 유출 질량유량. 비압축성이든 압축성이든 모든 유동에 적용된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Mass rate balance</strong>: Time rate of change of mass inside the CV = inlet mass flow rate - exit mass flow rate. Applicable to all flows, whether incompressible or compressible.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>일차원 유동</strong>: 각 단면에서 밀도, 속도, 엔탈피 등의 물성이 균일하다고 가정한다. 실제 유동에서는 단면 평균값을 사용한다.</span>
+      <span class="lang-en" style="display:none;"><strong>One-dimensional flow</strong>: Properties such as density, velocity, and enthalpy are assumed uniform at each cross-section. In practice, area-averaged values are used.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>정상상태 특수 형태</strong>: 정상상태에서는 $dm_{cv}/dt = 0$이므로 $\sum_i \dot{m}_i = \sum_e \dot{m}_e$가 된다. 단일 입·출구 경우 $\dot{m}_1 = \dot{m}_2$이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Steady-state form</strong>: At steady state $dm_{cv}/dt = 0$, so $\sum_i \dot{m}_i = \sum_e \dot{m}_e$. For a single-inlet, single-exit device, $\dot{m}_1 = \dot{m}_2$.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>적분형(과도상태)</strong>: 시간에 따라 적분하면 $m_{cv}(t_2) - m_{cv}(t_1) = \sum_i m_i - \sum_e m_e$로, 탱크 충전·방출 같은 과도 문제에 사용된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Integral form (transient)</strong>: Integrating over time gives $m_{cv}(t_2) - m_{cv}(t_1) = \sum_i m_i - \sum_e m_e$, used for transient problems such as tank filling and emptying.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 4.4-4.5: Energy Balance ============ -->
+<section id="s44" class="section">
+  <p class="section-label">Section 4.4 – 4.5</p>
+  <h2 class="section-title">
+    <span class="lang-ko">검사체적의 에너지 보존</span>
+    <span class="lang-en" style="display:none;">Conservation of Energy for a Control Volume</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">닫힌 시스템의 에너지 수지를 검사체적으로 확장할 때 핵심은 유동일(flow work)이다. 유체가 검사체적 경계를 통과하면서 주위를 밀어내는 일 $p \cdot v$가 자연스럽게 나타나며, 내부에너지 $u$와 합쳐져 엔탈피 $h = u + pv$로 정리된다. 따라서 검사체적 에너지 수지에서는 각 입·출구의 에너지가 엔탈피, 운동에너지, 위치에너지의 합으로 표현된다.</span>
+      <span class="lang-en" style="display:none;">The key concept when extending the closed-system energy balance to a control volume is flow work. As fluid crosses the CV boundary, it does work $p \cdot v$ pushing against the surroundings. This combines with internal energy $u$ to form enthalpy $h = u + pv$. Consequently, in the CV energy balance each port's energy appears as the sum of enthalpy, kinetic energy, and potential energy.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\frac{dE_{cv}}{dt} = \dot{Q}_{cv} - \dot{W}_{cv} + \sum_i \dot{m}_i\!\left(h_i + \frac{V_i^2}{2} + gz_i\right) - \sum_e \dot{m}_e\!\left(h_e + \frac{V_e^2}{2} + gz_e\right)$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>유동일과 엔탈피</strong>: 유체가 경계를 밀며 한 일 $pv$가 내부에너지에 더해져 $h = u + pv$가 된다. 이것이 검사체적 해석에서 엔탈피가 핵심 변수인 이유다.</span>
+      <span class="lang-en" style="display:none;"><strong>Flow work and enthalpy</strong>: The work $pv$ done by the fluid pushing across the boundary adds to internal energy, giving $h = u + pv$. This is why enthalpy is the central property in CV analysis.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>운동에너지·위치에너지</strong>: $V^2/2$와 $gz$ 항은 많은 공학 장치에서 엔탈피 변화에 비해 작아 무시할 수 있지만, 노즐·디퓨저에서는 운동에너지가, 수력 시스템에서는 위치에너지가 중요하다.</span>
+      <span class="lang-en" style="display:none;"><strong>Kinetic and potential energy</strong>: The $V^2/2$ and $gz$ terms are often negligible compared to enthalpy changes, but kinetic energy is significant in nozzles/diffusers and potential energy matters in hydraulic systems.</span>
+    </li>
+  </ul>
+
+  <p>
+    <span class="lang-ko"><strong>정상상태 단순화</strong>: 정상상태에서는 $dE_{cv}/dt = 0$, $dm_{cv}/dt = 0$이므로 단일 입·출구($\dot{m}_1 = \dot{m}_2 = \dot{m}$) 경우 에너지 수지는 다음과 같이 대수 방정식이 된다.</span>
+    <span class="lang-en" style="display:none;"><strong>Steady-state simplification</strong>: At steady state $dE_{cv}/dt = 0$ and $dm_{cv}/dt = 0$; for a single-inlet, single-exit device ($\dot{m}_1 = \dot{m}_2 = \dot{m}$), the energy balance becomes an algebraic equation.</span>
+  </p>
+
+  <div class="eq-block">$$\dot{Q}_{cv} - \dot{W}_{cv} = \dot{m}\!\left[(h_2 - h_1) + \frac{V_2^2 - V_1^2}{2} + g(z_2 - z_1)\right]$$</div>
+</section>
+
+<!-- ============ Section 4.6: Nozzles and Diffusers ============ -->
+<section id="s46" class="section">
+  <p class="section-label">Section 4.6</p>
+  <h2 class="section-title">
+    <span class="lang-ko">노즐과 디퓨저</span>
+    <span class="lang-en" style="display:none;">Nozzles and Diffusers</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">노즐은 유체를 가속시키는 장치이고, 디퓨저는 감속시키는 장치이다. 두 장치 모두 축일이 없고($\dot{W}_{cv} = 0$), 열전달과 위치에너지 변화가 무시할 수 있을 정도로 작다. 따라서 에너지 수지는 엔탈피와 운동에너지의 교환 관계로 단순화된다. 노즐에서는 엔탈피가 감소하면서 운동에너지가 증가하고, 디퓨저에서는 그 반대가 일어난다.</span>
+      <span class="lang-en" style="display:none;">A nozzle accelerates a fluid while a diffuser decelerates it. Both devices have no shaft work ($\dot{W}_{cv} = 0$), and heat transfer and potential energy changes are negligibly small. The energy balance thus reduces to an exchange between enthalpy and kinetic energy. In a nozzle, enthalpy decreases as kinetic energy increases; the reverse occurs in a diffuser.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$0 = (h_1 - h_2) + \frac{V_1^2 - V_2^2}{2}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>노즐 가정</strong>: $\dot{W}_{cv} = 0$, $\dot{Q}_{cv} \approx 0$, $\Delta z \approx 0$. 유체가 좁아지는 통로를 지나며 압력이 떨어지고 속도가 증가한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Nozzle assumptions</strong>: $\dot{W}_{cv} = 0$, $\dot{Q}_{cv} \approx 0$, $\Delta z \approx 0$. The fluid passes through a converging passage, pressure drops, and velocity increases.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>디퓨저</strong>: 노즐과 반대로 단면적이 넓어지며 속도가 감소하고 압력이 회복된다. 항공기 엔진 흡입구가 대표적 예이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Diffuser</strong>: Opposite of a nozzle — the cross-section widens, velocity decreases, and pressure recovers. Aircraft engine inlets are a typical example.</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure 4.2: Nozzle Velocity-Enthalpy Exchange -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 4.2</span>
+      <span class="figure-title">
+        <span class="lang-ko">노즐 속도-엔탈피 교환 시뮬레이터</span>
+        <span class="lang-en" style="display:none;">Nozzle Velocity-Enthalpy Exchange Simulator</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig42" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">입구 속도 $V_1$</span>
+            <span class="lang-en" style="display:none;">Inlet velocity $V_1$</span>
+          </span>
+          <input type="range" id="sl_V1" min="5" max="100" value="30" step="5">
+          <span class="control-value" id="val_V1">30 m/s</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">입구 엔탈피 $h_1$</span>
+            <span class="lang-en" style="display:none;">Inlet enthalpy $h_1$</span>
+          </span>
+          <input type="range" id="sl_h1_nozzle" min="2800" max="3400" value="3100" step="50">
+          <span class="control-value" id="val_h1_nozzle">3100 kJ/kg</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">출구 속도 $V_2$</span>
+          <span class="readout-key lang-en" style="display:none;">Exit velocity $V_2$</span>
+          <span class="readout-val" id="ro_V2">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">출구 엔탈피 $h_2$</span>
+          <span class="readout-key lang-en" style="display:none;">Exit enthalpy $h_2$</span>
+          <span class="readout-val" id="ro_h2_nozzle">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 4.7-4.8: Turbines & Compressors ============ -->
+<section id="s47" class="section">
+  <p class="section-label">Section 4.7 – 4.8</p>
+  <h2 class="section-title">
+    <span class="lang-ko">터빈, 압축기, 펌프</span>
+    <span class="lang-en" style="display:none;">Turbines, Compressors, and Pumps</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">터빈은 고온·고압 유체가 팽창하면서 축일을 생산하는 장치이다. 운동에너지와 위치에너지 변화를 무시하면 터빈 출력은 엔탈피 강하에 비례한다. 압축기와 펌프는 반대로 유체에 일을 가하여 압력을 높이는 장치이며, 압축기는 기체를, 펌프는 액체를 다룬다. 에너지 수지의 구조는 터빈과 동일하되 일의 부호가 반대이다.</span>
+      <span class="lang-en" style="display:none;">A turbine is a device where a high-temperature, high-pressure fluid expands to produce shaft work. Neglecting kinetic and potential energy changes, the turbine power output is proportional to the enthalpy drop. Compressors and pumps do the reverse — they input work to raise pressure. Compressors handle gases while pumps handle liquids. The energy balance structure is identical to that of a turbine but with reversed work sign.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\dot{W}_{cv} = \dot{m}(h_1 - h_2) \quad \text{(turbine, } \dot{Q}_{cv} \approx 0\text{, KE} \approx 0\text{, PE} \approx 0\text{)}$$</div>
+  <div class="eq-block">$$-\dot{W}_{cv} = \dot{m}(h_2 - h_1) \quad \text{(compressor/pump input)}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>터빈</strong>: 단열 가정($\dot{Q}_{cv} \approx 0$)이 일반적이며, 엔탈피 강하 $(h_1 - h_2)$가 곧 비출력(단위 질량당 출력)이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Turbine</strong>: The adiabatic assumption ($\dot{Q}_{cv} \approx 0$) is common; the enthalpy drop $(h_1 - h_2)$ equals the specific work output.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>압축기</strong>: 기체를 압축하므로 큰 비체적 변화가 수반되며, 상당한 일 입력이 필요하다. 중간 냉각(intercooling)으로 소요 일을 줄이기도 한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Compressor</strong>: Compressing a gas involves large specific-volume changes, requiring significant work input. Intercooling between stages can reduce the total work.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>펌프</strong>: 비압축성 액체를 다루므로 비체적이 거의 일정하여, 펌프 일은 $\dot{W}_p \approx \dot{m} v (p_2 - p_1)$로 근사할 수 있다.</span>
+      <span class="lang-en" style="display:none;"><strong>Pump</strong>: Handles nearly incompressible liquid, so specific volume is nearly constant and pump work can be approximated as $\dot{W}_p \approx \dot{m} v (p_2 - p_1)$.</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure 4.1: Device Energy Balance Comparison -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 4.1</span>
+      <span class="figure-title">
+        <span class="lang-ko">정상상태 장치별 에너지 수지 비교</span>
+        <span class="lang-en" style="display:none;">Steady-State Device Energy Balance Comparison</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig41" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">입구 엔탈피 $h_1$</span>
+            <span class="lang-en" style="display:none;">Inlet enthalpy $h_1$</span>
+          </span>
+          <input type="range" id="sl_h1" min="200" max="3500" value="3000" step="50">
+          <span class="control-value" id="val_h1">3000 kJ/kg</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">질량유량 $\dot{m}$</span>
+            <span class="lang-en" style="display:none;">Mass flow rate $\dot{m}$</span>
+          </span>
+          <input type="range" id="sl_mdot" min="0.5" max="20" value="5" step="0.5">
+          <span class="control-value" id="val_mdot">5.0 kg/s</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">출구 엔탈피 $h_2$</span>
+          <span class="readout-key lang-en" style="display:none;">Exit enthalpy $h_2$</span>
+          <span class="readout-val" id="ro_h2_dev">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">출력/입력 $\dot{W}$</span>
+          <span class="readout-key lang-en" style="display:none;">Power $\dot{W}$</span>
+          <span class="readout-val" id="ro_W_dev">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">열전달 $\dot{Q}$</span>
+          <span class="readout-key lang-en" style="display:none;">Heat transfer $\dot{Q}$</span>
+          <span class="readout-val" id="ro_Q_dev">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 4.9-4.10: Heat Exchangers & Throttling ============ -->
+<section id="s49" class="section">
+  <p class="section-label">Section 4.9 – 4.10</p>
+  <h2 class="section-title">
+    <span class="lang-ko">열교환기와 교축 장치</span>
+    <span class="lang-en" style="display:none;">Heat Exchangers and Throttling Devices</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">열교환기는 두 유체 사이에 열을 전달하는 장치로, 축일이 없고($\dot{W}_{cv} = 0$) 운동·위치에너지 변화가 무시할 수 있다. 직접 혼합형(개방형 급수가열기 등)에서는 두 유체가 섞이며, 대향류·병류 열교환기에서는 격벽을 사이에 두고 열만 교환한다. 전체 열교환기를 검사체적으로 잡으면 외부와의 열전달도 보통 무시할 수 있으므로, 고온 유체의 엔탈피 감소가 저온 유체의 엔탈피 증가와 같다.</span>
+      <span class="lang-en" style="display:none;">A heat exchanger transfers heat between two fluids with no shaft work ($\dot{W}_{cv} = 0$) and negligible kinetic and potential energy changes. In direct-contact types (e.g., open feedwater heaters) the fluids mix; in counter-flow or parallel-flow types they exchange heat across a wall. Taking the entire heat exchanger as the CV, external heat transfer is usually negligible, so the enthalpy decrease of the hot fluid equals the enthalpy increase of the cold fluid.</span>
+    </p>
+    <p>
+      <span class="lang-ko">교축 장치(밸브, 오리피스, 모세관 등)에서는 축일, 열전달, 운동에너지, 위치에너지가 모두 무시할 수 있어 에너지 수지가 $h_1 = h_2$(등엔탈피 과정)로 극단적으로 단순해진다. 교축은 비가역 과정이며 압력이 크게 떨어지지만, 이상기체의 경우 온도도 변하지 않는 반면 실제 기체에서는 줄-톰슨 효과에 의해 온도가 변할 수 있다.</span>
+      <span class="lang-en" style="display:none;">In throttling devices (valves, orifices, capillary tubes), shaft work, heat transfer, kinetic energy, and potential energy are all negligible, so the energy balance simplifies dramatically to $h_1 = h_2$ (isenthalpic process). Throttling is irreversible with a significant pressure drop; for an ideal gas the temperature remains unchanged, but for real gases the Joule-Thomson effect may cause a temperature change.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\dot{m}_{\text{hot}}(h_{\text{hot,in}} - h_{\text{hot,out}}) = \dot{m}_{\text{cold}}(h_{\text{cold,out}} - h_{\text{cold,in}}) \quad \text{(heat exchanger)}$$</div>
+  <div class="eq-block">$$h_1 = h_2 \quad \text{(throttling)}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>열교환기 검사체적 설정</strong>: 하나의 유체만 검사체적으로 잡으면 $\dot{Q}_{cv} \neq 0$이고, 전체를 잡으면 $\dot{Q}_{cv} \approx 0$이다. 문제에 따라 적절한 경계를 선택해야 한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Heat exchanger CV choice</strong>: If only one fluid stream is taken as the CV, $\dot{Q}_{cv} \neq 0$; if both are included, $\dot{Q}_{cv} \approx 0$. The appropriate boundary depends on what is known and what is sought.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>교축 = 등엔탈피</strong>: $h_1 = h_2$는 교축 장치를 해석하는 가장 기본적인 관계식이다. 냉동 시스템의 팽창밸브가 대표적 응용이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Throttling = isenthalpic</strong>: $h_1 = h_2$ is the most fundamental relation for analyzing throttling devices. The expansion valve in a refrigeration system is a classic application.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>줄-톰슨 계수</strong>: $\mu_{JT} = (\partial T / \partial p)_h$로 정의되며, 실제 기체에서 교축 시 온도 변화의 방향과 크기를 결정한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Joule-Thomson coefficient</strong>: Defined as $\mu_{JT} = (\partial T / \partial p)_h$, it determines the direction and magnitude of temperature change during throttling of a real gas.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 4.11: System Integration ============ -->
+<section id="s411" class="section">
+  <p class="section-label">Section 4.11</p>
+  <h2 class="section-title">
+    <span class="lang-ko">시스템 통합</span>
+    <span class="lang-en" style="display:none;">System Integration</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">실제 공학 시스템은 터빈, 열교환기, 펌프, 밸브 등 여러 장치가 결합된 복합 시스템이다. 각 장치를 개별 검사체적으로 해석한 뒤, 한 장치의 출구 상태가 다음 장치의 입구 상태가 되는 방식으로 연결한다. 전체 시스템을 하나의 큰 검사체적으로 잡아 해석할 수도 있으며, 이 경우 내부 장치 사이의 상태 정보 없이도 전체 성능(열효율, 순출력 등)을 구할 수 있다. 증기 동력 발전소나 냉동 시스템이 대표적인 복합 시스템 예이다.</span>
+      <span class="lang-en" style="display:none;">Real engineering systems combine multiple devices — turbines, heat exchangers, pumps, valves — into integrated systems. Each device is analyzed as an individual CV, with the exit state of one becoming the inlet state of the next. Alternatively, the entire system can be treated as a single large CV, yielding overall performance metrics (thermal efficiency, net power) without needing intermediate state information. Vapor power plants and refrigeration systems are classic examples of such integrated systems.</span>
+    </p>
+  </div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>장치 연결</strong>: $h_{\text{out,device A}} = h_{\text{in,device B}}$, $\dot{m}_A = \dot{m}_B$(연결점에서 질량·에너지 보존). 분기나 합류가 있으면 질량 수지를 먼저 풀어야 한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Device coupling</strong>: $h_{\text{out,device A}} = h_{\text{in,device B}}$, $\dot{m}_A = \dot{m}_B$ (mass and energy conservation at junctions). If branching or mixing occurs, the mass balance must be solved first.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>전체 시스템 해석</strong>: 전체를 하나의 검사체적으로 보면 내부 열교환은 상쇄되어 외부와의 열·일 교환만 남는다.</span>
+      <span class="lang-en" style="display:none;"><strong>Overall system analysis</strong>: Treating the entire system as one CV causes internal heat exchanges to cancel, leaving only external heat and work interactions.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 4.12: Transient Analysis ============ -->
+<section id="s412" class="section">
+  <p class="section-label">Section 4.12</p>
+  <h2 class="section-title">
+    <span class="lang-ko">과도 해석</span>
+    <span class="lang-en" style="display:none;">Transient Analysis</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">검사체적 내부의 상태가 시간에 따라 변하는 과도(transient) 과정에서는 질량 및 에너지 수지를 시간에 대해 적분해야 한다. 대표적인 예로 탱크 충전(질량 유입만 있는 경우)과 탱크 방출(질량 유출만 있는 경우)이 있다. 이상기체를 단열 강체 탱크에 충전하면, 탱크 내 최종 온도가 유입 기체의 엔탈피에 의해 결정되어 입구 온도보다 높아지는 흥미로운 결과가 나타난다($T_f = \gamma \cdot T_i$ for ideal gas with constant specific heats).</span>
+      <span class="lang-en" style="display:none;">When the state inside a control volume changes with time, the mass and energy balances must be integrated over time. Classic examples include tank filling (inlet flow only) and tank emptying (exit flow only). For an ideal gas filling an insulated rigid tank, the final tank temperature is determined by the inlet enthalpy and exceeds the inlet temperature — an interesting result ($T_f = \gamma \cdot T_i$ for an ideal gas with constant specific heats).</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$m_{cv}(t) - m_{cv}(0) = \sum_i m_i - \sum_e m_e$$</div>
+  <div class="eq-block">$$E_{cv}(t) - E_{cv}(0) = Q_{cv} - W_{cv} + \sum_i m_i h_i - \sum_e m_e h_e$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>과도 질량 수지</strong>: 시간 적분하면 탱크 내 질량 변화 = 유입 총 질량 - 유출 총 질량.</span>
+      <span class="lang-en" style="display:none;"><strong>Transient mass balance</strong>: Integrating over time, the change in CV mass = total mass in - total mass out.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>단열 충전</strong>: 초기에 비어 있는 단열 강체 탱크에 이상기체(공기, $\gamma = 1.4$)가 유입되면, 최종 온도는 입구 온도의 약 1.4배가 된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Adiabatic filling</strong>: When an ideal gas (air, $\gamma = 1.4$) fills an initially empty insulated rigid tank, the final temperature is about 1.4 times the inlet temperature.</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure 4.3: Tank Transient Filling -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 4.3</span>
+      <span class="figure-title">
+        <span class="lang-ko">탱크 과도 충전 과정</span>
+        <span class="lang-en" style="display:none;">Tank Transient Filling Process</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig43" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">탱크 체적 $V_{\text{tank}}$</span>
+            <span class="lang-en" style="display:none;">Tank volume $V_{\text{tank}}$</span>
+          </span>
+          <input type="range" id="sl_Vtank" min="0.1" max="5" value="1.0" step="0.1">
+          <span class="control-value" id="val_Vtank">1.0 m³</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">입구 온도 $T_i$</span>
+            <span class="lang-en" style="display:none;">Inlet temperature $T_i$</span>
+          </span>
+          <input type="range" id="sl_Ti" min="300" max="600" value="400" step="10">
+          <span class="control-value" id="val_Ti">400 K</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">최종 압력 $p(t_f)$</span>
+          <span class="readout-key lang-en" style="display:none;">Final pressure $p(t_f)$</span>
+          <span class="readout-val" id="ro_pf">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">최종 온도 $T(t_f)$</span>
+          <span class="readout-key lang-en" style="display:none;">Final temperature $T(t_f)$</span>
+          <span class="readout-val" id="ro_Tf">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Quizzes ============ -->
+<section id="quiz" class="section">
+  <p class="section-label">Self-Check</p>
+  <h2 class="section-title">
+    <span class="lang-ko">개념 점검 퀴즈</span>
+    <span class="lang-en" style="display:none;">Concept Check Quiz</span>
+  </h2>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q1.</strong> 정상상태 단일 입·출구 장치에서 에너지 수지의 좌변은 $\dot{Q}_{cv} - \dot{W}_{cv}$이다. 만약 장치가 단열이고 축일이 없다면, $h_2 - h_1$과 $\frac{V_2^2 - V_1^2}{2}$의 관계는?</span>
+      <span class="lang-en" style="display:none;"><strong>Q1.</strong> For a steady-state, single-inlet/exit device, the LHS of the energy balance is $\dot{Q}_{cv} - \dot{W}_{cv}$. If the device is adiabatic with no shaft work, what is the relation between $h_2 - h_1$ and $\frac{V_2^2 - V_1^2}{2}$?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q41')">
+        <span class="lang-ko">$(h_2 - h_1) + \frac{V_2^2 - V_1^2}{2} = 0$ (엔탈피 감소 = 운동에너지 증가)</span>
+        <span class="lang-en" style="display:none;">$(h_2 - h_1) + \frac{V_2^2 - V_1^2}{2} = 0$ (enthalpy decrease = KE increase)</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q41')">
+        <span class="lang-ko">$h_2 = h_1$ (항상 등엔탈피)</span>
+        <span class="lang-en" style="display:none;">$h_2 = h_1$ (always isenthalpic)</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q41')">
+        <span class="lang-ko">$V_2 = V_1$ (속도 변화 없음)</span>
+        <span class="lang-en" style="display:none;">$V_2 = V_1$ (no velocity change)</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q41')">
+        <span class="lang-ko">$\dot{Q}_{cv} = \dot{m}(h_2 - h_1)$</span>
+        <span class="lang-en" style="display:none;">$\dot{Q}_{cv} = \dot{m}(h_2 - h_1)$</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q41-explain">
+      <span class="lang-ko">단열, 무축일, 위치에너지 무시 시 에너지 수지는 $0 = (h_2 - h_1) + (V_2^2 - V_1^2)/2$가 된다. 이것이 노즐/디퓨저의 기본 관계식이다.</span>
+      <span class="lang-en" style="display:none;">With adiabatic, no shaft work, and negligible PE, the energy balance gives $0 = (h_2 - h_1) + (V_2^2 - V_1^2)/2$. This is the fundamental nozzle/diffuser relation.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q2.</strong> 교축 과정에서 $h_1 = h_2$가 성립하는 이유는?</span>
+      <span class="lang-en" style="display:none;"><strong>Q2.</strong> Why does $h_1 = h_2$ hold in a throttling process?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q42')">
+        <span class="lang-ko">과정이 가역적이기 때문</span>
+        <span class="lang-en" style="display:none;">Because the process is reversible</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q42')">
+        <span class="lang-ko">온도가 일정하기 때문</span>
+        <span class="lang-en" style="display:none;">Because the temperature is constant</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q42')">
+        <span class="lang-ko">축일, 열전달, 운동에너지, 위치에너지 변화가 모두 무시할 수 있기 때문</span>
+        <span class="lang-en" style="display:none;">Because shaft work, heat transfer, KE, and PE changes are all negligible</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q42')">
+        <span class="lang-ko">엔트로피가 일정하기 때문</span>
+        <span class="lang-en" style="display:none;">Because entropy is constant</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q42-explain">
+      <span class="lang-ko">교축 장치에서는 $\dot{W}_{cv} = 0$, $\dot{Q}_{cv} \approx 0$이고, 속도 변화와 높이 변화도 무시할 수 있어 에너지 수지가 $h_1 = h_2$로 귀결된다. 교축은 비가역 과정이므로 엔트로피는 증가한다.</span>
+      <span class="lang-en" style="display:none;">In a throttling device, $\dot{W}_{cv} = 0$, $\dot{Q}_{cv} \approx 0$, and velocity/elevation changes are negligible, so the energy balance reduces to $h_1 = h_2$. Throttling is irreversible, so entropy increases.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q3.</strong> 터빈에서 운동에너지와 위치에너지를 무시할 수 있을 때, 단위 질량당 출력은?</span>
+      <span class="lang-en" style="display:none;"><strong>Q3.</strong> When KE and PE are negligible in a turbine, what is the specific work output?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q43')">
+        <span class="lang-ko">$h_2 - h_1$</span>
+        <span class="lang-en" style="display:none;">$h_2 - h_1$</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q43')">
+        <span class="lang-ko">$h_1 - h_2$</span>
+        <span class="lang-en" style="display:none;">$h_1 - h_2$</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q43')">
+        <span class="lang-ko">$u_1 - u_2$</span>
+        <span class="lang-en" style="display:none;">$u_1 - u_2$</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q43')">
+        <span class="lang-ko">$p_1 v_1 - p_2 v_2$</span>
+        <span class="lang-en" style="display:none;">$p_1 v_1 - p_2 v_2$</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q43-explain">
+      <span class="lang-ko">단열, KE/PE 무시 조건에서 $\dot{W}_{cv}/\dot{m} = h_1 - h_2$이다. 검사체적에서는 내부에너지가 아닌 엔탈피로 표현됨에 유의하라.</span>
+      <span class="lang-en" style="display:none;">Under adiabatic, negligible KE/PE conditions, $\dot{W}_{cv}/\dot{m} = h_1 - h_2$. Note that in CV analysis, enthalpy (not internal energy) is used.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q4.</strong> 단열 강체 탱크에 이상기체(공기, $\gamma=1.4$)를 충전할 때, 탱크 내 최종 온도가 입구 온도보다 높은 이유는?</span>
+      <span class="lang-en" style="display:none;"><strong>Q4.</strong> When filling an insulated rigid tank with an ideal gas (air, $\gamma=1.4$), why is the final tank temperature higher than the inlet temperature?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q44')">
+        <span class="lang-ko">탱크 벽면과의 마찰 때문</span>
+        <span class="lang-en" style="display:none;">Due to friction with the tank walls</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q44')">
+        <span class="lang-ko">압축파에 의한 가열 때문</span>
+        <span class="lang-en" style="display:none;">Due to compression wave heating</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q44')">
+        <span class="lang-ko">유입 기체의 엔탈피($c_p T_i$)가 내부에너지($c_v T$)로 저장되므로, $T_f = (c_p/c_v) T_i = \gamma T_i$</span>
+        <span class="lang-en" style="display:none;">Inlet enthalpy ($c_p T_i$) is stored as internal energy ($c_v T$), so $T_f = (c_p/c_v) T_i = \gamma T_i$</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q44')">
+        <span class="lang-ko">이상기체에서는 온도가 항상 올라간다</span>
+        <span class="lang-en" style="display:none;">Temperature always rises for ideal gases</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q44-explain">
+      <span class="lang-ko">유입 기체는 엔탈피 $h_i = c_p T_i$의 에너지를 갖고 들어오지만, 탱크 내에서는 내부에너지 $u = c_v T$로 저장된다. 에너지 수지에서 $m c_v T_f = m c_p T_i$이므로 $T_f = \gamma T_i$가 된다.</span>
+      <span class="lang-en" style="display:none;">Incoming gas carries enthalpy $h_i = c_p T_i$, but energy is stored in the tank as internal energy $u = c_v T$. From the energy balance, $m c_v T_f = m c_p T_i$, giving $T_f = \gamma T_i$.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ What-if Cards ============ -->
+<section id="whatif" class="section">
+  <p class="section-label">What If?</p>
+  <h2 class="section-title">
+    <span class="lang-ko">사고 실험</span>
+    <span class="lang-en" style="display:none;">Thought Experiments</span>
+  </h2>
+
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 터빈이 단열이 아니라 상당한 열손실이 있다면?</span>
+        <span class="lang-en" style="display:none;">What if the turbine is not adiabatic but has significant heat loss?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">에너지 수지에 $\dot{Q}_{cv}$(음수, 열손실)가 추가되어 $\dot{W}_{cv} = \dot{m}(h_1 - h_2) + \dot{Q}_{cv}$가 된다. 열손실만큼 축일 출력이 감소하므로, 실제 터빈 출력은 단열 가정보다 낮다. 이것이 터빈을 잘 단열해야 하는 이유이다.</span>
+        <span class="lang-en" style="display:none;">The energy balance gains a $\dot{Q}_{cv}$ term (negative for heat loss): $\dot{W}_{cv} = \dot{m}(h_1 - h_2) + \dot{Q}_{cv}$. Shaft work output decreases by the heat loss, so actual turbine output is lower than the adiabatic assumption predicts. This is why turbines are well-insulated.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 열교환기에서 냉각수 유량이 절반으로 줄어든다면?</span>
+        <span class="lang-en" style="display:none;">What if the cooling water flow rate is halved in a heat exchanger?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">같은 열량을 절반의 유량으로 흡수해야 하므로 냉각수의 온도 상승이 두 배가 된다: $\Delta T_{\text{cold}} = \dot{Q}/(\dot{m}_{\text{cold}} c_p)$. 냉각수 출구 온도가 크게 올라가고, 열교환기 효율이 떨어지며, 고온 유체의 냉각이 불충분해질 수 있다.</span>
+        <span class="lang-en" style="display:none;">The same heat must be absorbed by half the flow, so the cooling water temperature rise doubles: $\Delta T_{\text{cold}} = \dot{Q}/(\dot{m}_{\text{cold}} c_p)$. The coolant exit temperature increases significantly, heat exchanger effectiveness drops, and the hot fluid may not be sufficiently cooled.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 탱크 충전 과정에서 열전달이 허용된다면 (단열이 아닌 경우)?</span>
+        <span class="lang-en" style="display:none;">What if the tank filling process allows heat transfer (non-adiabatic)?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">에너지 수지에 $Q_{cv}$가 추가된다. 열을 방출하면($Q_{cv} < 0$) 최종 온도가 단열 경우($\gamma T_i$)보다 낮아진다. 극단적으로 등온 충전이 가능하다면 $T_f = T_i$가 되지만, 이 경우 최종 압력은 더 높아진다(같은 탱크에 더 많은 질량이 들어감).</span>
+        <span class="lang-en" style="display:none;">$Q_{cv}$ is added to the energy balance. If heat is rejected ($Q_{cv} < 0$), the final temperature is lower than the adiabatic case ($\gamma T_i$). In the extreme isothermal limit, $T_f = T_i$, but the final pressure is higher (more mass fits in the same tank).</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Takeaways ============ -->
+<section class="takeaways">
+  <h2 class="section-title">Key Takeaways</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">01</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">에너지 수지의 핵심: 엔탈피</span>
+        <span class="lang-en" style="display:none;">Enthalpy is Central</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">검사체적에서는 유동일($pv$)이 포함되어 엔탈피가 에너지 수지의 핵심 변수가 된다.</span>
+        <span class="lang-en" style="display:none;">Flow work naturally appears, making enthalpy the key property in control volume energy balances.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">02</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">장치별 단순화 전략</span>
+        <span class="lang-en" style="display:none;">Device-Specific Simplifications</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">노즐($\dot{W}=0$), 터빈(KE$\approx$0), 교축($h_1=h_2$) 등 물리적 특성에 맞는 가정으로 일반 수지를 단순화한다.</span>
+        <span class="lang-en" style="display:none;">Each device's physics dictates which terms drop out of the general balance: nozzle ($\dot{W}=0$), turbine (KE$\approx$0), throttle ($h_1=h_2$).</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">03</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">정상상태 vs 과도 해석</span>
+        <span class="lang-en" style="display:none;">Steady-State vs Transient</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">정상상태는 대수 방정식, 과도 상태는 시간 적분이 필요하다. 단열 충전에서 $T_f = \gamma T_i$는 과도 해석의 대표적 결과다.</span>
+        <span class="lang-en" style="display:none;">Steady state yields algebraic equations; transient requires time integration. $T_f = \gamma T_i$ for adiabatic filling is a classic transient result.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.4</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC: Control Volume Analysis Using Energy
+// ============================================================
+
+// ============ Figure 4.1: Device Energy Balance Comparison ============
+// Bar chart comparing energy terms for 5 steady-state devices:
+// Nozzle, Turbine, Compressor, Heat Exchanger, Throttle
+
+function calcDeviceBalances(h1, mdot) {
+  // All devices: single-inlet, single-exit, steady-state
+  // h1 is inlet enthalpy (kJ/kg), mdot is mass flow rate (kg/s)
+
+  // --- Nozzle ---
+  // W=0, Q=0, KE significant. Assume V1=50 m/s.
+  // h1 + V1^2/2000 = h2 + V2^2/2000  (kJ/kg when V in m/s, /1000 for kJ)
+  // Let h2_nozzle = h1 - 150 kJ/kg (typical enthalpy drop in a nozzle)
+  var dh_nozzle = 150; // kJ/kg enthalpy drop
+  if (h1 < 400) dh_nozzle = h1 * 0.05;
+  var h2_nozzle = h1 - dh_nozzle;
+  var V1_nozzle = 50; // m/s
+  // V2 = sqrt(V1^2 + 2*1000*(h1 - h2))
+  var V2_nozzle = Math.sqrt(V1_nozzle * V1_nozzle + 2 * 1000 * dh_nozzle);
+  var KE_nozzle = mdot * (V2_nozzle * V2_nozzle - V1_nozzle * V1_nozzle) / 2000; // kW
+  var W_nozzle = 0;
+  var Q_nozzle = 0;
+
+  // --- Turbine ---
+  // Q≈0, KE≈0, PE≈0. W = mdot*(h1-h2)
+  // Typical: turbine extracts ~30% of inlet enthalpy
+  var dh_turbine = h1 * 0.30;
+  var h2_turbine = h1 - dh_turbine;
+  var W_turbine = mdot * dh_turbine; // kW (positive = output)
+  var Q_turbine = 0;
+  var KE_turbine = 0;
+
+  // --- Compressor ---
+  // Q≈0, KE≈0. Work input = mdot*(h2-h1)
+  // Typical: pressure ratio gives ~25% enthalpy rise
+  var dh_comp = h1 * 0.25;
+  var h2_comp = h1 + dh_comp;
+  var W_comp = -mdot * dh_comp; // kW (negative = input)
+  var Q_comp = 0;
+  var KE_comp = 0;
+
+  // --- Heat Exchanger (one stream) ---
+  // W=0, KE≈0. Q = mdot*(h2-h1)
+  // Assume cooling: h2 < h1 by 200 kJ/kg
+  var dh_hx = 200;
+  if (h1 < 500) dh_hx = h1 * 0.10;
+  var h2_hx = h1 - dh_hx;
+  var W_hx = 0;
+  var Q_hx = -mdot * dh_hx; // kW (negative = heat rejection)
+  var KE_hx = 0;
+
+  // --- Throttle ---
+  // W=0, Q=0, KE=0. h1=h2
+  var h2_throttle = h1;
+  var W_throttle = 0;
+  var Q_throttle = 0;
+  var KE_throttle = 0;
+
+  return {
+    devices: ['Nozzle', 'Turbine', 'Compressor', 'Heat Exch.', 'Throttle'],
+    dh: [-(dh_nozzle), -(dh_turbine), dh_comp, -(dh_hx), 0].map(function(v) { return mdot * v; }),
+    W: [W_nozzle, W_turbine, W_comp, W_hx, W_throttle],
+    Q: [Q_nozzle, Q_turbine, Q_comp, Q_hx, Q_throttle],
+    KE: [KE_nozzle, KE_turbine, KE_comp, KE_hx, KE_throttle],
+    h2: [h2_nozzle, h2_turbine, h2_comp, h2_hx, h2_throttle]
+  };
+}
+
+function buildFig41() {
+  var h1 = parseFloat(document.getElementById('sl_h1').value);
+  var mdot = parseFloat(document.getElementById('sl_mdot').value);
+  var d = calcDeviceBalances(h1, mdot);
+
+  var trDh = {
+    x: d.devices, y: d.dh,
+    name: 'Enthalpy change (kW)',
+    type: 'bar',
+    marker: { color: '#3b82f6' }
+  };
+  var trW = {
+    x: d.devices, y: d.W,
+    name: 'Shaft work (kW)',
+    type: 'bar',
+    marker: { color: '#10b981' }
+  };
+  var trQ = {
+    x: d.devices, y: d.Q,
+    name: 'Heat transfer (kW)',
+    type: 'bar',
+    marker: { color: '#f59e0b' }
+  };
+  var trKE = {
+    x: d.devices, y: d.KE,
+    name: 'KE change (kW)',
+    type: 'bar',
+    marker: { color: '#8b5cf6' }
+  };
+
+  Plotly.newPlot('fig41', [trDh, trW, trQ, trKE], {
+    ...plotlyLayout,
+    barmode: 'group',
+    xaxis: { ...plotlyLayout.xaxis, title: 'Device' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Energy rate (kW)' },
+    showlegend: true,
+    legend: { x: 0.01, y: 0.99, bgcolor: 'rgba(255,255,255,0.85)' }
+  }, plotlyConfig);
+
+  // Show turbine values in readout by default
+  document.getElementById('ro_h2_dev').textContent = d.h2[1].toFixed(0) + ' kJ/kg (turbine)';
+  document.getElementById('ro_W_dev').textContent = d.W[1].toFixed(1) + ' kW (turbine)';
+  document.getElementById('ro_Q_dev').textContent = d.Q[1].toFixed(1) + ' kW (turbine)';
+}
+
+function updateFig41() {
+  var h1 = parseFloat(document.getElementById('sl_h1').value);
+  var mdot = parseFloat(document.getElementById('sl_mdot').value);
+
+  document.getElementById('val_h1').textContent = h1 + ' kJ/kg';
+  document.getElementById('val_mdot').textContent = mdot.toFixed(1) + ' kg/s';
+
+  var d = calcDeviceBalances(h1, mdot);
+
+  Plotly.restyle('fig41', { y: [d.dh] }, [0]);
+  Plotly.restyle('fig41', { y: [d.W] }, [1]);
+  Plotly.restyle('fig41', { y: [d.Q] }, [2]);
+  Plotly.restyle('fig41', { y: [d.KE] }, [3]);
+
+  document.getElementById('ro_h2_dev').textContent = d.h2[1].toFixed(0) + ' kJ/kg (turbine)';
+  document.getElementById('ro_W_dev').textContent = d.W[1].toFixed(1) + ' kW (turbine)';
+  document.getElementById('ro_Q_dev').textContent = d.Q[1].toFixed(1) + ' kW (turbine)';
+}
+
+// ============ Figure 4.2: Nozzle Velocity-Enthalpy Exchange ============
+// Energy conservation: h1 + V1^2/(2*1000) = h2 + V2^2/(2*1000) [kJ/kg]
+// Plot: V2 as function of h2, for given h1 and V1
+
+function buildFig42() {
+  var V1 = parseFloat(document.getElementById('sl_V1').value);
+  var h1 = parseFloat(document.getElementById('sl_h1_nozzle').value);
+
+  // Total specific energy (kJ/kg): E_total = h1 + V1^2/2000
+  var E_total = h1 + V1 * V1 / 2000;
+
+  // Sweep h2 from some minimum to h1
+  var h2_arr = [];
+  var V2_arr = [];
+  var h2_min = Math.max(h1 - 600, 100);
+  for (var h2 = h2_min; h2 <= h1; h2 += 5) {
+    var ke2 = (E_total - h2) * 2000; // V2^2
+    if (ke2 < 0) continue;
+    h2_arr.push(h2);
+    V2_arr.push(Math.sqrt(ke2));
+  }
+
+  // Current operating point: assume h2 = h1 - 200 kJ/kg (typical nozzle)
+  var h2_op = h1 - 200;
+  if (h2_op < h2_min) h2_op = (h1 + h2_min) / 2;
+  var V2_op = Math.sqrt(Math.max(0, (E_total - h2_op) * 2000));
+
+  var trCurve = {
+    x: h2_arr, y: V2_arr,
+    mode: 'lines', name: 'V₂ vs h₂',
+    line: { color: '#3b82f6', width: 2.5 }
+  };
+
+  var trInlet = {
+    x: [h1], y: [V1],
+    mode: 'markers', name: 'Inlet (1)',
+    marker: { color: '#ef4444', size: 14, symbol: 'circle', line: { color: '#fff', width: 2 } }
+  };
+
+  var trOp = {
+    x: [h2_op], y: [V2_op],
+    mode: 'markers', name: 'Exit (2)',
+    marker: { color: '#10b981', size: 14, symbol: 'diamond', line: { color: '#fff', width: 2 } }
+  };
+
+  // Annotation: conservation line
+  var trConst = {
+    x: [h1, h2_min], y: [V1, Math.sqrt(Math.max(0, (E_total - h2_min) * 2000))],
+    mode: 'lines', name: 'h + V²/2 = const',
+    line: { color: '#9ca3af', width: 1, dash: 'dot' },
+    showlegend: false
+  };
+
+  Plotly.newPlot('fig42', [trCurve, trInlet, trOp], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'Enthalpy h (kJ/kg)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Velocity V (m/s)' },
+    showlegend: true,
+    legend: { x: 0.60, y: 0.98, bgcolor: 'rgba(255,255,255,0.85)' }
+  }, plotlyConfig);
+
+  document.getElementById('ro_V2').textContent = V2_op.toFixed(1) + ' m/s';
+  document.getElementById('ro_h2_nozzle').textContent = h2_op.toFixed(0) + ' kJ/kg';
+}
+
+function updateFig42() {
+  var V1 = parseFloat(document.getElementById('sl_V1').value);
+  var h1 = parseFloat(document.getElementById('sl_h1_nozzle').value);
+
+  document.getElementById('val_V1').textContent = V1 + ' m/s';
+  document.getElementById('val_h1_nozzle').textContent = h1 + ' kJ/kg';
+
+  var E_total = h1 + V1 * V1 / 2000;
+
+  var h2_arr = [];
+  var V2_arr = [];
+  var h2_min = Math.max(h1 - 600, 100);
+  for (var h2 = h2_min; h2 <= h1; h2 += 5) {
+    var ke2 = (E_total - h2) * 2000;
+    if (ke2 < 0) continue;
+    h2_arr.push(h2);
+    V2_arr.push(Math.sqrt(ke2));
+  }
+
+  var h2_op = h1 - 200;
+  if (h2_op < h2_min) h2_op = (h1 + h2_min) / 2;
+  var V2_op = Math.sqrt(Math.max(0, (E_total - h2_op) * 2000));
+
+  Plotly.restyle('fig42', { x: [h2_arr], y: [V2_arr] }, [0]);
+  Plotly.restyle('fig42', { x: [[h1]], y: [[V1]] }, [1]);
+  Plotly.restyle('fig42', { x: [[h2_op]], y: [[V2_op]] }, [2]);
+
+  document.getElementById('ro_V2').textContent = V2_op.toFixed(1) + ' m/s';
+  document.getElementById('ro_h2_nozzle').textContent = h2_op.toFixed(0) + ' kJ/kg';
+}
+
+// ============ Figure 4.3: Tank Transient Filling Process ============
+// Ideal gas (air): R = 0.287 kJ/(kg·K), cv = 0.718 kJ/(kg·K), cp = 1.005 kJ/(kg·K), gamma = 1.4
+// Initially empty rigid insulated tank.
+// Supply line: constant Ti, constant pi = 500 kPa
+// Mass in tank at time t: m(t) (increases as valve is open)
+// Energy balance: m(t)*cv*T(t) = m(t)*cp*Ti  =>  T(t) = gamma*Ti for adiabatic
+// But we simulate the filling process over time for visualization.
+
+function buildFig43() {
+  var V_tank = parseFloat(document.getElementById('sl_Vtank').value); // m^3
+  var Ti = parseFloat(document.getElementById('sl_Ti').value); // K
+
+  var R = 0.287;    // kJ/(kg·K)
+  var cv = 0.718;   // kJ/(kg·K)
+  var cp = 1.005;   // kJ/(kg·K)
+  var gamma_air = cp / cv; // 1.4
+  var pi = 500;     // kPa (supply pressure)
+
+  // Final state (adiabatic): T_f = gamma * Ti
+  var Tf = gamma_air * Ti;
+  // Final mass: m_f = pi * V_tank / (R * Tf) ... but p_f < pi in general
+  // Actually for adiabatic filling to supply pressure:
+  // When tank pressure reaches pi, flow stops. At that point:
+  // T_f = gamma * Ti, p_f = pi (approximately, for slow filling)
+  // m_f = p_f * V_tank / (R * T_f)
+  var pf = pi;
+  var mf = pf * V_tank / (R * Tf);
+
+  // Simulate time-resolved filling
+  // Approximate: assume mass flow rate decreases as tank pressure rises
+  // dm/dt = C * (pi - p_tank), where C is a constant
+  // p_tank = m * R * T / V_tank
+  // T at any time: from energy balance T = (cp/cv) * Ti = gamma * Ti
+  // (this holds throughout for ideal gas adiabatic filling)
+  // So p(t) = m(t) * R * gamma * Ti / V_tank
+  // dm/dt = C * (pi - m*R*gamma*Ti/V_tank)
+  // Solution: m(t) = mf * (1 - exp(-t/tau))  where tau = mf / (C * pi)
+
+  var nPts = 100;
+  var tau = 5.0; // time constant in seconds (arbitrary for visualization)
+  var tMax = 5 * tau;
+  var tArr = [];
+  var pArr = [];
+  var TArr = [];
+  var mArr = [];
+
+  for (var i = 0; i <= nPts; i++) {
+    var t = tMax * i / nPts;
+    var m_t = mf * (1 - Math.exp(-t / tau));
+    var T_t = (m_t < 1e-8) ? Ti : gamma_air * Ti; // Temperature jumps to gamma*Ti immediately
+    // More realistic: T transitions from Ti toward gamma*Ti
+    // At very start, first bit of gas enters at Ti and gets compressed.
+    // Use energy balance: m*cv*T = integral(cp*Ti*dm) = cp*Ti*m
+    // => T = gamma*Ti regardless of how much mass is in. Always gamma*Ti.
+    var p_t = (m_t > 1e-8) ? m_t * R * T_t / V_tank : 0;
+
+    tArr.push(t);
+    pArr.push(p_t);
+    TArr.push(T_t);
+    mArr.push(m_t);
+  }
+
+  var trP = {
+    x: tArr, y: pArr,
+    mode: 'lines', name: 'Pressure p(t) [kPa]',
+    line: { color: '#3b82f6', width: 2.5 },
+    yaxis: 'y'
+  };
+
+  var trT = {
+    x: tArr, y: TArr,
+    mode: 'lines', name: 'Temperature T(t) [K]',
+    line: { color: '#ef4444', width: 2.5, dash: 'dash' },
+    yaxis: 'y2'
+  };
+
+  // Supply pressure reference line
+  var trPi = {
+    x: [0, tMax], y: [pi, pi],
+    mode: 'lines', name: 'Supply p_i',
+    line: { color: '#3b82f6', width: 1, dash: 'dot' },
+    yaxis: 'y', showlegend: false
+  };
+
+  // Inlet temp reference
+  var trTi = {
+    x: [0, tMax], y: [Ti, Ti],
+    mode: 'lines', name: 'Inlet T_i',
+    line: { color: '#ef4444', width: 1, dash: 'dot' },
+    yaxis: 'y2', showlegend: false
+  };
+
+  Plotly.newPlot('fig43', [trP, trT, trPi, trTi], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'Time (s)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Pressure (kPa)', titlefont: { color: '#3b82f6' }, tickfont: { color: '#3b82f6' }, side: 'left', range: [0, pi * 1.15] },
+    yaxis2: { title: 'Temperature (K)', titlefont: { color: '#ef4444' }, tickfont: { color: '#ef4444' }, overlaying: 'y', side: 'right', gridcolor: 'rgba(0,0,0,0)', range: [Ti * 0.9, Tf * 1.1] },
+    showlegend: true,
+    legend: { x: 0.50, y: 0.40, bgcolor: 'rgba(255,255,255,0.85)' }
+  }, plotlyConfig);
+
+  document.getElementById('ro_pf').textContent = pf.toFixed(0) + ' kPa';
+  document.getElementById('ro_Tf').textContent = Tf.toFixed(1) + ' K (' + (gamma_air).toFixed(2) + ' × T_i)';
+}
+
+function updateFig43() {
+  var V_tank = parseFloat(document.getElementById('sl_Vtank').value);
+  var Ti = parseFloat(document.getElementById('sl_Ti').value);
+
+  document.getElementById('val_Vtank').textContent = V_tank.toFixed(1) + ' m³';
+  document.getElementById('val_Ti').textContent = Ti + ' K';
+
+  var R = 0.287;
+  var cv = 0.718;
+  var cp = 1.005;
+  var gamma_air = cp / cv;
+  var pi = 500;
+
+  var Tf = gamma_air * Ti;
+  var pf = pi;
+  var mf = pf * V_tank / (R * Tf);
+
+  var nPts = 100;
+  var tau = 5.0;
+  var tMax = 5 * tau;
+  var tArr = [];
+  var pArr = [];
+  var TArr = [];
+
+  for (var i = 0; i <= nPts; i++) {
+    var t = tMax * i / nPts;
+    var m_t = mf * (1 - Math.exp(-t / tau));
+    var T_t = (m_t < 1e-8) ? Ti : gamma_air * Ti;
+    var p_t = (m_t > 1e-8) ? m_t * R * T_t / V_tank : 0;
+    tArr.push(t);
+    pArr.push(p_t);
+    TArr.push(T_t);
+  }
+
+  Plotly.restyle('fig43', { x: [tArr], y: [pArr] }, [0]);
+  Plotly.restyle('fig43', { x: [tArr], y: [TArr] }, [1]);
+  Plotly.restyle('fig43', { x: [[0, tMax]], y: [[pi, pi]] }, [2]);
+  Plotly.restyle('fig43', { x: [[0, tMax]], y: [[Ti, Ti]] }, [3]);
+
+  Plotly.relayout('fig43', {
+    'yaxis.range': [0, pi * 1.15],
+    'yaxis2.range': [Ti * 0.9, Tf * 1.1]
+  });
+
+  document.getElementById('ro_pf').textContent = pf.toFixed(0) + ' kPa';
+  document.getElementById('ro_Tf').textContent = Tf.toFixed(1) + ' K (' + (gamma_air).toFixed(2) + ' × T_i)';
+}
+
+// ============ Slider Setup ============
+
+function setupSliders() {
+  // Fig 4.1 sliders
+  document.getElementById('sl_h1').addEventListener('input', function() {
+    throttledDraw('fig41', updateFig41);
+  });
+  document.getElementById('sl_mdot').addEventListener('input', function() {
+    throttledDraw('fig41', updateFig41);
+  });
+
+  // Fig 4.2 sliders
+  document.getElementById('sl_V1').addEventListener('input', function() {
+    throttledDraw('fig42', updateFig42);
+  });
+  document.getElementById('sl_h1_nozzle').addEventListener('input', function() {
+    throttledDraw('fig42', updateFig42);
+  });
+
+  // Fig 4.3 sliders
+  document.getElementById('sl_Vtank').addEventListener('input', function() {
+    throttledDraw('fig43', updateFig43);
+  });
+  document.getElementById('sl_Ti').addEventListener('input', function() {
+    throttledDraw('fig43', updateFig43);
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig41();
+  buildFig42();
+  buildFig43();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

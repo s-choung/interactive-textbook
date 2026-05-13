@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: 엔트로피의 활용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">엔트로피의 활용</a>
+    <ul class="nav-links">
+      <li><a href="#s61">6.1</a></li>
+      <li><a href="#s62">6.2</a></li>
+      <li><a href="#s63">6.3</a></li>
+      <li><a href="#s64">6.4</a></li>
+      <li><a href="#s65">6.5</a></li>
+      <li><a href="#s67">6.7</a></li>
+      <li><a href="#s69">6.9</a></li>
+      <li><a href="#s611">6.11</a></li>
+      <li><a href="#s612">6.12</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.6</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">엔트로피의 활용</span>
+    <span class="lang-en" style="display:none;">Using Entropy</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 6. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 6. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <span class="chip">엔트로피 변화</span>
+    <span class="chip">TdS 관계식</span>
+    <span class="chip">엔트로피 수지</span>
+    <span class="chip">등엔트로피 과정</span>
+    <span class="chip">등엔트로피 효율</span>
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+
+<!-- ===== Section 6.1 ===== -->
+<section id="s61" class="section">
+  <p class="section-label">Section 6.1</p>
+  <h2 class="section-title">
+    <span class="lang-ko">엔트로피 — 계의 상태량</span>
+    <span class="lang-en" style="display:none;">Entropy — A System Property</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">엔트로피는 열역학적 계가 현재 어떤 '무질서' 상태에 있는지를 정량화하는 상태량이다. 이 값은 내부 가역 과정을 따라 열전달량을 온도로 나누어 적분함으로써 정의되며, 경로에 무관하게 초기·최종 상태만으로 결정된다. 거시적 정의 외에도, 볼츠만의 통계역학적 관점에서 미시 상태 수 $w$와 $S = k \ln w$의 관계로 물리적 의미를 부여할 수 있다.</span>
+      <span class="lang-en" style="display:none;">Entropy is a state property that quantifies the degree of molecular disorder in a thermodynamic system. It is defined by integrating the heat transfer divided by temperature along an internally reversible path, and its value depends only on the initial and final states, not on the process path. Beyond the macroscopic definition, Boltzmann's statistical mechanics connects entropy to the number of microstates $w$ through $S = k \ln w$.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$S_2 - S_1 = \int_1^2 \left(\frac{\delta Q}{T}\right)_{\text{int rev}}$$</div>
+  <div class="eq-block">$$S = k \ln w$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>내부 가역 과정</strong>: 계 내부에서 마찰이나 급격한 팽창 등 비가역 요소가 전혀 없는 이상적인 과정으로, 엔트로피 정의의 기준 경로가 된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Internally reversible process</strong>: An idealized process with no internal irreversibilities such as friction or rapid expansion, serving as the reference path for defining entropy.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>상태량</strong>: 엔트로피는 온도, 압력처럼 계의 현재 평형 상태에 의해서만 결정되며, 단위는 kJ/K이다.</span>
+      <span class="lang-en" style="display:none;"><strong>State property</strong>: Like temperature and pressure, entropy is determined solely by the current equilibrium state of the system, with units of kJ/K.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>볼츠만 상수 $k$</strong>: $1.3806 \times 10^{-23}$ J/K 로, 거시적 엔트로피와 미시적 분자 배열 수를 연결하는 다리 역할을 한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Boltzmann constant $k$</strong>: $1.3806 \times 10^{-23}$ J/K, bridging macroscopic entropy and the number of microscopic molecular arrangements.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 6.2 ===== -->
+<section id="s62" class="section">
+  <p class="section-label">Section 6.2</p>
+  <h2 class="section-title">
+    <span class="lang-ko">엔트로피 데이터의 활용</span>
+    <span class="lang-en" style="display:none;">Retrieving Entropy Data</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">실제 문제 풀이에서 비엔트로피 값은 증기표, 냉매표, 또는 소프트웨어에서 직접 조회한다. 포화 상태에서는 건도 $x$를 이용해 $s = s_f + x(s_g - s_f)$로 계산하며, 압축액의 경우 해당 온도의 포화액 엔트로피로 근사한다. T-s 선도와 h-s(Mollier) 선도는 상변화와 과열 영역에서의 상태 변화를 시각적으로 파악하는 데 유용하다.</span>
+      <span class="lang-en" style="display:none;">In practical problem-solving, specific entropy values are retrieved directly from steam tables, refrigerant tables, or software. In the two-phase region, $s = s_f + x(s_g - s_f)$ is used with quality $x$. For compressed liquids, the saturated liquid entropy at the given temperature provides a good approximation. T-s and h-s (Mollier) diagrams offer visual insight into state changes across phase boundaries and the superheated region.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$s = s_f + x(s_g - s_f)$$</div>
+  <div class="eq-block">$$s(T,p) \approx s_f(T) \quad \text{(compressed liquid approximation)}$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>건도 $x$</strong>: 포화 혼합물에서 증기 질량 분율로, $0 \leq x \leq 1$ 범위에서 비엔트로피를 선형 보간한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Quality $x$</strong>: The vapor mass fraction in a saturated mixture, used to linearly interpolate specific entropy within the range $0 \leq x \leq 1$.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>T-s 선도</strong>: 등온선이 수평선으로 나타나고, 과정의 열전달량이 곡선 아래 면적으로 표현되어 직관적 해석이 가능하다.</span>
+      <span class="lang-en" style="display:none;"><strong>T-s diagram</strong>: Isotherms appear as horizontal lines, and the heat transfer for a process equals the area under the curve, enabling intuitive analysis.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>압축액 근사</strong>: 액체는 압력에 의한 엔트로피 변화가 매우 작아 $s(T,p) \approx s_f(T)$로 근사해도 충분히 정확하다.</span>
+      <span class="lang-en" style="display:none;"><strong>Compressed liquid approximation</strong>: Since pressure has a negligible effect on liquid entropy, $s(T,p) \approx s_f(T)$ is sufficiently accurate.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 6.3 ===== -->
+<section id="s63" class="section">
+  <p class="section-label">Section 6.3</p>
+  <h2 class="section-title">
+    <span class="lang-ko">TdS 관계식</span>
+    <span class="lang-en" style="display:none;">Introducing the TdS Equations</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">제1법칙과 엔트로피 정의를 결합하면 두 가지 기본 관계식이 도출된다. 제1 TdS식 $T\,ds = du + p\,d\upsilon$는 내부에너지와 비체적의 미소 변화로 엔트로피 변화를 표현하며, 제2 TdS식 $T\,ds = dh - \upsilon\,dp$는 엔탈피와 압력 변화를 이용한다. 이 두 관계식은 순수 단순 압축성 물질에 대한 엔트로피 계산의 출발점이며, 상변화 시 $s_g - s_f = (h_g - h_f)/T$로 표 값을 교차 검증할 수 있다.</span>
+      <span class="lang-en" style="display:none;">Combining the first law and the entropy definition yields two fundamental relations. The first TdS equation $T\,ds = du + p\,d\upsilon$ expresses entropy change through internal energy and specific volume differentials, while the second TdS equation $T\,ds = dh - \upsilon\,dp$ uses enthalpy and pressure changes. These relations are the starting point for entropy evaluation of pure simple compressible substances, and during phase change, $s_g - s_f = (h_g - h_f)/T$ allows cross-checking of tabulated values.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$T\,ds = du + p\,d\upsilon$$</div>
+  <div class="eq-block">$$T\,ds = dh - \upsilon\,dp$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>제1 TdS식</strong>: 등적 과정($d\upsilon=0$)에서 $ds = du/T = c_v\,dT/T$로 단순화되어, 온도 변화만으로 엔트로피를 구할 수 있다.</span>
+      <span class="lang-en" style="display:none;"><strong>First TdS equation</strong>: At constant volume ($d\upsilon=0$), it simplifies to $ds = du/T = c_v\,dT/T$, allowing entropy calculation from temperature change alone.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>제2 TdS식</strong>: 등압 과정($dp=0$)에서 $ds = dh/T = c_p\,dT/T$로 단순화되어, 정압 비열만으로 엔트로피 변화를 평가할 수 있다.</span>
+      <span class="lang-en" style="display:none;"><strong>Second TdS equation</strong>: At constant pressure ($dp=0$), it simplifies to $ds = dh/T = c_p\,dT/T$, enabling entropy evaluation using only the constant-pressure specific heat.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>상변화 검증</strong>: 포화 온도 $T$에서 $s_{fg} = h_{fg}/T$ 관계를 이용하면 증기표의 엔트로피 데이터를 엔탈피 데이터와 교차 확인할 수 있다.</span>
+      <span class="lang-en" style="display:none;"><strong>Phase-change verification</strong>: At saturation temperature $T$, the relation $s_{fg} = h_{fg}/T$ allows cross-verification of entropy data against enthalpy data in steam tables.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 6.4 ===== -->
+<section id="s64" class="section">
+  <p class="section-label">Section 6.4</p>
+  <h2 class="section-title">
+    <span class="lang-ko">비압축성 물질의 엔트로피 변화</span>
+    <span class="lang-en" style="display:none;">Entropy Change of an Incompressible Substance</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">액체나 고체처럼 밀도가 거의 변하지 않는 비압축성 물질에서는 $d\upsilon \approx 0$이므로 제1 TdS식이 $ds = c(T)\,dT/T$로 단순화된다. 비열이 온도에 따라 크게 변하지 않으면 $\Delta s = c \ln(T_2/T_1)$으로 바로 계산할 수 있다. 이 공식은 물의 열교환, 금속의 냉각 등 고체·액체가 관여하는 문제에 매우 폭넓게 적용된다.</span>
+      <span class="lang-en" style="display:none;">For incompressible substances such as liquids and solids whose density is nearly constant, $d\upsilon \approx 0$ simplifies the first TdS equation to $ds = c(T)\,dT/T$. When the specific heat is approximately constant, the entropy change is directly $\Delta s = c \ln(T_2/T_1)$. This formula applies broadly to problems involving heat exchange in liquids and cooling of metals and other solids.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$s_2 - s_1 = c \ln\frac{T_2}{T_1}$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>비압축성 가정</strong>: 비체적이 일정($d\upsilon=0$)하여 압력 변화가 엔트로피에 영향을 주지 않으므로, 오직 온도만이 엔트로피를 결정한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Incompressible assumption</strong>: With constant specific volume ($d\upsilon=0$), pressure changes do not affect entropy, so temperature alone determines the entropy change.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>비열 $c$</strong>: 비압축성 물질에서는 $c_p \approx c_v = c$이므로 별도의 구분이 불필요하다.</span>
+      <span class="lang-en" style="display:none;"><strong>Specific heat $c$</strong>: For incompressible substances, $c_p \approx c_v = c$, so no distinction is needed.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 6.5 ===== -->
+<section id="s65" class="section">
+  <p class="section-label">Section 6.5</p>
+  <h2 class="section-title">
+    <span class="lang-ko">이상기체의 엔트로피 변화</span>
+    <span class="lang-en" style="display:none;">Entropy Change of an Ideal Gas</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">이상기체의 엔트로피 변화는 TdS 관계식에 이상기체 상태방정식을 대입하여 유도한다. 비열의 온도 의존성을 정확히 반영하려면 $s^\circ$ 함수(이상기체 표)를 이용해 $\Delta s = s^\circ(T_2) - s^\circ(T_1) - R\ln(p_2/p_1)$로 계산한다. 비열이 일정하다고 가정할 수 있는 경우에는 $\Delta s = c_p \ln(T_2/T_1) - R\ln(p_2/p_1)$로 간편하게 평가한다.</span>
+      <span class="lang-en" style="display:none;">The entropy change of an ideal gas is derived by substituting the ideal gas equation of state into the TdS relations. To accurately account for the temperature dependence of specific heats, the $s^\circ$ function from ideal gas tables gives $\Delta s = s^\circ(T_2) - s^\circ(T_1) - R\ln(p_2/p_1)$. When constant specific heats are a reasonable assumption, the simpler form $\Delta s = c_p \ln(T_2/T_1) - R\ln(p_2/p_1)$ can be used.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$s(T_2,p_2) - s(T_1,p_1) = s^\circ(T_2) - s^\circ(T_1) - R\ln\frac{p_2}{p_1}$$</div>
+  <div class="eq-block">$$\Delta s = c_p \ln\frac{T_2}{T_1} - R\ln\frac{p_2}{p_1}$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>$s^\circ$ 함수</strong>: 기준 압력(보통 1 atm)에서의 절대 엔트로피를 온도의 함수로 표화한 값으로, 비열의 온도 변화를 적분에 반영한다.</span>
+      <span class="lang-en" style="display:none;"><strong>$s^\circ$ function</strong>: Tabulated absolute entropy at a reference pressure (usually 1 atm) as a function of temperature, incorporating the temperature variation of specific heats through integration.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>압력 보정항 $-R\ln(p_2/p_1)$</strong>: 이상기체에서 압력이 증가하면 분자 배열의 자유도가 줄어 엔트로피가 감소하며, 그 크기를 이 항이 나타낸다.</span>
+      <span class="lang-en" style="display:none;"><strong>Pressure correction $-R\ln(p_2/p_1)$</strong>: For an ideal gas, increasing pressure reduces molecular configurational freedom and thus entropy; this term quantifies that effect.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Interactive Figure: Ideal Gas Entropy Change ===== -->
+<div class="figure-card">
+  <div class="figure-header">
+    <span class="figure-label">Figure 6.1</span>
+    <span class="figure-title">
+      <span class="lang-ko">이상기체 엔트로피 변화 계산기</span>
+      <span class="lang-en" style="display:none;">Ideal Gas Entropy Change Calculator</span>
+    </span>
+  </div>
+  <div class="figure-body">
+    <div id="fig_ideal_gas_entropy" class="plotly-container"></div>
+    <div class="controls">
+      <div class="control-row">
+        <span class="control-label">T&#8322;/T&#8321; (온도비)</span>
+        <input type="range" id="slider_tratio" min="0.5" max="4.0" value="2.0" step="0.1" oninput="throttledDraw('ige', updateIdealGasEntropy)">
+        <span class="control-value" id="val_tratio">2.0</span>
+      </div>
+      <div class="control-row">
+        <span class="control-label">p&#8322;/p&#8321; (압력비)</span>
+        <input type="range" id="slider_pratio" min="0.1" max="10.0" value="1.0" step="0.1" oninput="throttledDraw('ige', updateIdealGasEntropy)">
+        <span class="control-value" id="val_pratio">1.0</span>
+      </div>
+      <div class="control-row">
+        <span class="control-label">c&#7528; (kJ/(kg&middot;K))</span>
+        <input type="range" id="slider_cp" min="0.5" max="2.0" value="1.005" step="0.01" oninput="throttledDraw('ige', updateIdealGasEntropy)">
+        <span class="control-value" id="val_cp">1.005</span>
+      </div>
+    </div>
+    <div class="readout">
+      <div class="readout-item">
+        <span class="readout-key lang-ko">&Delta;s (kJ/(kg&middot;K))</span>
+        <span class="readout-key lang-en" style="display:none;">&Delta;s (kJ/(kg&middot;K))</span>
+        <span class="readout-val" id="ro_delta_s">0.697</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Section 6.7 ===== -->
+<section id="s67" class="section">
+  <p class="section-label">Section 6.7</p>
+  <h2 class="section-title">
+    <span class="lang-ko">닫힌 계의 엔트로피 수지</span>
+    <span class="lang-en" style="display:none;">Entropy Balance for Closed Systems</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">닫힌 계의 엔트로피 변화는 경계를 통한 열전달에 수반되는 엔트로피 전달과 계 내부의 비가역성에 의한 엔트로피 생성의 합이다. 엔트로피 생성 $\sigma$는 항상 0 이상이며, 이것이 제2법칙을 정량적으로 표현한 것이다. 고립계에서는 열전달이 없으므로 $\Delta S_{\text{isol}} = \sigma > 0$이 되어, 엔트로피는 반드시 증가한다.</span>
+      <span class="lang-en" style="display:none;">The entropy change of a closed system equals the sum of entropy transfer accompanying heat transfer across the boundary and entropy production due to internal irreversibilities. Entropy production $\sigma$ is always non-negative, which is the quantitative statement of the second law. For an isolated system with no heat transfer, $\Delta S_{\text{isol}} = \sigma > 0$, meaning entropy must increase.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$S_2 - S_1 = \int_1^2 \frac{\delta Q}{T_b} + \sigma$$</div>
+  <div class="eq-block">$$\sigma \geq 0$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>엔트로피 전달</strong>: 열전달 $\delta Q$가 경계 온도 $T_b$에서 일어날 때 $\delta Q/T_b$만큼의 엔트로피가 계로(또는 밖으로) 이동한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Entropy transfer</strong>: When heat transfer $\delta Q$ occurs at boundary temperature $T_b$, an amount $\delta Q/T_b$ of entropy is transported into (or out of) the system.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>엔트로피 생성 $\sigma$</strong>: 마찰, 급격한 팽창·압축, 혼합 등 비가역 현상에 의해 계 내부에서 만들어지는 엔트로피로, 절대 음수가 될 수 없다.</span>
+      <span class="lang-en" style="display:none;"><strong>Entropy production $\sigma$</strong>: Entropy created internally by irreversible phenomena such as friction, rapid expansion/compression, and mixing; it can never be negative.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>고립계 원리</strong>: 외부와 에너지·물질 교환이 없는 계에서 자발적 과정은 반드시 엔트로피를 증가시킨다.</span>
+      <span class="lang-en" style="display:none;"><strong>Isolated system principle</strong>: In a system with no energy or mass exchange with the surroundings, every spontaneous process must increase entropy.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 6.9 ===== -->
+<section id="s69" class="section">
+  <p class="section-label">Section 6.9</p>
+  <h2 class="section-title">
+    <span class="lang-ko">검사체적의 엔트로피 수지</span>
+    <span class="lang-en" style="display:none;">Entropy Rate Balance for Control Volumes</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">정상상태 검사체적에서는 열전달에 의한 엔트로피 전달률, 질량 유동에 수반되는 엔트로피 전달률, 그리고 내부 비가역성에 의한 엔트로피 생성률의 수지를 세운다. 단열 단일 입·출구 장치에서 비가역성이 존재하면 출구 비엔트로피가 입구보다 반드시 크며, 등호는 과정이 등엔트로피일 때만 성립한다.</span>
+      <span class="lang-en" style="display:none;">For a steady-state control volume, the entropy rate balance accounts for the rate of entropy transfer by heat, the rate of entropy transport with mass flow, and the rate of entropy production from internal irreversibilities. For an adiabatic, single-inlet, single-exit device with irreversibilities, the exit specific entropy must exceed the inlet value; equality holds only for an isentropic process.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$0 = \sum_j \frac{\dot{Q}_j}{T_j} + \sum_i \dot{m}_i s_i - \sum_e \dot{m}_e s_e + \dot{\sigma}_{cv}$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>정상상태 가정</strong>: 검사체적 내 엔트로피의 시간 변화율이 0이므로, 들어오는 엔트로피와 나가는 엔트로피, 그리고 생성된 엔트로피의 합이 영이 된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Steady-state assumption</strong>: The time rate of change of entropy within the control volume is zero, so the sum of entropy inflows, outflows, and production equals zero.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>단열 단일 입·출구</strong>: $\dot{Q}=0$이고 $\dot{m}_i = \dot{m}_e$이면 $s_e - s_i = \dot{\sigma}_{cv}/\dot{m} \geq 0$으로 단순화된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Adiabatic single-inlet/exit</strong>: With $\dot{Q}=0$ and $\dot{m}_i = \dot{m}_e$, the balance simplifies to $s_e - s_i = \dot{\sigma}_{cv}/\dot{m} \geq 0$.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 6.11 ===== -->
+<section id="s611" class="section">
+  <p class="section-label">Section 6.11</p>
+  <h2 class="section-title">
+    <span class="lang-ko">등엔트로피 과정</span>
+    <span class="lang-en" style="display:none;">Isentropic Processes</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">등엔트로피 과정은 단열이면서 내부 가역인 이상적인 과정으로, 엔트로피가 일정하게 유지된다. 이상기체에 비열 일정 가정을 적용하면 $T_2/T_1 = (p_2/p_1)^{(k-1)/k}$ 및 $p\upsilon^k = \text{const}$와 같은 유용한 관계식을 얻는다. 공기표의 상대압력 $p_r$과 상대체적 $v_r$을 사용하면 비열의 온도 의존성을 반영한 보다 정확한 등엔트로피 해석도 가능하다.</span>
+      <span class="lang-en" style="display:none;">An isentropic process is an idealized adiabatic, internally reversible process in which entropy remains constant. Applying the constant specific heat assumption to an ideal gas yields useful relations such as $T_2/T_1 = (p_2/p_1)^{(k-1)/k}$ and $p\upsilon^k = \text{const}$. Using the relative pressure $p_r$ and relative volume $v_r$ from air tables enables more accurate isentropic analysis that accounts for temperature-dependent specific heats.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$\frac{T_2}{T_1} = \left(\frac{p_2}{p_1}\right)^{(k-1)/k}$$</div>
+  <div class="eq-block">$$p\upsilon^k = \text{constant}$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>비열비 $k$</strong>: $k = c_p/c_v$로 정의되며, 단원자 이상기체는 약 1.67, 이원자(공기)는 약 1.4의 값을 갖는다.</span>
+      <span class="lang-en" style="display:none;"><strong>Specific heat ratio $k$</strong>: Defined as $k = c_p/c_v$; approximately 1.67 for monatomic ideal gases and about 1.4 for diatomic gases like air.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>상대압력 $p_r$</strong>: 등엔트로피 과정에서 $p_2/p_1 = p_r(T_2)/p_r(T_1)$로 압력비를 구할 수 있어, 비열 변화를 정확히 반영한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Relative pressure $p_r$</strong>: In an isentropic process, $p_2/p_1 = p_r(T_2)/p_r(T_1)$, which accurately accounts for specific heat variation with temperature.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 6.12 ===== -->
+<section id="s612" class="section">
+  <p class="section-label">Section 6.12</p>
+  <h2 class="section-title">
+    <span class="lang-ko">등엔트로피 효율</span>
+    <span class="lang-en" style="display:none;">Isentropic Efficiencies of Turbines, Nozzles, Compressors, and Pumps</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">등엔트로피 효율은 실제 기기의 성능을 같은 조건에서의 이상적(등엔트로피) 성능과 비교하여 정의한다. 터빈의 경우 실제 일 대 이상적 일의 비로 $\eta_t = (h_1 - h_2)/(h_1 - h_{2s})$이며, 압축기·펌프에서는 이상적 일 대 실제 일의 비로 $\eta_c = (h_{2s} - h_1)/(h_2 - h_1)$이 된다. 등엔트로피 효율은 에너지 시스템 설계에서 기기 선정과 성능 평가의 핵심 지표이다.</span>
+      <span class="lang-en" style="display:none;">Isentropic efficiency compares the actual performance of a device to the ideal (isentropic) performance under the same conditions. For a turbine, it is the ratio of actual work to ideal work: $\eta_t = (h_1 - h_2)/(h_1 - h_{2s})$. For compressors and pumps, it is the ratio of ideal work to actual work: $\eta_c = (h_{2s} - h_1)/(h_2 - h_1)$. Isentropic efficiency is a key metric for equipment selection and performance assessment in energy system design.</span>
+    </p>
+  </div>
+  <div class="eq-block">$$\eta_t = \frac{h_1 - h_2}{h_1 - h_{2s}}$$</div>
+  <div class="eq-block">$$\eta_c = \frac{h_{2s} - h_1}{h_2 - h_1}$$</div>
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>터빈 효율</strong>: 비가역성(마찰, 난류 등)으로 인해 실제 출구 엔탈피 $h_2$가 $h_{2s}$보다 크므로, 실제 일이 이상적 일보다 항상 작다.</span>
+      <span class="lang-en" style="display:none;"><strong>Turbine efficiency</strong>: Due to irreversibilities (friction, turbulence, etc.), the actual exit enthalpy $h_2$ exceeds $h_{2s}$, so actual work is always less than the isentropic work.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>압축기 효율</strong>: 비가역성은 압축에 필요한 실제 일을 이상적 일보다 크게 만들며, 효율이 낮을수록 더 많은 일이 소모된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Compressor efficiency</strong>: Irreversibilities make the actual work required for compression exceed the isentropic work; lower efficiency means more work consumed.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Interactive Figure: Isentropic Efficiency Explorer ===== -->
+<div class="figure-card">
+  <div class="figure-header">
+    <span class="figure-label">Figure 6.2</span>
+    <span class="figure-title">
+      <span class="lang-ko">등엔트로피 효율 탐색기</span>
+      <span class="lang-en" style="display:none;">Isentropic Efficiency Explorer</span>
+    </span>
+  </div>
+  <div class="figure-body">
+    <div id="fig_isentropic_efficiency" class="plotly-container"></div>
+    <div class="controls">
+      <div class="control-row">
+        <span class="control-label">&eta; (등엔트로피 효율)</span>
+        <input type="range" id="slider_eta" min="0.5" max="1.0" value="0.8" step="0.01" oninput="throttledDraw('ise', updateIsentropicEfficiency)">
+        <span class="control-value" id="val_eta">0.80</span>
+      </div>
+      <div class="control-row">
+        <span class="control-label">h&#8321; (입구 엔탈피, kJ/kg)</span>
+        <input type="range" id="slider_h1" min="2800" max="3400" value="3100" step="10" oninput="throttledDraw('ise', updateIsentropicEfficiency)">
+        <span class="control-value" id="val_h1">3100</span>
+      </div>
+      <div class="control-row">
+        <span class="control-label">h&#8322;s (등엔트로피 출구, kJ/kg)</span>
+        <input type="range" id="slider_h2s" min="2400" max="2800" value="2700" step="10" oninput="throttledDraw('ise', updateIsentropicEfficiency)">
+        <span class="control-value" id="val_h2s">2700</span>
+      </div>
+    </div>
+    <div class="readout">
+      <div class="readout-item">
+        <span class="readout-key lang-ko">h&#8322;_actual (kJ/kg)</span>
+        <span class="readout-key lang-en" style="display:none;">h&#8322;_actual (kJ/kg)</span>
+        <span class="readout-val" id="ro_h2_actual">2780</span>
+      </div>
+      <div class="readout-item">
+        <span class="readout-key lang-ko">W_actual (kJ/kg)</span>
+        <span class="readout-key lang-en" style="display:none;">W_actual (kJ/kg)</span>
+        <span class="readout-val" id="ro_w_actual">320</span>
+      </div>
+      <div class="readout-item">
+        <span class="readout-key lang-ko">W_isentropic (kJ/kg)</span>
+        <span class="readout-key lang-en" style="display:none;">W_isentropic (kJ/kg)</span>
+        <span class="readout-val" id="ro_w_isen">400</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<section class="section">
+  <p class="section-label">Self-Check Quiz</p>
+  <h2 class="section-title">
+    <span class="lang-ko">스스로 확인하기</span>
+    <span class="lang-en" style="display:none;">Self-Check Quiz</span>
+  </h2>
+
+  <!-- Quiz 1 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">단열 터빈에서 증기가 팽창할 때, 비가역성이 있으면 출구 비엔트로피 $s_2$는 입구 비엔트로피 $s_1$과 어떤 관계인가?</span>
+      <span class="lang-en" style="display:none;">When steam expands through an adiabatic turbine with irreversibilities, how does the exit specific entropy $s_2$ compare to the inlet specific entropy $s_1$?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q61')">$s_2 > s_1$</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q61')">$s_2 = s_1$</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q61')">$s_2 < s_1$</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q61')">
+        <span class="lang-ko">관계를 알 수 없다</span>
+        <span class="lang-en" style="display:none;">Cannot be determined</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q61-explain">
+      <span class="lang-ko">단열 과정에서 엔트로피 전달은 0이고, 비가역성에 의해 엔트로피가 생성($\sigma > 0$)되므로 $s_2 > s_1$이다.</span>
+      <span class="lang-en" style="display:none;">In an adiabatic process there is no entropy transfer. Irreversibilities produce entropy ($\sigma > 0$), so $s_2 > s_1$.</span>
+    </div>
+  </div>
+
+  <!-- Quiz 2 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">공기(이상기체)가 300 K, 1 bar에서 600 K, 1 bar로 변할 때, 엔트로피 변화에 대한 압력 항의 기여는?</span>
+      <span class="lang-en" style="display:none;">When air (ideal gas) goes from 300 K, 1 bar to 600 K, 1 bar, what is the pressure term contribution to the entropy change?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q62')">$0$</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q62')">$R \ln 2$</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q62')">$-R \ln 2$</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q62')">$c_p \ln 2$</button>
+    </div>
+    <div class="quiz-explain" id="q62-explain">
+      <span class="lang-ko">$\Delta s = c_p \ln(T_2/T_1) - R \ln(p_2/p_1)$에서 $p_2 = p_1$이므로 $R \ln(1) = 0$이다.</span>
+      <span class="lang-en" style="display:none;">Since $p_2 = p_1$, the term $R \ln(p_2/p_1) = R \ln(1) = 0$.</span>
+    </div>
+  </div>
+
+  <!-- Quiz 3 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">등엔트로피 터빈 효율이 80%이고, 등엔트로피 팽창 시 일이 200 kJ/kg이면 실제 터빈 일은?</span>
+      <span class="lang-en" style="display:none;">If the isentropic turbine efficiency is 80% and the isentropic work is 200 kJ/kg, what is the actual turbine work?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q63')">160 kJ/kg</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q63')">200 kJ/kg</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q63')">250 kJ/kg</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q63')">240 kJ/kg</button>
+    </div>
+    <div class="quiz-explain" id="q63-explain">
+      <span class="lang-ko">$\eta_t = W_{\text{actual}} / W_s$ 이므로 $W_{\text{actual}} = 0.80 \times 200 = 160$ kJ/kg이다.</span>
+      <span class="lang-en" style="display:none;">$\eta_t = W_{\text{actual}} / W_s$, so $W_{\text{actual}} = 0.80 \times 200 = 160$ kJ/kg.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHAT-IF CARDS ===== -->
+<section class="section">
+  <p class="section-label">What If?</p>
+  <h2 class="section-title">
+    <span class="lang-ko">만약에...?</span>
+    <span class="lang-en" style="display:none;">What If...?</span>
+  </h2>
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 모든 과정이 내부 가역이라면 엔트로피 생성은 어떻게 되는가?</span>
+        <span class="lang-en" style="display:none;">What if all processes were internally reversible?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &rarr;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &rarr;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">$\sigma = 0$이 되어 엔트로피 변화는 오직 열전달에 의한 엔트로피 전달로만 결정된다.</span>
+        <span class="lang-en" style="display:none;">$\sigma = 0$, and entropy change equals only the entropy transfer accompanying heat transfer.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 이상기체의 비열비 $k$가 증가하면 등엔트로피 압축 후 온도는 어떻게 변하는가?</span>
+        <span class="lang-en" style="display:none;">What if the specific heat ratio $k$ of an ideal gas increases?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &rarr;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &rarr;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">$T_2/T_1 = (p_2/p_1)^{(k-1)/k}$에서 $k$가 클수록 지수가 커져 같은 압력비에서 출구 온도가 더 높아진다.</span>
+        <span class="lang-en" style="display:none;">In $T_2/T_1 = (p_2/p_1)^{(k-1)/k}$, a larger $k$ increases the exponent, yielding a higher exit temperature for the same pressure ratio.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TAKEAWAYS ===== -->
+<section class="takeaways">
+  <h2 class="section-title">Key Takeaways</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">01</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">엔트로피 수지는 제2법칙의 실용적 도구</span>
+        <span class="lang-en" style="display:none;">Entropy Balance as a Practical Tool for the Second Law</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">엔트로피 수지식을 통해 비가역성의 크기(엔트로피 생성)를 정량화하고, 열역학 기기의 성능 저하 원인을 식별할 수 있다.</span>
+        <span class="lang-en" style="display:none;">The entropy balance quantifies irreversibilities via entropy production and identifies sources of performance degradation in thermodynamic devices.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">02</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">등엔트로피 효율로 실제 기기를 평가</span>
+        <span class="lang-en" style="display:none;">Isentropic Efficiency Benchmarks Real Devices</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">터빈·압축기·노즐·펌프의 실제 성능을 이상적(등엔트로피) 성능과 비교하여 효율을 정의하며, 이는 공학 설계의 핵심 지표이다.</span>
+        <span class="lang-en" style="display:none;">Isentropic efficiency compares actual device performance to the ideal isentropic case, serving as a key metric in engineering design.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">03</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">TdS 관계식은 엔트로피 계산의 출발점</span>
+        <span class="lang-en" style="display:none;">TdS Equations Are the Foundation for Entropy Evaluation</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">$TdS = dU + pdV$ 와 $TdS = dH - Vdp$ 는 순수 단순 압축성 물질의 엔트로피 변화를 계산하는 기본 관계식이며, 이상기체·비압축성 물질 등 다양한 모델에 적용된다.</span>
+        <span class="lang-en" style="display:none;">$TdS = dU + pdV$ and $TdS = dH - Vdp$ are fundamental relations for computing entropy changes of pure simple compressible substances, applicable to ideal gases, incompressible substances, and more.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.6</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES (모든 챕터 공통)
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC: Figure 6.1 — Ideal Gas Entropy Change
+// ============================================================
+
+function buildIdealGasEntropy() {
+  // Build a surface: Δs as a function of T-ratio (x) and p-ratio (y)
+  const cp = parseFloat(document.getElementById('slider_cp').value);
+  const R = 0.287;
+  const tRatios = [];
+  const pRatios = [];
+  for (let t = 0.5; t <= 4.0; t += 0.1) tRatios.push(parseFloat(t.toFixed(1)));
+  for (let p = 0.1; p <= 10.0; p += 0.2) pRatios.push(parseFloat(p.toFixed(1)));
+
+  const z = [];
+  pRatios.forEach(pr => {
+    const row = [];
+    tRatios.forEach(tr => {
+      row.push(cp * Math.log(tr) - R * Math.log(pr));
+    });
+    z.push(row);
+  });
+
+  const heatmap = {
+    x: tRatios,
+    y: pRatios,
+    z: z,
+    type: 'heatmap',
+    colorscale: 'RdBu',
+    reversescale: true,
+    colorbar: { title: 'Δs', titleside: 'right', thickness: 15, len: 0.8 },
+    hoverongaps: false,
+    hovertemplate: 'T₂/T₁: %{x}<br>p₂/p₁: %{y}<br>Δs: %{z:.3f} kJ/(kg·K)<extra></extra>'
+  };
+
+  // Current point marker
+  const tr = parseFloat(document.getElementById('slider_tratio').value);
+  const pr = parseFloat(document.getElementById('slider_pratio').value);
+  const ds = cp * Math.log(tr) - R * Math.log(pr);
+
+  const marker = {
+    x: [tr],
+    y: [pr],
+    mode: 'markers',
+    type: 'scatter',
+    marker: { size: 14, color: '#fff', symbol: 'circle', line: { color: '#000', width: 2 } },
+    hovertemplate: 'Current: Δs = ' + ds.toFixed(3) + ' kJ/(kg·K)<extra></extra>'
+  };
+
+  const layout = Object.assign({}, plotlyLayout, {
+    xaxis: Object.assign({}, plotlyLayout.xaxis, { title: 'T₂/T₁' }),
+    yaxis: Object.assign({}, plotlyLayout.yaxis, { title: 'p₂/p₁' }),
+    margin: { t: 24, r: 80, b: 48, l: 56 }
+  });
+
+  Plotly.newPlot('fig_ideal_gas_entropy', [heatmap, marker], layout, plotlyConfig);
+  document.getElementById('ro_delta_s').textContent = ds.toFixed(3);
+}
+
+function updateIdealGasEntropy() {
+  const tr = parseFloat(document.getElementById('slider_tratio').value);
+  const pr = parseFloat(document.getElementById('slider_pratio').value);
+  const cp = parseFloat(document.getElementById('slider_cp').value);
+  const R = 0.287;
+
+  document.getElementById('val_tratio').textContent = tr.toFixed(1);
+  document.getElementById('val_pratio').textContent = pr.toFixed(1);
+  document.getElementById('val_cp').textContent = cp.toFixed(3);
+
+  const ds = cp * Math.log(tr) - R * Math.log(pr);
+  document.getElementById('ro_delta_s').textContent = ds.toFixed(3);
+
+  // Rebuild heatmap with updated cp
+  const tRatios = [];
+  const pRatios = [];
+  for (let t = 0.5; t <= 4.0; t += 0.1) tRatios.push(parseFloat(t.toFixed(1)));
+  for (let p = 0.1; p <= 10.0; p += 0.2) pRatios.push(parseFloat(p.toFixed(1)));
+
+  const z = [];
+  pRatios.forEach(pv => {
+    const row = [];
+    tRatios.forEach(tv => {
+      row.push(cp * Math.log(tv) - R * Math.log(pv));
+    });
+    z.push(row);
+  });
+
+  Plotly.restyle('fig_ideal_gas_entropy', { z: [z], x: [tRatios], y: [pRatios] }, 0);
+  Plotly.restyle('fig_ideal_gas_entropy', { x: [[tr]], y: [[pr]] }, 1);
+}
+
+// ============================================================
+// CHAPTER-SPECIFIC: Figure 6.2 — Isentropic Efficiency Explorer
+// ============================================================
+
+function buildIsentropicEfficiency() {
+  const eta = parseFloat(document.getElementById('slider_eta').value);
+  const h1 = parseFloat(document.getElementById('slider_h1').value);
+  const h2s = parseFloat(document.getElementById('slider_h2s').value);
+
+  const Ws = h1 - h2s;
+  const Wact = eta * Ws;
+  const h2act = h1 - Wact;
+
+  // Bar chart: isentropic work vs actual work
+  const trace = {
+    x: ['W_isentropic', 'W_actual'],
+    y: [Ws, Wact],
+    type: 'bar',
+    marker: {
+      color: ['#2563eb', '#f59e0b'],
+      line: { color: ['#1e40af', '#d97706'], width: 1.5 }
+    },
+    text: [Ws.toFixed(0) + ' kJ/kg', Wact.toFixed(0) + ' kJ/kg'],
+    textposition: 'outside',
+    hovertemplate: '%{x}: %{y:.1f} kJ/kg<extra></extra>'
+  };
+
+  // h-s style conceptual diagram (right panel)
+  // Simple representation: two lines from h1 to h2s (isentropic) and h1 to h2 (actual)
+  const sEntropy = {
+    x: [0, 0, 1],
+    y: [h1, h2s, h2act],
+    mode: 'markers+text',
+    type: 'scatter',
+    marker: { size: [12, 12, 12], color: ['#10b981', '#2563eb', '#f59e0b'], symbol: ['circle', 'diamond', 'square'] },
+    text: ['h₁ = ' + h1, 'h₂s = ' + h2s, 'h₂ = ' + h2act.toFixed(0)],
+    textposition: ['top center', 'bottom left', 'bottom right'],
+    hoverinfo: 'text'
+  };
+
+  // Lines from h1 to h2s and h1 to h2
+  const lineIsen = {
+    x: [0, 0],
+    y: [h1, h2s],
+    mode: 'lines',
+    type: 'scatter',
+    line: { color: '#2563eb', width: 2, dash: 'dash' },
+    showlegend: false,
+    hoverinfo: 'skip'
+  };
+
+  const lineActual = {
+    x: [0, 1],
+    y: [h1, h2act],
+    mode: 'lines',
+    type: 'scatter',
+    line: { color: '#f59e0b', width: 2 },
+    showlegend: false,
+    hoverinfo: 'skip'
+  };
+
+  const layout = Object.assign({}, plotlyLayout, {
+    xaxis: Object.assign({}, plotlyLayout.xaxis, { title: 's (비엔트로피)', showticklabels: false }),
+    yaxis: Object.assign({}, plotlyLayout.yaxis, { title: 'h (kJ/kg)', range: [2200, 3600] }),
+    showlegend: false,
+    margin: { t: 24, r: 24, b: 48, l: 56 },
+    annotations: [
+      { x: 0, y: (h1 + h2s) / 2, text: 'W_s=' + Ws.toFixed(0), showarrow: false, xanchor: 'right', xshift: -10, font: { color: '#2563eb', size: 12 } },
+      { x: 0.5, y: (h1 + h2act) / 2, text: 'W_act=' + Wact.toFixed(0), showarrow: false, xanchor: 'left', xshift: 10, font: { color: '#f59e0b', size: 12 } }
+    ]
+  });
+
+  Plotly.newPlot('fig_isentropic_efficiency', [lineIsen, lineActual, sEntropy], layout, plotlyConfig);
+
+  document.getElementById('ro_h2_actual').textContent = h2act.toFixed(0);
+  document.getElementById('ro_w_actual').textContent = Wact.toFixed(0);
+  document.getElementById('ro_w_isen').textContent = Ws.toFixed(0);
+}
+
+function updateIsentropicEfficiency() {
+  const eta = parseFloat(document.getElementById('slider_eta').value);
+  const h1 = parseFloat(document.getElementById('slider_h1').value);
+  const h2s = parseFloat(document.getElementById('slider_h2s').value);
+
+  document.getElementById('val_eta').textContent = eta.toFixed(2);
+  document.getElementById('val_h1').textContent = h1.toFixed(0);
+  document.getElementById('val_h2s').textContent = h2s.toFixed(0);
+
+  const Ws = h1 - h2s;
+  const Wact = eta * Ws;
+  const h2act = h1 - Wact;
+
+  document.getElementById('ro_h2_actual').textContent = h2act.toFixed(0);
+  document.getElementById('ro_w_actual').textContent = Wact.toFixed(0);
+  document.getElementById('ro_w_isen').textContent = Ws.toFixed(0);
+
+  // Update h-s diagram
+  Plotly.restyle('fig_isentropic_efficiency', { y: [[h1, h2s]] }, 0);         // lineIsen
+  Plotly.restyle('fig_isentropic_efficiency', { y: [[h1, h2act]] }, 1);       // lineActual
+  Plotly.restyle('fig_isentropic_efficiency', {
+    y: [[h1, h2s, h2act]],
+    text: [['h₁ = ' + h1, 'h₂s = ' + h2s, 'h₂ = ' + h2act.toFixed(0)]]
+  }, 2);
+
+  Plotly.relayout('fig_isentropic_efficiency', {
+    'annotations[0].y': (h1 + h2s) / 2,
+    'annotations[0].text': 'W_s=' + Ws.toFixed(0),
+    'annotations[1].y': (h1 + h2act) / 2,
+    'annotations[1].text': 'W_act=' + Wact.toFixed(0)
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildIdealGasEntropy();
+  buildIsentropicEfficiency();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

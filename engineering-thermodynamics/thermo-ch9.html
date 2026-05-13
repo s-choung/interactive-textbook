@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Gas Power Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">Gas Power Systems</a>
+    <ul class="nav-links">
+      <li><a href="#s91">9.1</a></li>
+      <li><a href="#s92">9.2</a></li>
+      <li><a href="#s93">9.3</a></li>
+      <li><a href="#s96">9.6</a></li>
+      <li><a href="#s97">9.7</a></li>
+      <li><a href="#s99">9.9</a></li>
+      <li><a href="#s912">9.12</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.9</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">기체 동력 시스템</span>
+    <span class="lang-en" style="display:none;">Gas Power Systems</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 9. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 9. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <span class="chip">Otto 사이클</span>
+    <span class="chip">Diesel 사이클</span>
+    <span class="chip">Brayton 사이클</span>
+    <span class="chip">압축비</span>
+    <span class="chip">재생·재열</span>
+    <span class="chip">복합 사이클</span>
+    <span class="chip">압축성 유동</span>
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+
+<!-- ============ Section 9.1 ============ -->
+<section id="s91" class="section">
+  <p class="section-label">Section 9.1</p>
+  <h2 class="section-title">
+    <span class="lang-ko">엔진 용어 소개</span>
+    <span class="lang-en" style="display:none;">Introducing Engine Terminology</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">왕복 내연기관은 피스톤이 실린더 안에서 왕복 운동하며 기체의 팽창 에너지를 크랭크축 회전으로 변환한다. 피스톤이 최상단에 위치한 상사점(TDC)과 최하단의 하사점(BDC) 사이에서 한 번 이동하는 것을 하나의 행정(stroke)이라 하며, 실린더 내경을 보어(bore)라 한다. 공기표준 해석(air-standard analysis)에서는 작동유체를 공기로 가정하고, 연소를 외부 열공급으로 대체하며, 배기 과정을 방열로 모델링한다. 이렇게 하면 복잡한 실제 기관을 상대적으로 단순한 열역학적 사이클로 분석할 수 있다.</span>
+      <span class="lang-en" style="display:none;">A reciprocating internal combustion engine converts gas expansion energy into crankshaft rotation through piston reciprocation inside a cylinder. A single piston movement between top dead center (TDC) and bottom dead center (BDC) is one stroke, and the cylinder inner diameter is the bore. In air-standard analysis, the working fluid is assumed to be air, combustion is replaced by external heat addition, and exhaust is modeled as heat rejection. This simplification lets us analyze the complex real engine with relatively straightforward thermodynamic cycles.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\text{mep} = \frac{W_{\text{cycle}}}{V_1 - V_2}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>압축비 $r$</strong>: 최대 체적(BDC)과 최소 체적(TDC)의 비 $r = V_1/V_2$. 모든 왕복기관 사이클의 핵심 설계 변수이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Compression ratio $r$</strong>: The ratio of maximum volume (BDC) to minimum volume (TDC), $r = V_1/V_2$. The key design variable for all reciprocating engine cycles.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>평균유효압력(mep)</strong>: 사이클 순일을 행정 체적으로 나눈 값으로, 엔진 크기에 무관하게 출력 능력을 비교할 수 있는 성능 지표이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Mean effective pressure (mep)</strong>: Net cycle work divided by displacement volume, a performance metric that enables comparison of power output regardless of engine size.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>공기표준 가정</strong>: (1) 작동유체는 이상기체인 공기, (2) 연소→정적 또는 정압 열공급, (3) 배기→열방출, (4) 모든 과정은 내부 가역으로 가정한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Air-standard assumptions</strong>: (1) Air as ideal-gas working fluid, (2) combustion modeled as constant-volume or constant-pressure heat addition, (3) exhaust modeled as heat rejection, (4) all processes internally reversible.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 9.2 ============ -->
+<section id="s92" class="section">
+  <p class="section-label">Section 9.2</p>
+  <h2 class="section-title">
+    <span class="lang-ko">공기표준 Otto 사이클</span>
+    <span class="lang-en" style="display:none;">Air-Standard Otto Cycle</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">Otto 사이클은 스파크 점화(SI) 엔진의 이상 모델로, 네 과정으로 구성된다: 등엔트로피 압축(1→2), 정적 가열(2→3), 등엔트로피 팽창(3→4), 정적 방열(4→1). 열효율은 오직 압축비 $r$과 비열비 $k$에만 의존하며, 압축비가 높아질수록 효율이 증가한다. 그러나 실제 엔진에서는 압축비가 너무 높으면 혼합기가 자발적으로 착화하는 노킹(knocking) 현상이 발생하므로 가솔린 엔진의 압축비는 통상 8~12로 제한된다.</span>
+      <span class="lang-en" style="display:none;">The Otto cycle is the ideal model for spark-ignition (SI) engines, comprising four processes: isentropic compression (1-2), constant-volume heat addition (2-3), isentropic expansion (3-4), and constant-volume heat rejection (4-1). Thermal efficiency depends solely on the compression ratio $r$ and specific heat ratio $k$, increasing with higher compression ratios. However, in real engines, excessively high compression ratios cause knock — spontaneous ignition of the air-fuel mixture — so gasoline engines are typically limited to compression ratios of 8-12.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\eta_{\text{Otto}} = 1 - \frac{1}{r^{k-1}}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>정적 가열·방열</strong>: 연소와 배기를 등체적 과정으로 모델링한다. 피스톤이 TDC에서 순간적으로 열을 받고, BDC에서 열을 방출하는 것으로 이상화한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Constant-volume heat addition/rejection</strong>: Combustion and exhaust are modeled as isochoric processes. The piston instantaneously receives heat at TDC and rejects heat at BDC.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>노킹과 압축비 상한</strong>: 압축비를 높이면 압축 종료 시 온도와 압력이 상승하여 자발 착화 가능성이 커진다. 이를 억제하기 위해 고옥탄 연료를 사용하거나 압축비를 제한한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Knock and compression ratio limits</strong>: Higher compression ratios increase temperature and pressure at compression end, raising the risk of spontaneous ignition. This is mitigated by using high-octane fuel or limiting the compression ratio.</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure 9.1: Otto/Diesel/Brayton Efficiency Comparison -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 9.1</span>
+      <span class="figure-title">
+        <span class="lang-ko">Otto·Diesel·Brayton 사이클 열효율 비교</span>
+        <span class="lang-en" style="display:none;">Otto / Diesel / Brayton Thermal Efficiency Comparison</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig91" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">압축비 $r$</span>
+            <span class="lang-en" style="display:none;">Compression ratio $r$</span>
+          </span>
+          <input type="range" id="sl_r91" min="2" max="24" value="10" step="0.5">
+          <span class="control-value" id="val_r91">10</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">비열비 $k$</span>
+            <span class="lang-en" style="display:none;">Specific heat ratio $k$</span>
+          </span>
+          <input type="range" id="sl_k91" min="1.2" max="1.67" value="1.4" step="0.01">
+          <span class="control-value" id="val_k91">1.40</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">차단비 $r_c$ (Diesel)</span>
+            <span class="lang-en" style="display:none;">Cutoff ratio $r_c$ (Diesel)</span>
+          </span>
+          <input type="range" id="sl_rc91" min="1.5" max="4" value="2.5" step="0.1">
+          <span class="control-value" id="val_rc91">2.5</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">η_Otto (%)</span>
+          <span class="readout-key lang-en" style="display:none;">η_Otto (%)</span>
+          <span class="readout-val" id="ro_eta_otto">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">η_Diesel (%)</span>
+          <span class="readout-key lang-en" style="display:none;">η_Diesel (%)</span>
+          <span class="readout-val" id="ro_eta_diesel">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">η_Brayton (%)</span>
+          <span class="readout-key lang-en" style="display:none;">η_Brayton (%)</span>
+          <span class="readout-val" id="ro_eta_brayton">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Figure 9.2: Otto Cycle p-v & T-s Diagrams -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 9.2</span>
+      <span class="figure-title">
+        <span class="lang-ko">Otto 사이클 p-v &amp; T-s 다이어그램</span>
+        <span class="lang-en" style="display:none;">Otto Cycle p-v &amp; T-s Diagrams</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig92" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">압축비 $r$</span>
+            <span class="lang-en" style="display:none;">Compression ratio $r$</span>
+          </span>
+          <input type="range" id="sl_r92" min="4" max="14" value="8" step="0.5">
+          <span class="control-value" id="val_r92">8.0</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">최고 온도 $T_3$</span>
+            <span class="lang-en" style="display:none;">Peak temperature $T_3$</span>
+          </span>
+          <input type="range" id="sl_T3_92" min="1500" max="3600" value="2500" step="100">
+          <span class="control-value" id="val_T3_92">2500 K</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">η (%)</span>
+          <span class="readout-key lang-en" style="display:none;">η (%)</span>
+          <span class="readout-val" id="ro_eta92">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">mep (kPa)</span>
+          <span class="readout-key lang-en" style="display:none;">mep (kPa)</span>
+          <span class="readout-val" id="ro_mep92">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">W_net (kJ/kg)</span>
+          <span class="readout-key lang-en" style="display:none;">W_net (kJ/kg)</span>
+          <span class="readout-val" id="ro_wnet92">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 9.3 ============ -->
+<section id="s93" class="section">
+  <p class="section-label">Section 9.3</p>
+  <h2 class="section-title">
+    <span class="lang-ko">공기표준 Diesel 사이클</span>
+    <span class="lang-en" style="display:none;">Air-Standard Diesel Cycle</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">Diesel 사이클은 압축 점화(CI) 엔진의 이상 모델이다. Otto 사이클과 달리 가열 과정이 정압(constant pressure)에서 일어나며, 이를 특징짓는 매개변수가 차단비(cutoff ratio) $r_c = V_3/V_2$이다. Diesel 엔진은 공기만을 먼저 높은 압축비(15~25)로 압축하여 고온을 만든 뒤 연료를 분사하므로, 노킹 문제가 없어 Otto 엔진보다 높은 압축비를 사용할 수 있다. 같은 압축비에서는 Diesel 사이클의 효율이 Otto 사이클보다 낮지만, 실제로는 높은 압축비 덕분에 전체 효율이 더 높은 경우가 많다.</span>
+      <span class="lang-en" style="display:none;">The Diesel cycle is the ideal model for compression-ignition (CI) engines. Unlike the Otto cycle, heat addition occurs at constant pressure, characterized by the cutoff ratio $r_c = V_3/V_2$. Diesel engines compress only air to a high compression ratio (15-25), creating high temperatures before fuel injection, so knock is not a concern and higher compression ratios than Otto engines are possible. At the same compression ratio, Diesel cycle efficiency is lower than Otto, but in practice the higher permissible compression ratio often yields superior overall efficiency.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\eta_{\text{Diesel}} = 1 - \frac{1}{r^{k-1}} \left[ \frac{r_c^{k} - 1}{k(r_c - 1)} \right]$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>차단비 $r_c$</strong>: 정압 가열이 끝나는 시점과 시작 시점의 체적비이다. $r_c = 1$이면 가열이 없으므로 Otto 사이클 효율식과 일치하게 된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Cutoff ratio $r_c$</strong>: The volume ratio at the end to the start of constant-pressure heating. When $r_c = 1$, there is no heat addition and the formula reduces to the Otto cycle efficiency.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>Otto vs Diesel</strong>: 괄호 안의 인자 $[r_c^k - 1]/[k(r_c-1)]$은 항상 1보다 크므로, 동일 $r$에서 Diesel 효율이 Otto보다 낮다. 그러나 Diesel은 $r$을 훨씬 높일 수 있어 실용 효율이 높다.</span>
+      <span class="lang-en" style="display:none;"><strong>Otto vs Diesel</strong>: The bracketed factor $[r_c^k - 1]/[k(r_c-1)]$ is always greater than 1, so Diesel efficiency is lower than Otto at the same $r$. But Diesel allows much higher $r$, yielding superior practical efficiency.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 9.4 ============ -->
+<section id="s94" class="section">
+  <p class="section-label">Section 9.4</p>
+  <h2 class="section-title">
+    <span class="lang-ko">공기표준 이중(Dual) 사이클</span>
+    <span class="lang-en" style="display:none;">Air-Standard Dual Cycle</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">실제 내연기관의 연소 과정은 순수한 정적 또는 정압 과정이 아니다. Dual 사이클은 정적 가열과 정압 가열을 결합하여 실제 엔진의 p-V 선도를 더 잘 근사한다. 먼저 TDC 부근에서 급격한 정적 가열이 일어나고(Otto 부분), 이어서 피스톤이 이동하면서 정압 가열이 계속된다(Diesel 부분). 이 모델은 두 개의 추가 매개변수—압력비(정적 가열 정도)와 차단비(정압 가열 정도)—를 통해 Otto 사이클과 Diesel 사이클을 특수한 경우로 포함한다.</span>
+      <span class="lang-en" style="display:none;">The actual combustion process in an internal combustion engine is neither purely constant-volume nor constant-pressure. The Dual cycle combines both, better approximating the real engine p-V diagram. Rapid constant-volume heating occurs near TDC (the Otto portion), followed by constant-pressure heating as the piston moves (the Diesel portion). This model includes two extra parameters — a pressure ratio for the isochoric heating and a cutoff ratio for the isobaric heating — encompassing both Otto and Diesel cycles as special cases.</span>
+    </p>
+  </div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>유연한 모델링</strong>: 정압 가열 비율을 0으로 하면 Otto 사이클, 정적 가열 비율을 0으로 하면 Diesel 사이클이 된다. 실제 엔진 데이터에 맞추어 두 비율을 조정한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Flexible modeling</strong>: Setting the constant-pressure fraction to zero gives the Otto cycle; setting the constant-volume fraction to zero gives the Diesel cycle. Both fractions are adjusted to match real engine data.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 9.5–9.6 ============ -->
+<section id="s95" class="section">
+  <p class="section-label">Section 9.5</p>
+  <h2 class="section-title">
+    <span class="lang-ko">가스터빈 발전소 모델링</span>
+    <span class="lang-en" style="display:none;">Modeling Gas Turbine Power Plants</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">가스터빈 발전소는 압축기-연소기-터빈으로 구성되며, 개방형(연소 가스가 직접 터빈 통과)과 폐쇄형(열교환기를 통해 열공급) 두 가지 형태가 있다. 개방형이 대부분의 실제 발전소에 해당하지만, 공기표준 해석에서는 폐쇄형으로 모델링하여 사이클 분석을 수행한다. 증기 사이클과 달리 가스터빈은 압축기 소요 일이 터빈 출력의 상당 부분(40~80%)을 차지하므로, 역일비(back work ratio)가 매우 높다.</span>
+      <span class="lang-en" style="display:none;">A gas turbine power plant consists of a compressor, combustor, and turbine. It can be open-cycle (combustion gases pass directly through the turbine) or closed-cycle (heat supplied via heat exchanger). Most actual plants are open-cycle, but air-standard analysis uses a closed-cycle model. Unlike vapor cycles, the compressor in a gas turbine consumes a substantial fraction (40-80%) of turbine output, resulting in a very high back work ratio.</span>
+    </p>
+  </div>
+</section>
+
+<section id="s96" class="section">
+  <p class="section-label">Section 9.6</p>
+  <h2 class="section-title">
+    <span class="lang-ko">공기표준 Brayton 사이클</span>
+    <span class="lang-en" style="display:none;">Air-Standard Brayton Cycle</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">Brayton 사이클은 가스터빈의 이상 모델로, 등엔트로피 압축(1→2), 정압 가열(2→3), 등엔트로피 팽창(3→4), 정압 방열(4→1)의 네 과정으로 이루어진다. 열효율은 압력비 $p_2/p_1$의 함수이며, 형태적으로 Otto 사이클 효율식과 유사하다. 그러나 최적 압력비는 최대 열효율이 아닌 최대 순일을 주는 값으로 선택하는 경우가 많으며, 터빈 입구 온도 $T_3$가 높을수록 최대 순일이 커진다. 실제 가스터빈에서는 압축기와 터빈의 등엔트로피 효율이 1보다 작아 이상 사이클 대비 성능이 저하되며, 특히 역일비가 높으므로 이 효율 손실이 순일에 미치는 영향이 크다.</span>
+      <span class="lang-en" style="display:none;">The Brayton cycle is the ideal model for gas turbines, comprising isentropic compression (1-2), constant-pressure heat addition (2-3), isentropic expansion (3-4), and constant-pressure heat rejection (4-1). Thermal efficiency is a function of the pressure ratio $p_2/p_1$, formally similar to the Otto cycle formula. However, the optimal pressure ratio is often chosen for maximum net work rather than maximum efficiency, and higher turbine inlet temperature $T_3$ increases the maximum net work. In real gas turbines, compressor and turbine isentropic efficiencies below unity degrade performance relative to the ideal cycle, and because the back work ratio is high, these efficiency losses have a disproportionate impact on net work.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\eta_{\text{Brayton}} = 1 - \frac{1}{(p_2/p_1)^{(k-1)/k}}$$</div>
+  <div class="eq-block">$$\text{bwr} = \frac{\dot{W}_c / \dot{m}}{\dot{W}_t / \dot{m}}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>압력비와 효율</strong>: 압력비를 높이면 열효율이 단조 증가하지만, 순일은 특정 압력비에서 최대가 된다. 발전용 가스터빈은 이 최적점 부근에서 설계된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Pressure ratio and efficiency</strong>: Increasing the pressure ratio monotonically increases thermal efficiency, but net work reaches a maximum at a certain pressure ratio. Power-generation gas turbines are designed near this optimum.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>높은 역일비</strong>: 가스(기체)를 압축하는 데 드는 일이 크므로, 증기 사이클(bwr 1~4%)과 달리 가스터빈의 bwr은 40~80%에 달한다.</span>
+      <span class="lang-en" style="display:none;"><strong>High back work ratio</strong>: Compressing a gas requires substantial work, so gas turbine bwr is 40-80%, far higher than the 1-4% typical of vapor cycles.</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure 9.3: Brayton Cycle Pressure Ratio Effects -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 9.3</span>
+      <span class="figure-title">
+        <span class="lang-ko">Brayton 사이클 압력비 효과</span>
+        <span class="lang-en" style="display:none;">Brayton Cycle Pressure Ratio Effects</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig93" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">압력비 $p_2/p_1$</span>
+            <span class="lang-en" style="display:none;">Pressure ratio $p_2/p_1$</span>
+          </span>
+          <input type="range" id="sl_rp93" min="2" max="40" value="12" step="1">
+          <span class="control-value" id="val_rp93">12</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">터빈 입구 온도 $T_3$</span>
+            <span class="lang-en" style="display:none;">Turbine inlet temperature $T_3$</span>
+          </span>
+          <input type="range" id="sl_T3_93" min="900" max="1800" value="1400" step="50">
+          <span class="control-value" id="val_T3_93">1400 K</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">η (%)</span>
+          <span class="readout-key lang-en" style="display:none;">η (%)</span>
+          <span class="readout-val" id="ro_eta93">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">bwr (%)</span>
+          <span class="readout-key lang-en" style="display:none;">bwr (%)</span>
+          <span class="readout-val" id="ro_bwr93">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">W_net (kJ/kg)</span>
+          <span class="readout-key lang-en" style="display:none;">W_net (kJ/kg)</span>
+          <span class="readout-val" id="ro_wnet93">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 9.7–9.8 ============ -->
+<section id="s97" class="section">
+  <p class="section-label">Section 9.7 – 9.8</p>
+  <h2 class="section-title">
+    <span class="lang-ko">재생·재열·중간냉각을 적용한 가스터빈</span>
+    <span class="lang-en" style="display:none;">Regenerative Gas Turbines with Reheat and Intercooling</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">기본 Brayton 사이클의 성능을 향상시키기 위한 세 가지 주요 기법이 있다. 재생(regeneration)은 터빈 배기(state 4)의 잔여 열을 열교환기(재생기)를 통해 압축기 출구 공기(state 2)에 전달하여 연소기에 필요한 열공급량을 줄인다. 재생기 유효도(regenerator effectiveness) $\eta_{\text{reg}}$는 실제 공기 온도 상승과 이론적 최대 상승의 비이다. 재열(reheat)은 터빈을 다단으로 나누고 중간에 재가열하여 터빈 총 출력을 증가시키며, 중간냉각(intercooling)은 압축기를 다단으로 나누고 중간에 냉각하여 압축 소요 일을 줄인다. 세 기법을 함께 적용하면 최적의 효과를 얻는다.</span>
+      <span class="lang-en" style="display:none;">Three key techniques improve the basic Brayton cycle. Regeneration transfers residual heat from the turbine exhaust (state 4) to the compressor exit air (state 2) via a heat exchanger (regenerator), reducing the heat input needed in the combustor. The regenerator effectiveness $\eta_{\text{reg}}$ is the ratio of actual air temperature rise to the theoretical maximum. Reheat splits the turbine into stages with intermediate reheating to increase total turbine output. Intercooling splits the compressor with intermediate cooling to reduce compressor work. Combining all three yields the greatest benefit.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\eta_{\text{reg}} = \frac{h_x - h_2}{h_4 - h_2}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>재생기 유효도</strong>: $\eta_{\text{reg}} = 1$이면 압축기 출구 공기가 터빈 배기 온도까지 완전히 가열되어 최대한의 연료 절감이 이루어진다. 실제로는 0.6~0.8 수준이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Regenerator effectiveness</strong>: When $\eta_{\text{reg}} = 1$, the compressor exit air is fully heated to the turbine exhaust temperature, achieving maximum fuel savings. Practical values are 0.6-0.8.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>재열과 중간냉각의 상보성</strong>: 재열은 터빈 출력을 높이지만 배기 온도도 상승시키고, 중간냉각은 압축 일을 줄이지만 압축기 출구 온도를 낮춘다. 재생기가 있으면 두 효과 모두 추가 열회수로 이어져 시너지가 극대화된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Complementarity of reheat and intercooling</strong>: Reheat increases turbine output but also raises exhaust temperature, while intercooling reduces compressor work but lowers compressor exit temperature. With a regenerator, both effects translate into additional heat recovery, maximizing synergy.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 9.9–9.10 ============ -->
+<section id="s99" class="section">
+  <p class="section-label">Section 9.9 – 9.10</p>
+  <h2 class="section-title">
+    <span class="lang-ko">가스터빈 기반 복합 사이클 &amp; IGCC</span>
+    <span class="lang-en" style="display:none;">Gas Turbine-Based Combined Cycles &amp; IGCC</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">복합 사이클(combined cycle)은 가스터빈(토핑 사이클)과 증기터빈(보텀 사이클)을 결합한 시스템이다. 가스터빈 배기(450~600°C)를 배열회수 보일러(HRSG)에 통과시켜 증기를 발생시키고, 이 증기로 Rankine 사이클을 구동한다. 이렇게 하면 고온 열원과 저온 방열 사이의 온도 범위를 최대한 활용하여 60% 이상의 열효율을 달성할 수 있다. IGCC(석탄가스화 복합 발전)는 석탄을 합성가스(syngas)로 전환한 뒤 이를 가스터빈 연료로 사용하여, 기존 석탄 화력보다 높은 효율과 낮은 오염물질 배출을 동시에 실현한다.</span>
+      <span class="lang-en" style="display:none;">A combined cycle couples a gas turbine (topping cycle) with a steam turbine (bottoming cycle). Gas turbine exhaust (450-600°C) passes through a heat recovery steam generator (HRSG) to produce steam that drives a Rankine cycle. By exploiting the full temperature range between the high-temperature source and low-temperature sink, thermal efficiencies above 60% are achievable. IGCC (Integrated Gasification Combined Cycle) converts coal to syngas before using it as gas turbine fuel, achieving higher efficiency and lower pollutant emissions than conventional coal-fired plants.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\eta_{\text{cc}} = \frac{\dot{W}_{\text{gas}} + \dot{W}_{\text{vap}}}{\dot{Q}_{\text{in}}}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>토핑/보텀 사이클</strong>: 가스터빈은 고온(1200~1600°C) 영역에서, 증기터빈은 중저온(~600°C 이하) 영역에서 작동하여 각각의 장점을 극대화한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Topping/bottoming cycle</strong>: The gas turbine operates in the high-temperature range (1200-1600°C) while the steam turbine operates in the medium-to-low range (~600°C and below), maximizing the advantages of each.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>IGCC의 환경 이점</strong>: 석탄 가스화 과정에서 황화합물과 미세 입자를 연소 전에 제거할 수 있어, 배출 기준을 훨씬 쉽게 충족한다. CO₂ 포집과의 통합도 유리하다.</span>
+      <span class="lang-en" style="display:none;"><strong>Environmental advantages of IGCC</strong>: Sulfur compounds and particulates can be removed before combustion in the gasification process, making emission standards far easier to meet. Integration with CO₂ capture is also favorable.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 9.11 ============ -->
+<section id="s911" class="section">
+  <p class="section-label">Section 9.11</p>
+  <h2 class="section-title">
+    <span class="lang-ko">항공 추진용 가스터빈</span>
+    <span class="lang-en" style="display:none;">Gas Turbines for Aircraft Propulsion</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">터보제트 엔진은 디퓨저(속도→압력 전환)–압축기–연소기–터빈–노즐(압력→속도 전환)로 구성된다. 터빈은 압축기를 구동하는 데 필요한 만큼의 일만 추출하고, 나머지 고온·고압 가스는 노즐을 통해 고속으로 배출되어 추력을 생성한다. 추력은 엔진을 통과하는 공기의 운동량 변화로 표현된다. 터보팬, 터보프롭 등의 변형은 기본 터보제트에 바이패스 덕트나 프로펠러를 추가하여 추진 효율을 높인 것이다.</span>
+      <span class="lang-en" style="display:none;">A turbojet engine consists of a diffuser (velocity-to-pressure conversion), compressor, combustor, turbine, and nozzle (pressure-to-velocity conversion). The turbine extracts only enough work to drive the compressor, and the remaining high-temperature, high-pressure gas is expelled at high velocity through the nozzle to generate thrust. Thrust equals the momentum change of air passing through the engine. Turbofan and turboprop variants add bypass ducts or propellers to the basic turbojet to improve propulsive efficiency.</span>
+    </p>
+  </div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>추력 생성</strong>: $F = \dot{m}(V_{\text{exit}} - V_{\text{inlet}})$. 노즐 출구 속도가 비행 속도보다 크면 순추력이 양수이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Thrust generation</strong>: $F = \dot{m}(V_{\text{exit}} - V_{\text{inlet}})$. Net thrust is positive when the nozzle exit velocity exceeds the flight speed.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>디퓨저와 노즐</strong>: 디퓨저는 유입 공기의 운동에너지를 압력 상승으로 전환하고, 노즐은 반대로 압력 에너지를 운동에너지로 전환한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Diffuser and nozzle</strong>: The diffuser converts incoming air kinetic energy into a pressure rise; the nozzle does the reverse, converting pressure energy into kinetic energy.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 9.12–9.14 ============ -->
+<section id="s912" class="section">
+  <p class="section-label">Section 9.12 – 9.14</p>
+  <h2 class="section-title">
+    <span class="lang-ko">압축성 유동 기초 &amp; 노즐·디퓨저 해석</span>
+    <span class="lang-en" style="display:none;">Compressible Flow Fundamentals &amp; Nozzle-Diffuser Analysis</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">기체가 높은 속도로 유동할 때는 밀도 변화를 무시할 수 없으며, 이를 압축성 유동이라 한다. 음속은 이상기체에서 $c = \sqrt{kRT}$이고, 유동 속도와 음속의 비를 마하수 $M = V/c$로 정의한다. $M < 1$이면 아음속, $M > 1$이면 초음속이다. 정체 상태(stagnation state)는 유체를 단열·등엔트로피적으로 정지시켰을 때의 상태로, 정체 온도 $T_o$와 정체 압력 $p_o$는 등엔트로피 유동에서 보존된다.</span>
+      <span class="lang-en" style="display:none;">When gas flows at high velocity, density changes cannot be ignored — this is compressible flow. The speed of sound in an ideal gas is $c = \sqrt{kRT}$, and the Mach number is defined as $M = V/c$. $M < 1$ is subsonic; $M > 1$ is supersonic. The stagnation state is the state reached when the fluid is brought to rest adiabatically and isentropically; stagnation temperature $T_o$ and stagnation pressure $p_o$ are conserved in isentropic flow.</span>
+    </p>
+    <p>
+      <span class="lang-ko">아음속 유동에서는 면적 감소 시 가속(수축 노즐), 면적 증가 시 감속(디퓨저)이 일어난다. 초음속 유동에서는 이 관계가 반전되어 면적 증가 시 가속된다. 아음속에서 초음속으로의 전환은 반드시 최소 면적(목, throat)에서 $M = 1$(초킹, choking)이 되어야 가능하다. 수직 충격파(normal shock)는 초음속 유동이 급격히 아음속으로 전환되는 매우 얇은 비가역적 영역으로, 충격파 전후에서 압력·온도·밀도가 불연속적으로 변한다.</span>
+      <span class="lang-en" style="display:none;">In subsonic flow, area decrease causes acceleration (converging nozzle) and area increase causes deceleration (diffuser). In supersonic flow, these relationships are reversed — area increase causes acceleration. Transition from subsonic to supersonic requires Mach 1 at the minimum area (throat), known as choking. A normal shock wave is a very thin, irreversible region where supersonic flow abruptly transitions to subsonic, with discontinuous changes in pressure, temperature, and density across the shock.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$c = \sqrt{kRT}$$</div>
+  <div class="eq-block">$$M = \frac{V}{c}$$</div>
+  <div class="eq-block">$$\frac{T_o}{T} = 1 + \frac{k-1}{2} M^2$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>초킹(choking)</strong>: 목(throat)에서 $M = 1$이 되면 유량은 최대가 되고, 하류 압력을 더 낮추어도 유량이 증가하지 않는다. 이를 초킹이라 한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Choking</strong>: When $M = 1$ at the throat, mass flow rate reaches its maximum and further lowering downstream pressure does not increase the flow rate.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>수축-확대 노즐</strong>: 아음속 유입 → 목에서 $M = 1$ → 확대부에서 초음속으로 가속. 로켓 노즐과 초음속 풍동의 기본 원리이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Converging-diverging nozzle</strong>: Subsonic inlet → $M = 1$ at the throat → supersonic acceleration in the diverging section. The operating principle of rocket nozzles and supersonic wind tunnels.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>등엔트로피 유동 함수</strong>: $T_o/T$, $p_o/p$, $\rho_o/\rho$ 비가 마하수와 비열비의 함수로 표현되어, 유동 해석 시 편리한 도구가 된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Isentropic flow functions</strong>: The ratios $T_o/T$, $p_o/p$, and $\rho_o/\rho$ are expressed as functions of Mach number and specific heat ratio, serving as convenient tools for flow analysis.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Quizzes ============ -->
+<section id="quizzes" class="section">
+  <p class="section-label">Self-Check</p>
+  <h2 class="section-title">
+    <span class="lang-ko">확인 문제</span>
+    <span class="lang-en" style="display:none;">Quiz</span>
+  </h2>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q1.</strong> 공기표준 Otto 사이클에서 압축비를 8에서 12로 높이면 열효율은 어떻게 변하는가? ($k = 1.4$)</span>
+      <span class="lang-en" style="display:none;"><strong>Q1.</strong> In the air-standard Otto cycle, how does thermal efficiency change when the compression ratio increases from 8 to 12? ($k = 1.4$)</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q91')">
+        <span class="lang-ko">56.5% → 63.0%로 증가</span>
+        <span class="lang-en" style="display:none;">Increases from 56.5% to 63.0%</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q91')">
+        <span class="lang-ko">56.5% → 50.0%로 감소</span>
+        <span class="lang-en" style="display:none;">Decreases from 56.5% to 50.0%</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q91')">
+        <span class="lang-ko">압축비와 열효율은 무관하다</span>
+        <span class="lang-en" style="display:none;">Compression ratio and efficiency are unrelated</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q91')">
+        <span class="lang-ko">45.0% → 56.5%로 증가</span>
+        <span class="lang-en" style="display:none;">Increases from 45.0% to 56.5%</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q91-explain">
+      <span class="lang-ko">$\eta = 1 - 1/r^{k-1}$에서 $r=8$이면 $\eta = 1 - 1/8^{0.4} = 0.565$, $r=12$이면 $\eta = 1 - 1/12^{0.4} = 0.630$이다. 압축비가 50% 증가했지만 효율 증가는 완만해지는 것을 확인할 수 있다.</span>
+      <span class="lang-en" style="display:none;">From $\eta = 1 - 1/r^{k-1}$: at $r=8$, $\eta = 1 - 1/8^{0.4} = 0.565$; at $r=12$, $\eta = 1 - 1/12^{0.4} = 0.630$. A 50% increase in $r$ yields a diminishing efficiency gain.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q2.</strong> 동일한 압축비에서 Otto 사이클과 Diesel 사이클의 열효율을 비교하면?</span>
+      <span class="lang-en" style="display:none;"><strong>Q2.</strong> Comparing Otto and Diesel cycle thermal efficiencies at the same compression ratio:</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q92')">
+        <span class="lang-ko">Diesel 효율이 항상 더 높다</span>
+        <span class="lang-en" style="display:none;">Diesel efficiency is always higher</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q92')">
+        <span class="lang-ko">Otto 효율이 항상 더 높다</span>
+        <span class="lang-en" style="display:none;">Otto efficiency is always higher</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q92')">
+        <span class="lang-ko">두 효율은 동일하다</span>
+        <span class="lang-en" style="display:none;">Both efficiencies are identical</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q92')">
+        <span class="lang-ko">비열비에 따라 달라진다</span>
+        <span class="lang-en" style="display:none;">It depends on the specific heat ratio</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q92-explain">
+      <span class="lang-ko">Diesel 효율식의 괄호 인자 $[r_c^k-1]/[k(r_c-1)]$은 $r_c > 1$일 때 항상 1보다 크므로, 동일 압축비에서는 Otto 효율이 더 높다. 단, 실제 Diesel 엔진은 훨씬 높은 압축비를 사용할 수 있어 전체 효율이 더 높을 수 있다.</span>
+      <span class="lang-en" style="display:none;">The Diesel formula bracket $[r_c^k-1]/[k(r_c-1)]$ exceeds 1 for $r_c > 1$, so at the same compression ratio, Otto efficiency is higher. However, real Diesel engines can use much higher compression ratios, potentially achieving higher overall efficiency.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q3.</strong> Brayton 사이클의 역일비(bwr)가 증기 사이클보다 훨씬 높은 이유는?</span>
+      <span class="lang-en" style="display:none;"><strong>Q3.</strong> Why is the Brayton cycle back work ratio much higher than that of vapor cycles?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q93')">
+        <span class="lang-ko">터빈 입구 온도가 더 낮기 때문</span>
+        <span class="lang-en" style="display:none;">Because turbine inlet temperature is lower</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q93')">
+        <span class="lang-ko">사이클 압력비가 더 작기 때문</span>
+        <span class="lang-en" style="display:none;">Because cycle pressure ratio is smaller</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q93')">
+        <span class="lang-ko">기체를 압축하는 데 액체보다 훨씬 큰 일이 필요하기 때문</span>
+        <span class="lang-en" style="display:none;">Because compressing gas requires much more work than compressing liquid</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q93')">
+        <span class="lang-ko">연소기의 압력 강하가 크기 때문</span>
+        <span class="lang-en" style="display:none;">Because the combustor pressure drop is large</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q93-explain">
+      <span class="lang-ko">증기 사이클에서는 펌프가 비압축성 액체를 다루어 $v \cdot \Delta p$가 매우 작지만, 가스터빈에서는 큰 비체적의 기체를 압축해야 하므로 압축기 일이 터빈 출력의 40~80%에 달한다.</span>
+      <span class="lang-en" style="display:none;">In vapor cycles, the pump handles incompressible liquid so $v \cdot \Delta p$ is tiny, but in gas turbines, compressing gas with a large specific volume requires 40-80% of turbine output.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q4.</strong> 수축-확대 노즐에서 초킹(choking)이 발생하는 조건은?</span>
+      <span class="lang-en" style="display:none;"><strong>Q4.</strong> Under what condition does choking occur in a converging-diverging nozzle?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q94')">
+        <span class="lang-ko">노즐 입구에서 마하수가 1이 될 때</span>
+        <span class="lang-en" style="display:none;">When Mach number reaches 1 at the nozzle inlet</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q94')">
+        <span class="lang-ko">목(throat)에서 마하수가 1이 될 때</span>
+        <span class="lang-en" style="display:none;">When Mach number reaches 1 at the throat</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q94')">
+        <span class="lang-ko">노즐 출구에서 마하수가 1이 될 때</span>
+        <span class="lang-en" style="display:none;">When Mach number reaches 1 at the nozzle exit</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q94')">
+        <span class="lang-ko">배압이 입구 정체 압력보다 높을 때</span>
+        <span class="lang-en" style="display:none;">When back pressure exceeds inlet stagnation pressure</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q94-explain">
+      <span class="lang-ko">초킹은 최소 단면적인 목에서 $M = 1$이 되는 현상이다. 이 조건이 되면 질량유량이 최대에 도달하고, 하류 압력 변화가 상류 유동에 영향을 미칠 수 없다.</span>
+      <span class="lang-en" style="display:none;">Choking occurs when $M = 1$ at the throat (minimum cross-sectional area). At this point, mass flow rate is maximized and downstream pressure changes cannot influence the upstream flow.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ What-if Cards ============ -->
+<section id="whatif" class="section">
+  <p class="section-label">What If?</p>
+  <h2 class="section-title">
+    <span class="lang-ko">만약에?</span>
+    <span class="lang-en" style="display:none;">What If?</span>
+  </h2>
+
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 압축비를 극단적으로 높이면 (예: $r = 50$)?</span>
+        <span class="lang-en" style="display:none;">What if the compression ratio were extremely high (e.g., $r = 50$)?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">이론적 효율($1 - 1/r^{0.4}$)은 약 82%에 이르지만, 실제로는 불가능하다. 압축 종료 온도가 수천 K에 달해 실린더 벽이 견딜 수 없고, 윤활유가 분해되며, 가솔린 엔진에서는 극심한 노킹이 발생한다. Diesel 엔진도 기계적 응력 한계로 $r \leq 25$ 수준이 현실적이다. 효율 공식은 이상적 상한을 보여줄 뿐이며, 재료·마찰·열전달 한계가 실질적인 상한을 결정한다.</span>
+        <span class="lang-en" style="display:none;">The theoretical efficiency ($1 - 1/r^{0.4}$) reaches about 82%, but this is practically impossible. End-of-compression temperatures would reach thousands of K, exceeding cylinder wall limits, decomposing lubricants, and causing extreme knock in gasoline engines. Even Diesel engines are practically limited to $r \leq 25$ due to mechanical stress. The efficiency formula shows an ideal upper bound; material, friction, and heat transfer limits determine the real ceiling.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 재생기 유효도가 100%이면?</span>
+        <span class="lang-en" style="display:none;">What if the regenerator effectiveness were 100%?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">압축기 출구 공기가 터빈 배기 온도까지 완전히 예열되어, 연소기에서는 $T_4$에서 $T_3$까지만 가열하면 된다. Brayton 사이클의 열효율이 카르노 효율에 가까워지지만, 완벽한 재생기는 무한한 열교환 면적을 요구하므로 물리적으로 불가능하다. 또한 압력비가 높으면 압축기 출구 온도($T_2$)가 터빈 출구 온도($T_4$)보다 높아질 수 있어, 재생이 오히려 역효과를 낳는다.</span>
+        <span class="lang-en" style="display:none;">The compressor exit air would be fully preheated to the turbine exhaust temperature, so the combustor only needs to heat from $T_4$ to $T_3$. The Brayton cycle efficiency would approach Carnot, but a perfect regenerator requires infinite heat exchange area — physically impossible. Also, at high pressure ratios, compressor exit temperature ($T_2$) can exceed turbine exit temperature ($T_4$), making regeneration counterproductive.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 수축-확대 노즐의 배압을 임계 압력 이하로 낮추면?</span>
+        <span class="lang-en" style="display:none;">What if the back pressure of a converging-diverging nozzle is lowered below the critical pressure?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">목에서 $M = 1$이 되어 초킹이 발생하고, 확대부에서 초음속 유동이 형성된다. 배압이 노즐 설계 출구 압력과 정확히 맞으면 충격파 없이 매끄러운 초음속 유동이 이루어진다. 배압이 설계값보다 높으면 확대부 내에서 수직 충격파가 발생하여 유동이 갑자기 아음속으로 전환되고, 정체 압력이 손실된다. 배압이 설계값보다 낮으면 노즐 출구 밖에서 팽창파가 발생한다.</span>
+        <span class="lang-en" style="display:none;">$M = 1$ is reached at the throat (choking), and supersonic flow develops in the diverging section. If the back pressure exactly matches the nozzle design exit pressure, smooth supersonic flow occurs without shocks. If the back pressure is above the design value, a normal shock forms inside the diverging section, abruptly converting flow to subsonic with stagnation pressure loss. If below, expansion waves form outside the nozzle exit.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Takeaways ============ -->
+<section class="takeaways">
+  <h2 class="section-title">Key Takeaways</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">01</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">압축비의 힘</span>
+        <span class="lang-en" style="display:none;">Power of Compression Ratio</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">Otto·Diesel 사이클 모두 압축비를 높이면 열효율이 증가하지만, 노킹·구조 한계가 실질적 상한을 결정한다.</span>
+        <span class="lang-en" style="display:none;">Higher compression ratios boost thermal efficiency for both Otto and Diesel cycles, but knock and structural limits set practical upper bounds.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">02</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">복합 사이클의 시너지</span>
+        <span class="lang-en" style="display:none;">Combined Cycle Synergy</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">가스터빈 + 증기터빈을 결합하면 단독 사이클보다 훨씬 높은 열효율을 달성할 수 있다.</span>
+        <span class="lang-en" style="display:none;">Coupling gas and vapor turbines yields efficiency far exceeding either cycle alone.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">03</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">면적 변화와 마하수</span>
+        <span class="lang-en" style="display:none;">Area Change and Mach Number</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">아음속 유동은 면적 감소 시 가속, 초음속 유동은 면적 증가 시 가속된다.</span>
+        <span class="lang-en" style="display:none;">Subsonic flow accelerates in converging passages; supersonic flow in diverging ones.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.9</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC: Gas Power Systems
+// ============================================================
+
+// ============ Figure 9.1: Otto/Diesel/Brayton Efficiency Comparison ============
+
+function etaOtto(r, k) {
+  return 1 - 1 / Math.pow(r, k - 1);
+}
+
+function etaDiesel(r, k, rc) {
+  return 1 - (1 / Math.pow(r, k - 1)) * (Math.pow(rc, k) - 1) / (k * (rc - 1));
+}
+
+function etaBrayton(rp, k) {
+  // For Brayton, rp is pressure ratio; equivalent to r^k for volume-based ratio
+  return 1 - 1 / Math.pow(rp, (k - 1) / k);
+}
+
+function buildFig91() {
+  updateFig91();
+}
+
+function updateFig91() {
+  const rCur = parseFloat(document.getElementById('sl_r91').value);
+  const k = parseFloat(document.getElementById('sl_k91').value);
+  const rc = parseFloat(document.getElementById('sl_rc91').value);
+
+  document.getElementById('val_r91').textContent = rCur.toFixed(1);
+  document.getElementById('val_k91').textContent = k.toFixed(2);
+  document.getElementById('val_rc91').textContent = rc.toFixed(1);
+
+  // Build sweep from r = 2 to 24
+  const rVals = [];
+  const ottoVals = [];
+  const dieselVals = [];
+  const braytonVals = [];
+  for (let r = 2; r <= 24; r += 0.5) {
+    rVals.push(r);
+    ottoVals.push(etaOtto(r, k) * 100);
+    dieselVals.push(etaDiesel(r, k, rc) * 100);
+    // For Brayton, interpret r as pressure ratio
+    braytonVals.push(etaBrayton(r, k) * 100);
+  }
+
+  const trOtto = {
+    x: rVals, y: ottoVals,
+    mode: 'lines', name: 'Otto',
+    line: { color: '#3b82f6', width: 2.5 }
+  };
+  const trDiesel = {
+    x: rVals, y: dieselVals,
+    mode: 'lines', name: 'Diesel (rc=' + rc.toFixed(1) + ')',
+    line: { color: '#ef4444', width: 2.5 }
+  };
+  const trBrayton = {
+    x: rVals, y: braytonVals,
+    mode: 'lines', name: 'Brayton (rp)',
+    line: { color: '#10b981', width: 2.5, dash: 'dash' }
+  };
+
+  // Current point markers
+  const eO = etaOtto(rCur, k) * 100;
+  const eD = etaDiesel(rCur, k, rc) * 100;
+  const eB = etaBrayton(rCur, k) * 100;
+
+  const trPt = {
+    x: [rCur, rCur, rCur], y: [eO, eD, eB],
+    mode: 'markers',
+    marker: { color: ['#3b82f6','#ef4444','#10b981'], size: 12, line: { color: '#fff', width: 2 } },
+    showlegend: false
+  };
+
+  Plotly.newPlot('fig91', [trOtto, trDiesel, trBrayton, trPt], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'r (compression ratio) / rp (pressure ratio)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Thermal Efficiency (%)', range: [0, 80] },
+    showlegend: true,
+    legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.85)' }
+  }, plotlyConfig);
+
+  document.getElementById('ro_eta_otto').textContent = eO.toFixed(1);
+  document.getElementById('ro_eta_diesel').textContent = eD.toFixed(1);
+  document.getElementById('ro_eta_brayton').textContent = eB.toFixed(1);
+}
+
+// ============ Figure 9.2: Otto Cycle p-v & T-s Diagrams ============
+
+function calcOttoCycle(r, T3) {
+  // Air properties
+  const k = 1.4;
+  const cv = 0.718; // kJ/(kg·K)
+  const R_air = 0.287; // kJ/(kg·K)
+
+  // State 1: BDC, assume T1=300K, p1=100 kPa
+  const T1 = 300;
+  const p1 = 100; // kPa
+  const v1 = R_air * T1 / p1; // m^3/kg
+
+  // State 2: TDC after isentropic compression
+  const v2 = v1 / r;
+  const T2 = T1 * Math.pow(r, k - 1);
+  const p2 = p1 * Math.pow(r, k);
+
+  // State 3: after constant-volume heat addition
+  // T3 is given
+  const v3 = v2;
+  const p3 = p2 * (T3 / T2);
+
+  // State 4: BDC after isentropic expansion
+  const v4 = v1;
+  const T4 = T3 * Math.pow(1 / r, k - 1);
+  const p4 = p3 * Math.pow(v3 / v4, k);
+
+  // s values (relative, using cv*ln(T) + R*ln(v))
+  // s1 reference = 0
+  const s1 = 0;
+  const s2 = s1; // isentropic
+  const s3 = cv * Math.log(T3 / T2); // constant volume: ds = cv * ln(T3/T2)
+  const s4 = s3; // isentropic
+
+  // Performance
+  const qin = cv * (T3 - T2);
+  const qout = cv * (T4 - T1);
+  const wnet = qin - qout;
+  const eta = wnet / qin;
+  const mep = wnet / (v1 - v2); // kPa
+
+  return {
+    states: [
+      { v: v1, p: p1, T: T1, s: s1 },
+      { v: v2, p: p2, T: T2, s: s2 },
+      { v: v3, p: p3, T: T3, s: s3 },
+      { v: v4, p: p4, T: T4, s: s4 }
+    ],
+    eta, mep, wnet, k
+  };
+}
+
+function buildFig92() {
+  updateFig92();
+}
+
+function updateFig92() {
+  const r = parseFloat(document.getElementById('sl_r92').value);
+  const T3 = parseFloat(document.getElementById('sl_T3_92').value);
+
+  document.getElementById('val_r92').textContent = r.toFixed(1);
+  document.getElementById('val_T3_92').textContent = T3 + ' K';
+
+  const cyc = calcOttoCycle(r, T3);
+  const st = cyc.states;
+  const k = cyc.k;
+
+  // p-v diagram
+  // Process 1→2: isentropic compression (p*v^k = const)
+  const pv_v = [];
+  const pv_p = [];
+  const nPts = 60;
+
+  // 1→2: isentropic
+  for (let i = 0; i <= nPts; i++) {
+    const v = st[0].v - (st[0].v - st[1].v) * i / nPts;
+    const p = st[0].p * Math.pow(st[0].v / v, k);
+    pv_v.push(v);
+    pv_p.push(p);
+  }
+  // 2→3: constant volume
+  pv_v.push(st[2].v);
+  pv_p.push(st[2].p);
+  // 3→4: isentropic expansion
+  for (let i = 1; i <= nPts; i++) {
+    const v = st[2].v + (st[3].v - st[2].v) * i / nPts;
+    const p = st[2].p * Math.pow(st[2].v / v, k);
+    pv_v.push(v);
+    pv_p.push(p);
+  }
+  // 4→1: constant volume
+  pv_v.push(st[0].v);
+  pv_p.push(st[0].p);
+
+  // T-s diagram
+  const cv = 0.718;
+  const ts_s = [];
+  const ts_T = [];
+
+  // 1→2: isentropic (vertical line)
+  ts_s.push(st[0].s); ts_T.push(st[0].T);
+  ts_s.push(st[1].s); ts_T.push(st[1].T);
+  // 2→3: constant volume heating
+  for (let i = 1; i <= nPts; i++) {
+    const T = st[1].T + (st[2].T - st[1].T) * i / nPts;
+    const s = st[1].s + cv * Math.log(T / st[1].T);
+    ts_s.push(s);
+    ts_T.push(T);
+  }
+  // 3→4: isentropic (vertical line)
+  ts_s.push(st[3].s); ts_T.push(st[3].T);
+  // 4→1: constant volume cooling
+  for (let i = 1; i <= nPts; i++) {
+    const T = st[3].T + (st[0].T - st[3].T) * i / nPts;
+    const s = st[3].s + cv * Math.log(T / st[3].T);
+    ts_s.push(s);
+    ts_T.push(T);
+  }
+
+  const trPV = {
+    x: pv_v, y: pv_p,
+    mode: 'lines', name: 'p-v',
+    line: { color: '#3b82f6', width: 2.5 },
+    fill: 'toself', fillcolor: 'rgba(59,130,246,0.08)'
+  };
+
+  // State markers for p-v
+  const trPVpts = {
+    x: [st[0].v, st[1].v, st[2].v, st[3].v],
+    y: [st[0].p, st[1].p, st[2].p, st[3].p],
+    mode: 'markers+text',
+    text: ['1','2','3','4'],
+    textposition: ['bottom right','top left','top right','bottom right'],
+    textfont: { size: 13, color: '#1e3a5f', family: 'Inter' },
+    marker: { color: '#3b82f6', size: 9, line: { color: '#fff', width: 1.5 } },
+    showlegend: false
+  };
+
+  const trTS = {
+    x: ts_s, y: ts_T,
+    mode: 'lines', name: 'T-s',
+    line: { color: '#ef4444', width: 2.5 },
+    fill: 'toself', fillcolor: 'rgba(239,68,68,0.08)',
+    xaxis: 'x2', yaxis: 'y2'
+  };
+
+  // State markers for T-s
+  const trTSpts = {
+    x: [st[0].s, st[1].s, st[2].s, st[3].s],
+    y: [st[0].T, st[1].T, st[2].T, st[3].T],
+    mode: 'markers+text',
+    text: ['1','2','3','4'],
+    textposition: ['bottom right','bottom left','top right','top left'],
+    textfont: { size: 13, color: '#7f1d1d', family: 'Inter' },
+    marker: { color: '#ef4444', size: 9, line: { color: '#fff', width: 1.5 } },
+    showlegend: false,
+    xaxis: 'x2', yaxis: 'y2'
+  };
+
+  const layout = {
+    font: { family: 'Inter, sans-serif', size: 13 },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    margin: { t: 32, r: 24, b: 48, l: 56 },
+    grid: { rows: 1, columns: 2, pattern: 'independent', xgap: 0.12 },
+    xaxis: { title: 'v (m³/kg)', gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true, domain: [0, 0.45] },
+    yaxis: { title: 'p (kPa)', gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+    xaxis2: { title: 's (kJ/kg·K)', gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true, domain: [0.55, 1], anchor: 'y2' },
+    yaxis2: { title: 'T (K)', gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true, anchor: 'x2' },
+    showlegend: false
+  };
+
+  Plotly.newPlot('fig92', [trPV, trPVpts, trTS, trTSpts], layout, plotlyConfig);
+
+  document.getElementById('ro_eta92').textContent = (cyc.eta * 100).toFixed(1);
+  document.getElementById('ro_mep92').textContent = cyc.mep.toFixed(0);
+  document.getElementById('ro_wnet92').textContent = cyc.wnet.toFixed(1);
+}
+
+// ============ Figure 9.3: Brayton Cycle Pressure Ratio Effects ============
+
+function calcBrayton(rp, T3) {
+  const k = 1.4;
+  const cp = 1.005; // kJ/(kg·K)
+  const T1 = 300; // K ambient
+
+  // State 2: after isentropic compression
+  const T2 = T1 * Math.pow(rp, (k - 1) / k);
+
+  // State 3: after constant-pressure heat addition
+  // T3 given
+
+  // State 4: after isentropic expansion
+  const T4 = T3 / Math.pow(rp, (k - 1) / k);
+
+  const wt = cp * (T3 - T4); // turbine work
+  const wc = cp * (T2 - T1); // compressor work
+  const wnet = wt - wc;
+  const qin = cp * (T3 - T2);
+  const eta = (qin > 0 && wnet > 0) ? wnet / qin : 0;
+  const bwr = (wt > 0) ? wc / wt : 1;
+
+  return { eta, bwr, wnet, wt, wc, qin, T2, T4 };
+}
+
+function buildFig93() {
+  updateFig93();
+}
+
+function updateFig93() {
+  const rpCur = parseFloat(document.getElementById('sl_rp93').value);
+  const T3 = parseFloat(document.getElementById('sl_T3_93').value);
+
+  document.getElementById('val_rp93').textContent = rpCur;
+  document.getElementById('val_T3_93').textContent = T3 + ' K';
+
+  // Sweep pressure ratio
+  const rpVals = [];
+  const etaVals = [];
+  const bwrVals = [];
+  const wnetVals = [];
+  for (let rp = 2; rp <= 40; rp += 1) {
+    const b = calcBrayton(rp, T3);
+    rpVals.push(rp);
+    etaVals.push(b.eta * 100);
+    bwrVals.push(b.bwr * 100);
+    wnetVals.push(Math.max(b.wnet, 0));
+  }
+
+  const trEta = {
+    x: rpVals, y: etaVals,
+    mode: 'lines', name: 'η (%)',
+    line: { color: '#3b82f6', width: 2.5 },
+    yaxis: 'y'
+  };
+  const trWnet = {
+    x: rpVals, y: wnetVals,
+    mode: 'lines', name: 'W_net (kJ/kg)',
+    line: { color: '#10b981', width: 2.5 },
+    yaxis: 'y2'
+  };
+  const trBwr = {
+    x: rpVals, y: bwrVals,
+    mode: 'lines', name: 'bwr (%)',
+    line: { color: '#f59e0b', width: 2.5, dash: 'dash' },
+    yaxis: 'y'
+  };
+
+  const cur = calcBrayton(rpCur, T3);
+  const trPt = {
+    x: [rpCur, rpCur, rpCur],
+    y: [cur.eta * 100, cur.bwr * 100, null],
+    mode: 'markers',
+    marker: { color: ['#3b82f6','#f59e0b'], size: 12, line: { color: '#fff', width: 2 } },
+    showlegend: false, yaxis: 'y'
+  };
+  const trPtW = {
+    x: [rpCur], y: [Math.max(cur.wnet, 0)],
+    mode: 'markers',
+    marker: { color: '#10b981', size: 12, symbol: 'diamond', line: { color: '#fff', width: 2 } },
+    showlegend: false, yaxis: 'y2'
+  };
+
+  Plotly.newPlot('fig93', [trEta, trBwr, trWnet, trPt, trPtW], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'Pressure Ratio (p₂/p₁)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'η, bwr (%)', range: [0, 80], side: 'left' },
+    yaxis2: { title: 'W_net (kJ/kg)', titlefont: { color: '#10b981' }, tickfont: { color: '#10b981' }, overlaying: 'y', side: 'right', gridcolor: 'rgba(0,0,0,0)', rangemode: 'tozero' },
+    showlegend: true,
+    legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.85)' }
+  }, plotlyConfig);
+
+  document.getElementById('ro_eta93').textContent = (cur.eta * 100).toFixed(1);
+  document.getElementById('ro_bwr93').textContent = (cur.bwr * 100).toFixed(1);
+  document.getElementById('ro_wnet93').textContent = Math.max(cur.wnet, 0).toFixed(1);
+}
+
+// ============ Slider Setup ============
+
+function setupSliders() {
+  // Fig 9.1 sliders
+  document.getElementById('sl_r91').addEventListener('input', function() {
+    throttledDraw('fig91', updateFig91);
+  });
+  document.getElementById('sl_k91').addEventListener('input', function() {
+    throttledDraw('fig91', updateFig91);
+  });
+  document.getElementById('sl_rc91').addEventListener('input', function() {
+    throttledDraw('fig91', updateFig91);
+  });
+
+  // Fig 9.2 sliders
+  document.getElementById('sl_r92').addEventListener('input', function() {
+    throttledDraw('fig92', updateFig92);
+  });
+  document.getElementById('sl_T3_92').addEventListener('input', function() {
+    throttledDraw('fig92', updateFig92);
+  });
+
+  // Fig 9.3 sliders
+  document.getElementById('sl_rp93').addEventListener('input', function() {
+    throttledDraw('fig93', updateFig93);
+  });
+  document.getElementById('sl_T3_93').addEventListener('input', function() {
+    throttledDraw('fig93', updateFig93);
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFig91();
+  buildFig92();
+  buildFig93();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

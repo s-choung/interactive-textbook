@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Getting Started: Introductory Concepts and Definitions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">Getting Started: Introductory Concepts and Definitions</a>
+    <ul class="nav-links">
+      <li><a href="#s11">1.1</a></li>
+      <li><a href="#s12">1.2</a></li>
+      <li><a href="#s13">1.3</a></li>
+      <li><a href="#s14">1.4</a></li>
+      <li><a href="#s15">1.5</a></li>
+      <li><a href="#s16">1.6</a></li>
+      <li><a href="#s17">1.7</a></li>
+      <li><a href="#s18">1.8</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.1</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">시작하기: 기초 개념과 정의</span>
+    <span class="lang-en" style="display:none;">Getting Started: Introductory Concepts and Definitions</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 1. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 1. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <span class="chip">열역학계</span>
+    <span class="chip">상태량</span>
+    <span class="chip">비체적</span>
+    <span class="chip">압력</span>
+    <span class="chip">온도</span>
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+
+<!-- Section 1.1 -->
+<section id="s11" class="section">
+  <p class="section-label">Section 1.1</p>
+  <h2 class="section-title">
+    <span class="lang-ko">열역학의 활용</span>
+    <span class="lang-en" style="display:none;">Using Thermodynamics</span>
+  </h2>
+  <div class="section-body">
+    <p><span class="lang-ko">열역학은 에너지가 한 형태에서 다른 형태로 변환되거나 물체 사이에서 전달되는 현상을 체계적으로 분석하는 학문이다. 발전소에서 전기를 생산하고, 냉장고가 내부 온도를 낮추며, 자동차 엔진이 연료를 동력으로 바꾸는 과정 모두 열역학 원리로 설명할 수 있다. 현대 사회가 직면한 화석연료 효율 향상, 재생에너지 확대, 친환경 수송 기술 개발 등의 과제를 해결하려면 열역학적 사고가 반드시 필요하다.</span>
+    <span class="lang-en" style="display:none;">Thermodynamics provides a systematic framework for analyzing how energy is converted from one form to another and transferred between objects. Power plants generating electricity, refrigerators lowering internal temperatures, and automobile engines converting fuel into mechanical work all operate on thermodynamic principles. Addressing today's challenges -- improving fossil fuel efficiency, expanding renewable energy, and developing cleaner transportation -- requires solid thermodynamic reasoning.</span></p>
+  </div>
+
+  <ul class="concept-list">
+    <li><span class="lang-ko"><strong>에너지 변환</strong>: 열역학은 에너지가 여러 형태 사이에서 변환되고 전달되는 원리를 다루는 공학 기초 학문이다.</span>
+        <span class="lang-en" style="display:none;"><strong>Energy Conversion</strong>: Thermodynamics is a foundational engineering discipline dealing with energy conversion and transfer across different forms.</span></li>
+    <li><span class="lang-ko"><strong>현대 응용</strong>: 화석연료 효율 개선, 재생에너지 시스템, 친환경 수송 기술 등 21세기 핵심 과제에 직결된다.</span>
+        <span class="lang-en" style="display:none;"><strong>Modern Applications</strong>: Directly linked to 21st-century challenges such as fossil fuel efficiency, renewable energy systems, and clean transportation.</span></li>
+  </ul>
+</section>
+
+<!-- Section 1.2 -->
+<section id="s12" class="section">
+  <p class="section-label">Section 1.2</p>
+  <h2 class="section-title">
+    <span class="lang-ko">계의 정의</span>
+    <span class="lang-en" style="display:none;">Defining Systems</span>
+  </h2>
+  <div class="section-body">
+    <p><span class="lang-ko">열역학 문제를 풀기 위해서는 먼저 분석 대상인 '계(system)'를 명확히 정의해야 한다. 계를 둘러싼 경계(boundary)와 경계 밖의 주위(surroundings)를 구분하는 것이 해석의 출발점이다. 경계를 어떻게 설정하느냐에 따라 같은 물리 현상이라도 해석 방법이 완전히 달라질 수 있다.</span>
+    <span class="lang-en" style="display:none;">To solve any thermodynamic problem, one must first clearly define the 'system' under analysis. Distinguishing the boundary surrounding the system from the surroundings beyond it is the starting point of every analysis. The way the boundary is drawn can fundamentally change how the same physical phenomenon is analyzed.</span></p>
+  </div>
+
+  <ul class="concept-list">
+    <li><span class="lang-ko"><strong>닫힌계 (closed system)</strong>: 경계를 통한 질량 교환이 없는 계. 고립계(isolated system)는 질량뿐 아니라 에너지 교환도 차단된 특수한 경우이다.</span>
+        <span class="lang-en" style="display:none;"><strong>Closed System</strong>: A system with no mass crossing its boundary. An isolated system is a special case where neither mass nor energy crosses the boundary.</span></li>
+    <li><span class="lang-ko"><strong>열린계 (control volume)</strong>: 질량이 경계를 통과할 수 있는 공간 영역으로, 터빈이나 노즐 같은 유동 장치에 적용된다.</span>
+        <span class="lang-en" style="display:none;"><strong>Open System (Control Volume)</strong>: A spatial region through which mass may flow, applicable to flow devices such as turbines and nozzles.</span></li>
+    <li><span class="lang-ko"><strong>경계 설정</strong>: 적절한 경계를 선택하는 것이 해석의 첫 단계이자 핵심이며, 경계 선택에 따라 문제 풀이가 크게 달라진다.</span>
+        <span class="lang-en" style="display:none;"><strong>Boundary Selection</strong>: Choosing the appropriate boundary is the first and most critical step; the choice dramatically affects how the problem is solved.</span></li>
+  </ul>
+</section>
+
+<!-- Section 1.3 -->
+<section id="s13" class="section">
+  <p class="section-label">Section 1.3</p>
+  <h2 class="section-title">
+    <span class="lang-ko">계의 서술과 거동</span>
+    <span class="lang-en" style="display:none;">Describing Systems and Their Behavior</span>
+  </h2>
+  <div class="section-body">
+    <p><span class="lang-ko">계의 조건을 기술하기 위해 상태량(property)이라는 거시적 특성을 사용한다. 상태량은 계가 어떤 경로를 거쳐 현재 상태에 도달했는지와 무관하게, 오직 현재 상태에 의해서만 결정된다. 한 상태에서 다른 상태로의 변화를 과정(process)이라 하며, 계가 모든 종류의 평형을 동시에 만족하면 열역학적 평형 상태에 있다고 말한다.</span>
+    <span class="lang-en" style="display:none;">Macroscopic characteristics called properties are used to describe the condition of a system. A property is determined solely by the current state, independent of how the system arrived at that state. A change from one state to another is called a process, and a system is in thermodynamic equilibrium when mechanical, thermal, phase, and chemical equilibria are all satisfied simultaneously.</span></p>
+  </div>
+
+  <ul class="concept-list">
+    <li><span class="lang-ko"><strong>상태량 (property)</strong>: 과거 이력과 무관하게 현재 상태에서 결정되는 거시적 특성이다.</span>
+        <span class="lang-en" style="display:none;"><strong>Property</strong>: A macroscopic characteristic determined solely by the current state, independent of history.</span></li>
+    <li><span class="lang-ko"><strong>과정 (process)</strong>: 계가 한 상태에서 다른 상태로 변화하는 것을 의미한다.</span>
+        <span class="lang-en" style="display:none;"><strong>Process</strong>: A change of a system from one state to another.</span></li>
+    <li><span class="lang-ko"><strong>시량성 vs 세기성</strong>: 시량성(extensive) 상태량은 계의 크기에 비례하고, 세기성(intensive) 상태량은 크기와 무관하다.</span>
+        <span class="lang-en" style="display:none;"><strong>Extensive vs. Intensive</strong>: Extensive properties scale with system size; intensive properties are independent of size.</span></li>
+    <li><span class="lang-ko"><strong>열역학적 평형</strong>: 역학적, 열적, 상(phase), 화학적 평형이 모두 성립하는 상태를 말한다.</span>
+        <span class="lang-en" style="display:none;"><strong>Thermodynamic Equilibrium</strong>: A condition where mechanical, thermal, phase, and chemical equilibria all hold simultaneously.</span></li>
+  </ul>
+
+  <!-- Quiz -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">다음 중 세기성(intensive) 상태량만으로 짝지어진 것은?</span>
+      <span class="lang-en" style="display:none;">Which pair consists only of intensive properties?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')"><span class="lang-ko">질량, 체적</span><span class="lang-en" style="display:none;">Mass, Volume</span></button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q1')"><span class="lang-ko">온도, 압력</span><span class="lang-en" style="display:none;">Temperature, Pressure</span></button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')"><span class="lang-ko">에너지, 비체적</span><span class="lang-en" style="display:none;">Energy, Specific Volume</span></button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')"><span class="lang-ko">체적, 온도</span><span class="lang-en" style="display:none;">Volume, Temperature</span></button>
+    </div>
+    <div class="quiz-explain" id="q1-explain">
+      <span class="lang-ko">온도와 압력은 계의 크기에 무관한 세기성 상태량이다. 질량, 체적, 에너지는 시량성이다.</span>
+      <span class="lang-en" style="display:none;">Temperature and pressure are independent of system size (intensive). Mass, volume, and energy are extensive.</span>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1.4 -->
+<section id="s14" class="section">
+  <p class="section-label">Section 1.4</p>
+  <h2 class="section-title">
+    <span class="lang-ko">질량, 길이, 시간, 힘의 측정</span>
+    <span class="lang-en" style="display:none;">Measuring Mass, Length, Time, and Force</span>
+  </h2>
+  <div class="section-body">
+    <p><span class="lang-ko">열역학에서 사용되는 물리량을 정량적으로 다루려면 일관된 단위계가 필수이다. SI 단위계에서는 질량(kg), 길이(m), 시간(s)을 기본 단위로 삼고, 힘(N)은 뉴턴의 운동 제2법칙으로부터 유도된다. 영미 공학 단위계에서는 파운드(lb), 피트(ft), 초(s)를 기본으로 사용하며, 힘의 단위인 lbf는 별도의 변환 상수를 포함한다.</span>
+    <span class="lang-en" style="display:none;">Consistent unit systems are essential for quantitatively handling physical quantities in thermodynamics. In SI, mass (kg), length (m), and time (s) serve as base units, with force (N) derived from Newton's second law. In the English engineering system, pound (lb), foot (ft), and second (s) are the base units, and the force unit lbf involves a separate conversion constant.</span></p>
+  </div>
+
+  <div class="eq-block">$$F = ma$$</div>
+  <div class="eq-block">$$1\text{ N} = 1\text{ kg}\cdot\text{m/s}^2$$</div>
+
+  <ul class="concept-list">
+    <li><span class="lang-ko"><strong>SI 단위계</strong>: kg, m, s를 기본 단위로 사용하며, N = kg &middot; m/s&sup2;로 힘의 단위를 유도한다.</span>
+        <span class="lang-en" style="display:none;"><strong>SI Units</strong>: Uses kg, m, s as base units, with N = kg &middot; m/s&sup2; as the derived unit of force.</span></li>
+    <li><span class="lang-ko"><strong>영미 공학 단위계</strong>: lb, ft, s를 기본으로 삼고, 1 lbf = 32.1740 lb &middot; ft/s&sup2;의 관계를 사용한다.</span>
+        <span class="lang-en" style="display:none;"><strong>English Engineering Units</strong>: Uses lb, ft, s as base, with 1 lbf = 32.1740 lb &middot; ft/s&sup2;.</span></li>
+  </ul>
+</section>
+
+<!-- Section 1.5 -->
+<section id="s15" class="section">
+  <p class="section-label">Section 1.5</p>
+  <h2 class="section-title">
+    <span class="lang-ko">비체적</span>
+    <span class="lang-en" style="display:none;">Specific Volume</span>
+  </h2>
+  <div class="section-body">
+    <p><span class="lang-ko">밀도는 단위 부피당 질량으로 정의되며, 비체적은 밀도의 역수로서 단위 질량당 체적을 나타낸다. 비체적은 세기성 상태량이므로 계의 크기와 무관하게 물질의 특성을 표현할 수 있다. 몰 기준으로 표현할 때는 분자량 M을 이용하여 몰비체적으로 변환한다.</span>
+    <span class="lang-en" style="display:none;">Density is defined as mass per unit volume, while specific volume is its reciprocal -- volume per unit mass. Because specific volume is an intensive property, it characterizes the substance independent of system size. When expressed on a molar basis, the molar mass M is used to convert to molar specific volume.</span></p>
+  </div>
+
+  <div class="eq-block">$$\rho = \lim_{V'\to\delta} \frac{m}{V'}$$</div>
+  <div class="eq-block">$$n = \frac{m}{M}$$</div>
+  <div class="eq-block">$$\bar{\upsilon} = M\upsilon$$</div>
+
+  <ul class="concept-list">
+    <li><span class="lang-ko"><strong>밀도 (&rho;)</strong>: 단위 부피당 질량으로, 물질이 얼마나 빽빽하게 채워져 있는지를 나타낸다.</span>
+        <span class="lang-en" style="display:none;"><strong>Density (&rho;)</strong>: Mass per unit volume, indicating how compactly matter is packed.</span></li>
+    <li><span class="lang-ko"><strong>비체적 (&upsilon;)</strong>: &rho;의 역수(1/&rho;)이며, 세기성 상태량이다.</span>
+        <span class="lang-en" style="display:none;"><strong>Specific Volume (&upsilon;)</strong>: The reciprocal of density (1/&rho;), an intensive property.</span></li>
+    <li><span class="lang-ko"><strong>몰비체적</strong>: n = m/M으로 몰수를 구하고, 몰비체적 $\bar{\upsilon} = M\upsilon$으로 변환한다.</span>
+        <span class="lang-en" style="display:none;"><strong>Molar Specific Volume</strong>: Moles are found via n = m/M, and molar specific volume is $\bar{\upsilon} = M\upsilon$.</span></li>
+  </ul>
+</section>
+
+<!-- Section 1.6 -->
+<section id="s16" class="section">
+  <p class="section-label">Section 1.6</p>
+  <h2 class="section-title">
+    <span class="lang-ko">압력</span>
+    <span class="lang-en" style="display:none;">Pressure</span>
+  </h2>
+  <div class="section-body">
+    <p><span class="lang-ko">압력은 단위 면적에 수직으로 작용하는 힘으로 정의되며, 정지 유체 내에서는 방향에 무관하게 동일한 값을 가진다. 실험실에서 흔히 사용하는 마노미터(manometer)는 액주의 높이 차이를 이용하여 압력 차이를 측정하는 장치이다. 게이지 압력과 절대 압력의 구분을 정확히 이해해야 열역학 관계식을 올바르게 적용할 수 있다.</span>
+    <span class="lang-en" style="display:none;">Pressure is defined as the normal force per unit area and is the same in all directions in a fluid at rest. A manometer, commonly used in laboratories, measures pressure differences by the height difference of a liquid column. Correctly distinguishing between gage pressure and absolute pressure is essential for properly applying thermodynamic relations.</span></p>
+  </div>
+
+  <div class="eq-block">$$p = p_{\text{atm}} + \rho g L$$</div>
+  <div class="eq-block">$$p_{\text{gage}} = p_{\text{abs}} - p_{\text{atm}}$$</div>
+  <div class="eq-block">$$1\text{ atm} = 1.01325 \times 10^5\text{ N/m}^2$$</div>
+
+  <ul class="concept-list">
+    <li><span class="lang-ko"><strong>압력의 정의</strong>: 단위 면적당 수직력이며, 정지 유체에서는 방향에 무관하다.</span>
+        <span class="lang-en" style="display:none;"><strong>Definition of Pressure</strong>: Normal force per unit area; direction-independent in a static fluid.</span></li>
+    <li><span class="lang-ko"><strong>마노미터</strong>: 액주 높이로 압력을 측정하며, $p = p_{\text{atm}} + \rho g L$로 계산한다.</span>
+        <span class="lang-en" style="display:none;"><strong>Manometer</strong>: Measures pressure via liquid column height, calculated as $p = p_{\text{atm}} + \rho g L$.</span></li>
+    <li><span class="lang-ko"><strong>게이지 vs 절대 압력</strong>: 절대 압력 = 대기압 + 게이지 압력. 열역학 관계식에는 항상 절대 압력을 사용해야 한다.</span>
+        <span class="lang-en" style="display:none;"><strong>Gage vs. Absolute Pressure</strong>: Absolute pressure = atmospheric + gage pressure. Thermodynamic relations always require absolute pressure.</span></li>
+    <li><span class="lang-ko"><strong>부력</strong>: 유체에 잠긴 물체에 작용하는 상향 합력으로, 배제된 유체의 무게와 같다.</span>
+        <span class="lang-en" style="display:none;"><strong>Buoyancy</strong>: The net upward force on a submerged body, equal to the weight of the displaced fluid.</span></li>
+  </ul>
+
+  <!-- Manometer Interactive Figure -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 1.1</span>
+      <span class="figure-title">
+        <span class="lang-ko">마노미터 압력 계산기</span>
+        <span class="lang-en" style="display:none;">Manometer Pressure Calculator</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="figManometer" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">L (<span class="lang-ko">액주 높이</span><span class="lang-en" style="display:none;">Column Height</span>)</span>
+          <input type="range" id="sliderL" min="0" max="2000" value="760" step="10">
+          <span class="control-value" id="valL">760 mm</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">&rho; (<span class="lang-ko">액체 밀도</span><span class="lang-en" style="display:none;">Liquid Density</span>)</span>
+          <input type="range" id="sliderRho" min="800" max="13600" value="13590" step="100">
+          <span class="control-value" id="valRho">13590 kg/m&sup3;</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">절대 압력 (Pa)</span>
+          <span class="readout-key lang-en" style="display:none;">Absolute Pressure (Pa)</span>
+          <span class="readout-val" id="ro-pAbsPa">-</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">절대 압력 (atm)</span>
+          <span class="readout-key lang-en" style="display:none;">Absolute Pressure (atm)</span>
+          <span class="readout-val" id="ro-pAbsAtm">-</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">게이지 압력 (Pa)</span>
+          <span class="readout-key lang-en" style="display:none;">Gage Pressure (Pa)</span>
+          <span class="readout-val" id="ro-pGage">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 2 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">게이지 압력이 50 kPa이고 대기압이 101.3 kPa일 때, 절대 압력은?</span>
+      <span class="lang-en" style="display:none;">If gage pressure is 50 kPa and atmospheric pressure is 101.3 kPa, what is the absolute pressure?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">50 kPa</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">51.3 kPa</button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q2')">151.3 kPa</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">101.3 kPa</button>
+    </div>
+    <div class="quiz-explain" id="q2-explain">
+      <span class="lang-ko">$p_{\text{abs}} = p_{\text{atm}} + p_{\text{gage}} = 101.3 + 50 = 151.3$ kPa</span>
+      <span class="lang-en" style="display:none;">$p_{\text{abs}} = p_{\text{atm}} + p_{\text{gage}} = 101.3 + 50 = 151.3$ kPa</span>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1.7 -->
+<section id="s17" class="section">
+  <p class="section-label">Section 1.7</p>
+  <h2 class="section-title">
+    <span class="lang-ko">온도</span>
+    <span class="lang-en" style="display:none;">Temperature</span>
+  </h2>
+  <div class="section-body">
+    <p><span class="lang-ko">두 물체가 충분히 오래 접촉하면 결국 열평형에 도달하여 동일한 온도를 갖게 된다. 이 사실은 열역학 제0법칙으로 공식화되어 온도 측정의 이론적 근거가 된다. 온도를 나타내는 스케일에는 절대 온도인 Kelvin(K)과 Rankine(R), 그리고 상대 온도인 Celsius(C)와 Fahrenheit(F)가 있다.</span>
+    <span class="lang-en" style="display:none;">When two bodies are in contact long enough, they reach thermal equilibrium and share the same temperature. This fact, formalized as the zeroth law of thermodynamics, provides the theoretical basis for temperature measurement. Temperature scales include the absolute scales Kelvin (K) and Rankine (R) and the relative scales Celsius (C) and Fahrenheit (F).</span></p>
+  </div>
+
+  <div class="eq-block">$$T(°\text{R}) = 1.8\,T(\text{K})$$</div>
+  <div class="eq-block">$$T(°\text{C}) = T(\text{K}) - 273.15$$</div>
+  <div class="eq-block">$$T(°\text{F}) = 1.8\,T(°\text{C}) + 32$$</div>
+
+  <ul class="concept-list">
+    <li><span class="lang-ko"><strong>열역학 제0법칙</strong>: 열평형 상태에서 두 물체의 온도가 같다는 원리로, 온도 측정의 기반이 된다.</span>
+        <span class="lang-en" style="display:none;"><strong>Zeroth Law</strong>: If two bodies are in thermal equilibrium, they have the same temperature -- the foundation for temperature measurement.</span></li>
+    <li><span class="lang-ko"><strong>절대 온도</strong>: Kelvin(K)과 Rankine(R)은 절대 영점을 기준으로 하는 온도 스케일이다.</span>
+        <span class="lang-en" style="display:none;"><strong>Absolute Scales</strong>: Kelvin (K) and Rankine (R) are referenced to absolute zero.</span></li>
+    <li><span class="lang-ko"><strong>상대 온도</strong>: Celsius(C)와 Fahrenheit(F)는 물의 상태 변화 등을 기준으로 정한 스케일이다.</span>
+        <span class="lang-en" style="display:none;"><strong>Relative Scales</strong>: Celsius (C) and Fahrenheit (F) are defined relative to reference points such as phase changes of water.</span></li>
+  </ul>
+
+  <!-- Temperature Converter Interactive Figure -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 1.2</span>
+      <span class="figure-title">
+        <span class="lang-ko">온도 스케일 변환기</span>
+        <span class="lang-en" style="display:none;">Temperature Scale Converter</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="figTempConvert" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">T (°C)</span>
+          <input type="range" id="sliderTC" min="-273" max="500" value="25" step="1">
+          <span class="control-value" id="valTC">25 °C</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">T (K)</span>
+          <span class="readout-val" id="ro-TK">-</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">T (°R)</span>
+          <span class="readout-val" id="ro-TR">-</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">T (°F)</span>
+          <span class="readout-val" id="ro-TF">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 3 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">물의 삼중점 온도를 켈빈(K)으로 표현하면?</span>
+      <span class="lang-en" style="display:none;">What is the triple point temperature of water in Kelvin?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">0 K</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">100 K</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">273.15 K</button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q3')">273.16 K</button>
+    </div>
+    <div class="quiz-explain" id="q3-explain">
+      <span class="lang-ko">물의 삼중점은 국제 협약에 의해 정확히 273.16 K로 정의된다.</span>
+      <span class="lang-en" style="display:none;">The triple point of water is defined by international agreement as exactly 273.16 K.</span>
+    </div>
+  </div>
+</section>
+
+<!-- Section 1.8 -->
+<section id="s18" class="section">
+  <p class="section-label">Section 1.8</p>
+  <h2 class="section-title">
+    <span class="lang-ko">공학 설계와 해석</span>
+    <span class="lang-en" style="display:none;">Engineering Design and Analysis</span>
+  </h2>
+  <div class="section-body">
+    <p><span class="lang-ko">열역학적 해석은 질량 보존, 에너지 보존, 그리고 열역학 제2법칙이라는 세 가지 기본 법칙에 기반한다. 실제 공학 문제를 다룰 때는 적절한 가정을 통해 복잡한 현실 계를 단순화한 '공학 모델'을 구성한다. 좋은 모델은 핵심 물리 현상을 포착하면서도 수학적으로 다룰 수 있을 만큼 충분히 간결해야 한다.</span>
+    <span class="lang-en" style="display:none;">Thermodynamic analysis rests on three fundamental laws: conservation of mass, conservation of energy, and the second law of thermodynamics. In practice, appropriate assumptions are used to simplify complex real-world systems into 'engineering models.' A good model captures the essential physics while remaining mathematically tractable.</span></p>
+  </div>
+
+  <ul class="concept-list">
+    <li><span class="lang-ko"><strong>3대 법칙</strong>: 질량 보존, 에너지 보존(열역학 제1법칙), 열역학 제2법칙이 해석의 근간이다.</span>
+        <span class="lang-en" style="display:none;"><strong>Three Fundamental Laws</strong>: Conservation of mass, conservation of energy (first law), and the second law form the backbone of analysis.</span></li>
+    <li><span class="lang-ko"><strong>공학 모델</strong>: 적절한 가정으로 실제 계를 단순화하여 핵심 현상을 포착하면서 해석 가능하게 만든 표현이다.</span>
+        <span class="lang-en" style="display:none;"><strong>Engineering Model</strong>: A simplified representation of a real system that captures essential phenomena while remaining tractable through appropriate assumptions.</span></li>
+  </ul>
+
+  <!-- What-if Cards -->
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 지구 표면 중력가속도가 현재의 절반이라면 물체의 무게는?</span>
+        <span class="lang-en" style="display:none;">What if surface gravity were half the current value?</span>
+      </div>
+      <div class="whatif-arrow"><span class="lang-ko">클릭하여 확인 &rarr;</span><span class="lang-en" style="display:none;">Click to reveal &rarr;</span></div>
+      <div class="whatif-hint">
+        <span class="lang-ko">질량은 불변이지만 $W = mg$이므로 무게는 절반으로 줄어든다.</span>
+        <span class="lang-en" style="display:none;">Mass stays the same, but since $W = mg$, weight would be halved.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 닫힌계 내부에서 화학 반응이 일어나면 질량은 변하는가?</span>
+        <span class="lang-en" style="display:none;">What if a chemical reaction occurs inside a closed system -- does mass change?</span>
+      </div>
+      <div class="whatif-arrow"><span class="lang-ko">클릭하여 확인 &rarr;</span><span class="lang-en" style="display:none;">Click to reveal &rarr;</span></div>
+      <div class="whatif-hint">
+        <span class="lang-ko">닫힌계는 경계를 통한 질량 이동이 없으므로 총 질량은 보존된다. 조성은 바뀔 수 있다.</span>
+        <span class="lang-en" style="display:none;">A closed system has no mass transfer across its boundary, so total mass is conserved. Composition may change.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Takeaways -->
+<section class="takeaways">
+  <h2 class="section-title">Key Takeaways</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">01</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">계, 경계, 주위</span>
+        <span class="lang-en" style="display:none;">System, Boundary, Surroundings</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">해석 대상(계)을 정의하고 경계를 설정하는 것이 열역학 문제풀이의 첫 단계이다.</span>
+        <span class="lang-en" style="display:none;">Defining the system and its boundary is the essential first step in any thermodynamic analysis.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">02</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">상태량과 과정</span>
+        <span class="lang-en" style="display:none;">Properties and Processes</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">상태량은 과거 이력과 무관하며, 과정은 상태 변화를 의미한다. 시량성과 세기성 구분이 핵심이다.</span>
+        <span class="lang-en" style="display:none;">A property depends only on the current state, not the path. Distinguishing extensive from intensive properties is fundamental.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">03</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">압력과 온도 측정 및 단위 변환</span>
+        <span class="lang-en" style="display:none;">Pressure and Temperature Measurement and Unit Conversion</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">절대 압력 vs 게이지 압력, 네 가지 온도 스케일 간 변환을 정확히 수행해야 열역학 관계식을 올바르게 적용할 수 있다.</span>
+        <span class="lang-en" style="display:none;">Correct use of absolute vs. gage pressure and conversion among the four temperature scales is essential for applying thermodynamic relations.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.1</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC: Temperature Scale Converter
+// ============================================================
+
+function buildFigTempConvert() {
+  const tc = 25;
+  const tk = tc + 273.15;
+  const tr = 1.8 * tk;
+  const tf = 1.8 * tc + 32;
+
+  const scales = ['°C', 'K', '°R', '°F'];
+  const values = [tc, tk, tr, tf];
+  const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+
+  const trace = {
+    x: scales,
+    y: values,
+    type: 'bar',
+    marker: { color: colors, line: { width: 0 } },
+    text: values.map(v => v.toFixed(2)),
+    textposition: 'outside',
+    hovertemplate: '%{x}: %{y:.2f}<extra></extra>'
+  };
+
+  Plotly.newPlot('figTempConvert', [trace], {
+    ...plotlyLayout,
+    title: { text: 'Temperature Scales', font: { size: 14 } },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Value' },
+    xaxis: { ...plotlyLayout.xaxis, title: 'Scale' },
+    bargap: 0.3
+  }, plotlyConfig);
+
+  updateTempReadouts(tc);
+}
+
+function updateFigTempConvert(tc) {
+  const tk = tc + 273.15;
+  const tr = 1.8 * tk;
+  const tf = 1.8 * tc + 32;
+  const values = [tc, tk, tr, tf];
+
+  Plotly.react('figTempConvert', [{
+    x: ['°C', 'K', '°R', '°F'],
+    y: values,
+    type: 'bar',
+    marker: { color: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'], line: { width: 0 } },
+    text: values.map(v => v.toFixed(2)),
+    textposition: 'outside',
+    hovertemplate: '%{x}: %{y:.2f}<extra></extra>'
+  }], {
+    ...plotlyLayout,
+    title: { text: 'Temperature Scales', font: { size: 14 } },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Value' },
+    xaxis: { ...plotlyLayout.xaxis, title: 'Scale' },
+    bargap: 0.3
+  }, plotlyConfig);
+
+  updateTempReadouts(tc);
+}
+
+function updateTempReadouts(tc) {
+  const tk = tc + 273.15;
+  const tr = 1.8 * tk;
+  const tf = 1.8 * tc + 32;
+  document.getElementById('ro-TK').textContent = tk.toFixed(2) + ' K';
+  document.getElementById('ro-TR').textContent = tr.toFixed(2) + ' °R';
+  document.getElementById('ro-TF').textContent = tf.toFixed(2) + ' °F';
+}
+
+// ============================================================
+// CHAPTER-SPECIFIC: Manometer Pressure Calculator
+// ============================================================
+
+function buildFigManometer() {
+  const L = 760;   // mm
+  const rho = 13590; // kg/m^3
+  updateFigManometer(L, rho);
+}
+
+function updateFigManometer(L_mm, rho) {
+  const g = 9.81;
+  const L_m = L_mm / 1000;
+  const pGage = rho * g * L_m;
+  const pAbs = 101325 + pGage;
+  const pAbsAtm = pAbs / 101325;
+
+  // Visualization: bar chart showing atmospheric, gage, and absolute pressures
+  const trace = {
+    x: ['p_atm', 'p_gage', 'p_abs'],
+    y: [101325, pGage, pAbs],
+    type: 'bar',
+    marker: {
+      color: ['#94a3b8', '#3b82f6', '#10b981'],
+      line: { width: 0 }
+    },
+    text: [(101325/1000).toFixed(1)+' kPa', (pGage/1000).toFixed(1)+' kPa', (pAbs/1000).toFixed(1)+' kPa'],
+    textposition: 'outside',
+    hovertemplate: '%{x}: %{y:.0f} Pa<extra></extra>'
+  };
+
+  Plotly.react('figManometer', [trace], {
+    ...plotlyLayout,
+    title: { text: 'Manometer Pressures', font: { size: 14 } },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Pressure (Pa)' },
+    xaxis: { ...plotlyLayout.xaxis, title: '' },
+    bargap: 0.3
+  }, plotlyConfig);
+
+  document.getElementById('ro-pAbsPa').textContent = pAbs.toFixed(0) + ' Pa';
+  document.getElementById('ro-pAbsAtm').textContent = pAbsAtm.toFixed(4) + ' atm';
+  document.getElementById('ro-pGage').textContent = pGage.toFixed(0) + ' Pa';
+}
+
+// ============================================================
+// SLIDER SETUP
+// ============================================================
+
+function setupSliders() {
+  // Temperature converter slider
+  const sliderTC = document.getElementById('sliderTC');
+  sliderTC.addEventListener('input', function() {
+    const tc = parseFloat(this.value);
+    document.getElementById('valTC').textContent = tc + ' °C';
+    throttledDraw('temp', () => updateFigTempConvert(tc));
+  });
+
+  // Manometer sliders
+  const sliderL = document.getElementById('sliderL');
+  const sliderRho = document.getElementById('sliderRho');
+
+  function onManometerChange() {
+    const L = parseFloat(sliderL.value);
+    const rho = parseFloat(sliderRho.value);
+    document.getElementById('valL').textContent = L + ' mm';
+    document.getElementById('valRho').textContent = rho + ' kg/m³';
+    throttledDraw('manometer', () => updateFigManometer(L, rho));
+  }
+
+  sliderL.addEventListener('input', onManometerChange);
+  sliderRho.addEventListener('input', onManometerChange);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFigTempConvert();
+  buildFigManometer();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

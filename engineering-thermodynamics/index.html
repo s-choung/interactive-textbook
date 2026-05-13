@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서 — Engineering Thermodynamics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+.hero {
+  padding: 120px 0 80px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-fog-border);
+}
+.hero-eyebrow {
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: 20px;
+}
+.hero-title {
+  font-size: clamp(36px, 5vw, 56px); font-weight: 600;
+  letter-spacing: -1.44px; line-height: 1.08; margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: 18px; color: var(--color-graphite); line-height: 1.5;
+  max-width: 560px; margin: 0 auto 40px;
+}
+.hero-stats {
+  display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+}
+.hero-stat { text-align: center; }
+.hero-stat-num { font-size: 32px; font-weight: 600; letter-spacing: -0.5px; }
+.hero-stat-label { font-size: 13px; color: var(--color-graphite); margin-top: 4px; }
+
+.chapters { padding: 80px 0; }
+.chapters-title {
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: 32px;
+}
+.chapter-grid { display: flex; flex-direction: column; gap: 1px; }
+.chapter-card {
+  display: grid; grid-template-columns: 60px 1fr auto;
+  align-items: center; gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-fog-border);
+  text-decoration: none; color: inherit;
+  transition: background 0.15s;
+}
+.chapter-card:first-child { border-top: 1px solid var(--color-fog-border); }
+.chapter-card:hover { background: var(--color-chalk); margin: 0 -16px; padding: 24px 16px; border-radius: var(--radius-cards); }
+.ch-num {
+  font-size: 28px; font-weight: 600; color: var(--color-fog-border);
+  letter-spacing: -0.03em; text-align: right;
+}
+.ch-info { display: flex; flex-direction: column; gap: 4px; }
+.ch-title { font-size: 18px; font-weight: 600; line-height: 1.3; }
+.ch-desc { font-size: 14px; color: var(--color-graphite); line-height: 1.5; }
+.ch-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.ch-tag {
+  font-size: 11px; font-weight: 500; color: var(--color-ash);
+  background: rgba(0,0,0,0.03); border-radius: var(--radius-full);
+  padding: 3px 10px; letter-spacing: 0.01em;
+}
+.ch-arrow {
+  font-size: 18px; color: var(--color-fog-border);
+  transition: color 0.15s, transform 0.15s;
+}
+.chapter-card:hover .ch-arrow { color: var(--color-void); transform: translateX(4px); }
+.chapter-card:hover .ch-num { color: var(--color-void); }
+
+.lang-toggle {
+  position: fixed; top: 24px; right: 32px; z-index: 10;
+  display: flex; gap: 0;
+  border: 1px solid rgba(0,0,0,0.10); border-radius: 9999px;
+  overflow: hidden; background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+}
+.lang-btn {
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 6px 14px; border: none; cursor: pointer;
+  background: transparent; color: var(--color-ash);
+  transition: all 0.15s;
+}
+.lang-btn.active { background: var(--color-void); color: #fff; }
+
+footer {
+  border-top: 1px solid var(--color-fog-border);
+  padding: 40px 0;
+  text-align: center;
+}
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+.footer-text a { color: var(--color-void); text-decoration: none; }
+
+@media (max-width: 640px) {
+  .page { padding: 0 20px; }
+  .hero { padding: 64px 0 48px; }
+  .chapter-card { grid-template-columns: 40px 1fr auto; gap: 16px; }
+  .ch-num { font-size: 22px; }
+  .ch-title { font-size: 16px; }
+  .hero-stats { gap: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="lang-toggle">
+  <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+  <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+</div>
+
+<div class="page">
+  <section class="hero">
+    <p class="hero-eyebrow"><a href="../" style="color:inherit;text-decoration:none;">&#8592; Collection</a> &nbsp;·&nbsp; Moran &nbsp;·&nbsp; Fundamentals of Engineering Thermodynamics</p>
+    <h1 class="hero-title">
+      <span class="lang-ko">공학 열역학</span>
+      <span class="lang-en" style="display:none;">Engineering Thermodynamics</span>
+    </h1>
+    <p class="hero-subtitle">
+      <span class="lang-ko">슬라이더를 움직이면 그래프가 실시간으로 반응합니다. Carnot 사이클부터 Rankine, Brayton까지 — 파라미터를 직접 조작하면서 열역학의 '감'을 잡으세요.</span>
+      <span class="lang-en" style="display:none;">Graphs respond in real time as you move the sliders. From Carnot cycles to Rankine and Brayton — build intuition by manipulating parameters directly.</span>
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num">14</div><div class="hero-stat-label">Chapters</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Interactive Figures</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Quizzes</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Dependencies</div></div>
+    </div>
+  </section>
+
+  <section class="chapters">
+    <p class="chapters-title">All Chapters</p>
+    <div class="chapter-grid">
+      <a href="thermo-ch1.html" class="chapter-card">
+        <div class="ch-num">01</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">열역학의 기초 개념</span>
+            <span class="lang-en" style="display:none;">Getting Started: Foundations</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">시스템/경계/상태량, 단위계, 온도 스케일, 압력 측정</span>
+            <span class="lang-en" style="display:none;">Systems, boundaries, properties, units, temperature scales, pressure measurement</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">System</span><span class="ch-tag">Property</span><span class="ch-tag">Equilibrium</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch2.html" class="chapter-card">
+        <div class="ch-num">02</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">에너지와 제1법칙</span>
+            <span class="lang-en" style="display:none;">Energy &amp; the First Law</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">일과 열, 내부에너지, 에너지 밸런스, 팽창일</span>
+            <span class="lang-en" style="display:none;">Work &amp; heat, internal energy, energy balance, expansion work</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">First Law</span><span class="ch-tag">Work</span><span class="ch-tag">Heat</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch3.html" class="chapter-card">
+        <div class="ch-num">03</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">물질의 상태량 평가</span>
+            <span class="lang-en" style="display:none;">Evaluating Properties</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">p-v-T 관계, 상변화, 증기표, 이상기체</span>
+            <span class="lang-en" style="display:none;">p-v-T relations, phase changes, steam tables, ideal gas</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Phase Diagram</span><span class="ch-tag">Steam Table</span><span class="ch-tag">EOS</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch4.html" class="chapter-card">
+        <div class="ch-num">04</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">개방계 에너지 해석</span>
+            <span class="lang-en" style="display:none;">Control Volume Analysis</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">질량·에너지 보존, 터빈, 노즐, 열교환기, 정상상태</span>
+            <span class="lang-en" style="display:none;">Mass &amp; energy conservation, turbines, nozzles, heat exchangers, steady state</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Turbine</span><span class="ch-tag">Nozzle</span><span class="ch-tag">HX</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch5.html" class="chapter-card">
+        <div class="ch-num">05</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">열역학 제2법칙</span>
+            <span class="lang-en" style="display:none;">The Second Law</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">Kelvin-Planck/Clausius 진술, 비가역성, Carnot 사이클, 최대 효율</span>
+            <span class="lang-en" style="display:none;">Kelvin-Planck/Clausius statements, irreversibility, Carnot cycle, max efficiency</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Carnot</span><span class="ch-tag">Irreversibility</span><span class="ch-tag">Entropy</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch6.html" class="chapter-card">
+        <div class="ch-num">06</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">엔트로피의 활용</span>
+            <span class="lang-en" style="display:none;">Using Entropy</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">T-s 다이어그램, 엔트로피 밸런스, 등엔트로피 효율</span>
+            <span class="lang-en" style="display:none;">T-s diagrams, entropy balance, isentropic efficiency</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">T-s Diagram</span><span class="ch-tag">Isentropic</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch7.html" class="chapter-card">
+        <div class="ch-num">07</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">엑서지 해석</span>
+            <span class="lang-en" style="display:none;">Exergy Analysis</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">엑서지 개념, 비가역성 정량화, 제2법칙 효율</span>
+            <span class="lang-en" style="display:none;">Exergy concept, quantifying irreversibility, second-law efficiency</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Exergy</span><span class="ch-tag">Dead State</span><span class="ch-tag">2nd Law Eff.</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch8.html" class="chapter-card">
+        <div class="ch-num">08</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">증기 동력 시스템</span>
+            <span class="lang-en" style="display:none;">Vapor Power Systems</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">Rankine 사이클, 재열, 재생, 초임계</span>
+            <span class="lang-en" style="display:none;">Rankine cycle, reheat, regeneration, supercritical</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Rankine</span><span class="ch-tag">Reheat</span><span class="ch-tag">Regeneration</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch9.html" class="chapter-card">
+        <div class="ch-num">09</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">가스 동력 시스템</span>
+            <span class="lang-en" style="display:none;">Gas Power Systems</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">Otto, Diesel, Brayton 사이클, 효율 비교</span>
+            <span class="lang-en" style="display:none;">Otto, Diesel, Brayton cycles, efficiency comparison</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Otto</span><span class="ch-tag">Diesel</span><span class="ch-tag">Brayton</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch10.html" class="chapter-card">
+        <div class="ch-num">10</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">냉동 및 히트펌프</span>
+            <span class="lang-en" style="display:none;">Refrigeration &amp; Heat Pumps</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">냉동 사이클, 히트펌프, COP, 다단 압축</span>
+            <span class="lang-en" style="display:none;">Refrigeration cycle, heat pump, COP, multistage compression</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">COP</span><span class="ch-tag">Vapor-Compression</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch11.html" class="chapter-card">
+        <div class="ch-num">11</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">열역학적 관계식</span>
+            <span class="lang-en" style="display:none;">Thermodynamic Relations</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">Maxwell 관계식, Clapeyron, Joule-Thomson 계수</span>
+            <span class="lang-en" style="display:none;">Maxwell relations, Clapeyron, Joule-Thomson coefficient</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Maxwell</span><span class="ch-tag">Clapeyron</span><span class="ch-tag">J-T</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch12.html" class="chapter-card">
+        <div class="ch-num">12</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">이상기체 혼합물과 습공기</span>
+            <span class="lang-en" style="display:none;">Ideal Gas Mixtures &amp; Psychrometrics</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">혼합물 성질, 습공기선도, 이슬점, 습구온도</span>
+            <span class="lang-en" style="display:none;">Mixture properties, psychrometric chart, dew point, wet-bulb</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Psychrometric</span><span class="ch-tag">Dew Point</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch13.html" class="chapter-card">
+        <div class="ch-num">13</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">반응 혼합물과 연소</span>
+            <span class="lang-en" style="display:none;">Reacting Mixtures &amp; Combustion</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">연소 방정식, 공기비, 단열 화염 온도</span>
+            <span class="lang-en" style="display:none;">Combustion equations, air-fuel ratio, adiabatic flame temperature</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Combustion</span><span class="ch-tag">AFT</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+      <a href="thermo-ch14.html" class="chapter-card">
+        <div class="ch-num">14</div>
+        <div class="ch-info">
+          <div class="ch-title">
+            <span class="lang-ko">화학 및 상평형</span>
+            <span class="lang-en" style="display:none;">Chemical &amp; Phase Equilibrium</span>
+          </div>
+          <div class="ch-desc">
+            <span class="lang-ko">평형 상수, van't Hoff, Gibbs 상률, 상평형</span>
+            <span class="lang-en" style="display:none;">Equilibrium constant, van't Hoff, Gibbs phase rule, phase equilibrium</span>
+          </div>
+          <div class="ch-tags"><span class="ch-tag">Equilibrium</span><span class="ch-tag">Phase Rule</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <p class="footer-text">
+    <span class="lang-ko">Based on topics covered in Moran, Shapiro, Boettner, Bailey — <em>Fundamentals of Engineering Thermodynamics</em>, 9th Ed. (Wiley, 2018).</span>
+    <span class="lang-en" style="display:none;">Based on topics covered in Moran, Shapiro, Boettner, Bailey — <em>Fundamentals of Engineering Thermodynamics</em>, 9th Ed. (Wiley, 2018).</span>
+  </p>
+  <p class="footer-text" style="margin-top:4px;">All explanations, visualizations, and exercises are original works.</p>
+  <p class="footer-text" style="margin-top:8px;">움직이는 교과서 · <a href="https://schoung.com">Seokhyun Choung</a></p>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(function(el) { el.style.display = lang === 'ko' ? '' : 'none'; });
+  document.querySelectorAll('.lang-en').forEach(function(el) { el.style.display = lang === 'en' ? '' : 'none'; });
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+</script>
+</body>
+</html>

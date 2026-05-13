@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: {{CHAPTER_TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">{{CHAPTER_TITLE}}</a>
+    <ul class="nav-links">
+      <!-- {{NAV_LINKS}} -->
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.{{CHAPTER_NUM}}</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">{{HERO_TITLE_KO}}</span>
+    <span class="lang-en" style="display:none;">{{HERO_TITLE_EN}}</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter {{CHAPTER_NUM}}. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter {{CHAPTER_NUM}}. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <!-- {{HERO_CHIPS}} -->
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+<!-- Builder subagent가 여기에 섹션들을 채워 넣습니다.
+     사용 가능한 컴포넌트:
+
+     [섹션]
+     <section id="sXY" class="section">
+       <p class="section-label">Section X.Y</p>
+       <h2 class="section-title"><span class="lang-ko">제목</span><span class="lang-en" style="display:none;">Title</span></h2>
+       <div class="section-body">
+         <p><span class="lang-ko">설명</span><span class="lang-en" style="display:none;">Explanation</span></p>
+       </div>
+     </section>
+
+     [수식]
+     <div class="eq-block">$$수식$$</div>
+
+     [개념 리스트]
+     <ul class="concept-list"><li>...</li></ul>
+
+     [인터랙티브 Figure]
+     <div class="figure-card">
+       <div class="figure-header">
+         <span class="figure-label">Figure X.Y</span>
+         <span class="figure-title">Title</span>
+         <button class="challenge-btn" onclick="toggleChallenge('chXY')">도전 과제</button>
+       </div>
+       <div class="figure-body">
+         <div id="figXY" class="plotly-container"></div>
+         <div class="controls">
+           <div class="control-row">
+             <span class="control-label">Label</span>
+             <input type="range" id="..." min="" max="" value="" step="">
+             <span class="control-value" id="...">value</span>
+           </div>
+         </div>
+         <div class="readout">
+           <div class="readout-item">
+             <span class="readout-key lang-ko">키</span>
+             <span class="readout-key lang-en" style="display:none;">Key</span>
+             <span class="readout-val" id="...">val</span>
+           </div>
+         </div>
+       </div>
+     </div>
+
+     [퀴즈]
+     <div class="quiz-block">
+       <div class="quiz-q"><span class="lang-ko">질문?</span><span class="lang-en" style="display:none;">Question?</span></div>
+       <div class="quiz-options">
+         <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'qN')">A</button>
+         <button class="quiz-opt" onclick="checkQuiz(this,'qN')">B</button>
+       </div>
+       <div class="quiz-explain" id="qN-explain">설명</div>
+     </div>
+
+     [What-if 카드]
+     <div class="whatif-grid">
+       <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+         <div class="whatif-q"><span class="lang-ko">질문?</span><span class="lang-en" style="display:none;">Question?</span></div>
+         <div class="whatif-arrow">클릭하여 확인 →</div>
+         <div class="whatif-hint"><span class="lang-ko">답변</span><span class="lang-en" style="display:none;">Answer</span></div>
+       </div>
+     </div>
+
+     [Takeaways]
+     <section class="takeaways">
+       <h2 class="section-title">Key Takeaways</h2>
+       <div class="takeaway-grid">
+         <div class="takeaway-card">
+           <div class="takeaway-number">01</div>
+           <div class="takeaway-title"><span class="lang-ko">제목</span><span class="lang-en" style="display:none;">Title</span></div>
+           <div class="takeaway-body"><span class="lang-ko">설명</span><span class="lang-en" style="display:none;">Desc</span></div>
+         </div>
+       </div>
+     </section>
+-->
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.{{CHAPTER_NUM}}</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES (모든 챕터 공통)
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC (Builder subagent가 여기에 작성)
+// ============================================================
+
+// {{INTERACTIVE_JS}}
+// - buildFigXY() 함수들
+// - updateFigXY() 함수들
+// - setupSliders() 함수
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  // {{INIT_CALLS}}  예: buildFig51(); buildFig52(); setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

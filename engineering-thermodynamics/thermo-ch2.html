@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Energy and the First Law of Thermodynamics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">Energy and the First Law of Thermodynamics</a>
+    <ul class="nav-links">
+      <li><a href="#s21">2.1 역학적 에너지</a></li>
+      <li><a href="#s22">2.2 일(Work)</a></li>
+      <li><a href="#s23">2.3 에너지 확장</a></li>
+      <li><a href="#s24">2.4 열전달</a></li>
+      <li><a href="#s25">2.5 에너지 수지</a></li>
+      <li><a href="#s26">2.6 사이클</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.2</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">에너지와 열역학 제1법칙</span>
+    <span class="lang-en" style="display:none;">Energy and the First Law of Thermodynamics</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 2. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 2. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <span class="chip">에너지 보존</span>
+    <span class="chip">일과 열전달</span>
+    <span class="chip">내부에너지</span>
+    <span class="chip">열역학 사이클</span>
+    <span class="chip">열효율</span>
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+
+<!-- ===== Section 2.1 ===== -->
+<section id="s21" class="section">
+  <p class="section-label">Section 2.1</p>
+  <h2 class="section-title">
+    <span class="lang-ko">역학적 에너지 개념 복습</span>
+    <span class="lang-en" style="display:none;">Reviewing Mechanical Concepts of Energy</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">열역학에서 에너지를 다루기 전에, 역학에서 이미 다루었던 운동에너지와 위치에너지 개념을 복습할 필요가 있다. 물체가 속도를 가지면 운동에너지를 저장하고, 중력장 안에서 높이가 변하면 위치에너지가 달라진다. 외부 마찰이나 다른 힘이 없이 중력만 작용할 경우, 이 두 에너지의 합은 항상 일정하게 유지된다.</span>
+      <span class="lang-en" style="display:none;">Before exploring energy in thermodynamics, it is helpful to revisit the kinetic and potential energy concepts from mechanics. An object stores kinetic energy when it has velocity, and its potential energy changes with elevation in a gravitational field. When only gravity acts and there is no friction, the sum of these two forms of energy remains constant.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\Delta KE = \frac{1}{2}m(V_2^2 - V_1^2)$$</div>
+  <div class="eq-block">$$\Delta PE = mg(z_2 - z_1)$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>운동에너지 (KE)</strong>: 물체의 질량과 속도의 제곱에 비례하는 에너지로, $KE = \frac{1}{2}mV^2$으로 표현된다. 속도가 변하면 운동에너지도 변한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Kinetic Energy (KE)</strong>: Energy proportional to an object's mass and the square of its velocity, expressed as $KE = \frac{1}{2}mV^2$. Changes in velocity lead to changes in kinetic energy.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>위치에너지 (PE)</strong>: 중력장 내에서 물체의 높이에 비례하는 에너지로, $PE = mgz$이다. 기준면 선정에 따라 값이 달라진다.</span>
+      <span class="lang-en" style="display:none;"><strong>Potential Energy (PE)</strong>: Energy proportional to an object's elevation in a gravitational field, given by $PE = mgz$. Its value depends on the choice of reference datum.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>역학적 에너지 보존</strong>: 중력만 작용하는 계에서 $KE + PE$는 일정하다. 높이가 줄면 속도가 증가하고, 속도가 줄면 높이가 증가한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Conservation of Mechanical Energy</strong>: In a system where only gravity acts, $KE + PE$ remains constant. A decrease in elevation leads to an increase in velocity, and vice versa.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 2.2 ===== -->
+<section id="s22" class="section">
+  <p class="section-label">Section 2.2</p>
+  <h2 class="section-title">
+    <span class="lang-ko">일(Work)의 확장된 이해</span>
+    <span class="lang-en" style="display:none;">Broadening Our Understanding of Work</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">열역학에서 일이란 계와 주위 사이의 에너지 상호작용 중 하나이다. 계가 외부에 유일한 효과로 추를 들어올릴 수 있다면 그 상호작용은 일이다. 피스톤-실린더 장치에서 기체가 팽창하거나 압축될 때의 경계 일은 p-V 선도에서 곡선 아래 면적으로 구할 수 있으며, 이는 과정 경로에 의존한다.</span>
+      <span class="lang-en" style="display:none;">In thermodynamics, work is one of two energy interactions between a system and its surroundings. If the sole external effect of the interaction could be the raising of a weight, it qualifies as work. For a piston-cylinder device, the boundary work during expansion or compression equals the area under the process curve on a p-V diagram and depends on the process path.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$W = \int_{V_1}^{V_2} p\,dV$$</div>
+  <div class="eq-block">$$\dot{W} = \mathbf{F} \cdot \mathbf{V}$$</div>
+  <div class="eq-block">$$pV^n = \text{constant} \quad (\text{polytropic process})$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>열역학적 일의 정의</strong>: 계와 주위 사이의 상호작용에서 유일한 외부 효과가 추를 들어올리는 것이 될 수 있으면 그것은 일이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Thermodynamic Definition of Work</strong>: An interaction between a system and its surroundings is work if the sole external effect could be the raising of a weight.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>경계 일</strong>: 기체가 팽창 또는 압축될 때 경계에서 수행되는 일로, $W = \int p\,dV$이며 p-V 선도의 곡선 아래 면적에 해당한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Boundary Work</strong>: Work done at the boundary during gas expansion or compression, given by $W = \int p\,dV$, which equals the area under the process curve on a p-V diagram.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>다변 과정</strong>: $pV^n = \text{const}$로 기술되며, 지수 $n$의 값에 따라 등압($n=0$), 등온($n=1$), 단열($n=k$), 등적($n \to \infty$) 등 다양한 과정을 포괄한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Polytropic Process</strong>: Described by $pV^n = \text{const}$. Depending on the exponent $n$, it encompasses isobaric ($n=0$), isothermal ($n=1$), adiabatic ($n=k$), and isochoric ($n \to \infty$) processes.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>일률 (Power)</strong>: 단위시간당 에너지 전달률로, $\dot{W} = \mathbf{F} \cdot \mathbf{V}$이다. 단위는 W(와트) 또는 kW를 사용한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Power</strong>: The rate of energy transfer per unit time, given by $\dot{W} = \mathbf{F} \cdot \mathbf{V}$. Common units include watts (W) and kilowatts (kW).</span>
+    </li>
+  </ul>
+
+  <!-- Interactive: Polytropic Work -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 2.1</span>
+      <span class="figure-title">
+        <span class="lang-ko">다변 팽창 일 (pV<sup>n</sup> = const)</span>
+        <span class="lang-en" style="display:none;">Polytropic Expansion Work (pV<sup>n</sup> = const)</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="figPolyWork" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">n (다변 지수)</span>
+          <input type="range" id="slider-n" min="0" max="2.0" value="1.0" step="0.1">
+          <span class="control-value" id="val-n">1.0</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">W (kJ)</span>
+          <span class="readout-key lang-en" style="display:none;">W (kJ)</span>
+          <span class="readout-val" id="ro-poly-W">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">p<sub>2</sub> (bar)</span>
+          <span class="readout-key lang-en" style="display:none;">p<sub>2</sub> (bar)</span>
+          <span class="readout-val" id="ro-poly-p2">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Section 2.3 ===== -->
+<section id="s23" class="section">
+  <p class="section-label">Section 2.3</p>
+  <h2 class="section-title">
+    <span class="lang-ko">에너지 개념의 확장</span>
+    <span class="lang-en" style="display:none;">Broadening Our Understanding of Energy</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">역학에서는 운동에너지와 위치에너지로 모든 에너지 변화를 설명할 수 있었지만, 열역학에서는 이것만으로 충분하지 않다. 내부에너지(U)라는 새로운 에너지 형태를 도입하여, KE와 PE로 설명되지 않는 분자 수준의 에너지 변화까지 포괄한다. 미시적으로 보면 분자의 병진, 회전, 진동 에너지와 분자간 상호작용 에너지가 모두 내부에너지에 포함된다.</span>
+      <span class="lang-en" style="display:none;">While mechanics accounts for energy changes using kinetic and potential energy alone, thermodynamics requires a broader view. Internal energy (U) is introduced to capture molecular-level energy changes that KE and PE cannot explain. From a microscopic perspective, translational, rotational, and vibrational energies of molecules, as well as intermolecular interaction energies, are all contained within internal energy.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$E_2 - E_1 = (U_2 - U_1) + (KE_2 - KE_1) + (PE_2 - PE_1)$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>내부에너지 (U)</strong>: 운동에너지와 위치에너지로 설명되지 않는 계의 에너지 변화를 모두 담는 광범위한 에너지 형태이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Internal Energy (U)</strong>: A comprehensive energy form that accounts for all system energy changes not captured by kinetic and potential energy.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>총 에너지</strong>: 계의 총 에너지 $E$는 내부에너지, 운동에너지, 위치에너지의 합이다. $E = U + KE + PE$.</span>
+      <span class="lang-en" style="display:none;"><strong>Total Energy</strong>: A system's total energy $E$ is the sum of internal, kinetic, and potential energy: $E = U + KE + PE$.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>미시적 해석</strong>: 분자들의 병진 운동, 회전, 진동에 의한 에너지와 분자간 인력/척력에 의한 에너지가 내부에너지의 구성 요소이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Microscopic Interpretation</strong>: Translational, rotational, and vibrational motions of molecules, along with intermolecular attractive and repulsive forces, make up the components of internal energy.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 2.4 ===== -->
+<section id="s24" class="section">
+  <p class="section-label">Section 2.4</p>
+  <h2 class="section-title">
+    <span class="lang-ko">열전달에 의한 에너지 전달</span>
+    <span class="lang-en" style="display:none;">Energy Transfer by Heat</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">열전달은 계와 주위 사이에 온도 차이가 있을 때만 발생하며, 항상 고온에서 저온으로 향한다. 전도, 복사, 대류의 세 가지 메커니즘이 있으며, 각각 Fourier 법칙, Stefan-Boltzmann 법칙, Newton 냉각 법칙으로 기술된다. 열전달이 전혀 없는 과정을 단열(adiabatic) 과정이라 부른다.</span>
+      <span class="lang-en" style="display:none;">Heat transfer occurs only when a temperature difference exists between a system and its surroundings, always proceeding from higher to lower temperature. Three mechanisms exist: conduction (Fourier's law), radiation (Stefan-Boltzmann law), and convection (Newton's law of cooling). A process with no heat transfer is called adiabatic.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\dot{Q}_x = -\kappa A \frac{dT}{dx}$$</div>
+  <div class="eq-block">$$\dot{Q}_c = hA(T_b - T_f)$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>전도 (Conduction)</strong>: 물질 내부에서 분자 상호작용을 통해 에너지가 전달되는 방식이다. Fourier 법칙에 의해 온도 기울기에 비례한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Conduction</strong>: Energy transfer through molecular interactions within a substance, proportional to the temperature gradient according to Fourier's law.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>복사 (Radiation)</strong>: 전자기파를 통해 에너지가 전달되며, 매질 없이도 가능하다. Stefan-Boltzmann 법칙에 따라 절대온도의 4제곱에 비례한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Radiation</strong>: Energy transfer via electromagnetic waves, possible even without a medium. Proportional to the fourth power of absolute temperature per the Stefan-Boltzmann law.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>대류 (Convection)</strong>: 유체의 흐름에 의해 에너지가 전달되는 방식으로, Newton 냉각 법칙에 의해 기술된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Convection</strong>: Energy transfer due to fluid motion, described by Newton's law of cooling.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>단열 과정</strong>: 열전달이 없는 과정($Q = 0$)이다. 완벽한 단열재로 둘러싸이거나 계와 주위의 온도가 같을 때 실현된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Adiabatic Process</strong>: A process with no heat transfer ($Q = 0$), achieved by perfect insulation or when the system and surroundings are at the same temperature.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== Section 2.5 ===== -->
+<section id="s25" class="section">
+  <p class="section-label">Section 2.5</p>
+  <h2 class="section-title">
+    <span class="lang-ko">밀폐계의 에너지 수지</span>
+    <span class="lang-en" style="display:none;">Energy Balance for Closed Systems</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">열역학 제1법칙을 밀폐계에 적용하면, 계의 에너지 변화는 열전달과 일의 순 효과와 같다. 수학적으로 $E_2 - E_1 = Q - W$이며, 이 식은 에너지 보존 원리의 핵심 표현이다. 정상상태에서는 에너지가 시간에 따라 변하지 않으므로 열전달률과 일률이 같아진다. 계의 경계를 어떻게 설정하느냐에 따라 Q와 W의 해석이 달라질 수 있다.</span>
+      <span class="lang-en" style="display:none;">Applying the first law of thermodynamics to a closed system, the change in energy equals the net effect of heat transfer and work: $E_2 - E_1 = Q - W$. This equation is the core expression of energy conservation. At steady state, energy does not change with time, so the rate of heat transfer equals the power. The interpretation of Q and W may differ depending on how the system boundary is chosen.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$E_2 - E_1 = Q - W$$</div>
+  <div class="eq-block">$$\frac{dE}{dt} = \dot{Q} - \dot{W}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>에너지 수지</strong>: 밀폐계에서 에너지 변화량 = 계로 전달된 순 열전달량 - 계가 수행한 순 일. 부호 규약에 주의해야 한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Energy Balance</strong>: In a closed system, energy change = net heat transfer to the system minus net work done by the system. Sign conventions must be carefully observed.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>정상상태</strong>: $dE/dt = 0$이면 계의 에너지가 시간에 따라 일정하므로, $\dot{Q} = \dot{W}$가 성립한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Steady State</strong>: When $dE/dt = 0$, the system's energy is constant over time, so $\dot{Q} = \dot{W}$.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>경계 선정의 중요성</strong>: 같은 물리적 상황이라도 계의 경계를 어디에 잡느냐에 따라 열전달과 일의 크기가 달라질 수 있다.</span>
+      <span class="lang-en" style="display:none;"><strong>Importance of Boundary Selection</strong>: For the same physical situation, the magnitudes of heat transfer and work may differ depending on where the system boundary is drawn.</span>
+    </li>
+  </ul>
+
+  <!-- Quiz -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q1.</strong> 밀폐계에서 에너지를 전달하는 두 가지 방식은?</span>
+      <span class="lang-en" style="display:none;"><strong>Q1.</strong> What are the two modes of energy transfer for a closed system?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q1')">
+        <span class="lang-ko">일과 열전달</span>
+        <span class="lang-en" style="display:none;">Work and heat transfer</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')">
+        <span class="lang-ko">열전달과 질량 흐름</span>
+        <span class="lang-en" style="display:none;">Heat transfer and mass flow</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')">
+        <span class="lang-ko">일과 엔트로피</span>
+        <span class="lang-en" style="display:none;">Work and entropy</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')">
+        <span class="lang-ko">내부에너지와 열전달</span>
+        <span class="lang-en" style="display:none;">Internal energy and heat transfer</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q1-explain">
+      <span class="lang-ko">밀폐계는 질량 교환이 없으므로 일(W)과 열전달(Q)만으로 에너지를 주고받는다.</span>
+      <span class="lang-en" style="display:none;">A closed system has no mass flow, so energy is transferred only by work (W) and heat transfer (Q).</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q2.</strong> pV<sup>n</sup> = const인 다변 과정에서 n = 0이면 어떤 과정인가?</span>
+      <span class="lang-en" style="display:none;"><strong>Q2.</strong> In a polytropic process pV<sup>n</sup> = const, what does n = 0 represent?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q2')">
+        <span class="lang-ko">등압 과정</span>
+        <span class="lang-en" style="display:none;">Isobaric process</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">
+        <span class="lang-ko">등온 과정</span>
+        <span class="lang-en" style="display:none;">Isothermal process</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">
+        <span class="lang-ko">등적 과정</span>
+        <span class="lang-en" style="display:none;">Isochoric process</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">
+        <span class="lang-ko">단열 과정</span>
+        <span class="lang-en" style="display:none;">Adiabatic process</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q2-explain">
+      <span class="lang-ko">n = 0이면 pV<sup>0</sup> = p = const가 되어 등압(isobaric) 과정이다.</span>
+      <span class="lang-en" style="display:none;">When n = 0, pV<sup>0</sup> = p = constant, which is an isobaric (constant-pressure) process.</span>
+    </div>
+  </div>
+
+  <!-- What-if -->
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 계에 열전달이 없다면(단열), 에너지 수지식은 어떻게 바뀔까?</span>
+        <span class="lang-en" style="display:none;">What if there is no heat transfer (adiabatic)? How does the energy balance simplify?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &rarr;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &rarr;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">Q = 0이므로 E<sub>2</sub> &minus; E<sub>1</sub> = &minus;W. 계가 한 일만큼 에너지가 감소한다.</span>
+        <span class="lang-en" style="display:none;">With Q = 0, E<sub>2</sub> &minus; E<sub>1</sub> = &minus;W. The system energy decreases by the amount of work done.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Section 2.6 ===== -->
+<section id="s26" class="section">
+  <p class="section-label">Section 2.6</p>
+  <h2 class="section-title">
+    <span class="lang-ko">열역학 사이클의 에너지 해석</span>
+    <span class="lang-en" style="display:none;">Energy Analysis of Cycles</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">열역학 사이클은 계가 일련의 과정을 거쳐 다시 처음 상태로 되돌아오는 과정이다. 한 사이클이 완료되면 모든 상태량이 원래 값으로 돌아오므로 $\Delta E = 0$이며, 따라서 사이클 동안의 순 일은 순 열전달과 같다. 동력 사이클의 성능은 열효율로, 냉동/히트펌프 사이클의 성능은 성능계수(COP)로 평가한다.</span>
+      <span class="lang-en" style="display:none;">A thermodynamic cycle is a sequence of processes after which the system returns to its initial state. Upon completing a cycle, all state properties return to their original values, so $\Delta E = 0$ and the net work equals the net heat transfer. Power cycle performance is measured by thermal efficiency, while refrigeration and heat pump cycles are evaluated using the coefficient of performance (COP).</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\eta = \frac{W_{cycle}}{Q_{in}} = 1 - \frac{Q_{out}}{Q_{in}}$$</div>
+  <div class="eq-block">$$\beta = \frac{Q_{in}}{W_{cycle}}$$</div>
+  <div class="eq-block">$$\gamma = \frac{Q_{out}}{W_{cycle}}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>사이클 에너지 수지</strong>: 사이클이 완료되면 $\Delta E = 0$이므로 $W_{cycle} = Q_{cycle}$이 성립한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Cycle Energy Balance</strong>: Upon cycle completion, $\Delta E = 0$, so $W_{cycle} = Q_{cycle}$.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>열효율 (&eta;)</strong>: 동력 사이클에서 공급된 열 중 일로 변환된 비율이다. 항상 1보다 작다.</span>
+      <span class="lang-en" style="display:none;"><strong>Thermal Efficiency (&eta;)</strong>: The fraction of heat input converted to work in a power cycle. It is always less than 1.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>냉동 사이클 COP (&beta;)</strong>: 투입된 일 대비 저온부에서 흡수한 열의 비율이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Refrigeration COP (&beta;)</strong>: The ratio of heat absorbed from the cold reservoir to the work input.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>히트펌프 COP (&gamma;)</strong>: 투입된 일 대비 고온부로 방출한 열의 비율이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Heat Pump COP (&gamma;)</strong>: The ratio of heat delivered to the hot reservoir to the work input.</span>
+    </li>
+  </ul>
+
+  <!-- Interactive: Cycle Efficiency -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 2.2</span>
+      <span class="figure-title">
+        <span class="lang-ko">동력 사이클 열효율</span>
+        <span class="lang-en" style="display:none;">Power Cycle Thermal Efficiency</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="figCycleEff" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">Q<sub>in</sub> (kJ)</span>
+          <input type="range" id="slider-qin" min="50" max="500" value="200" step="10">
+          <span class="control-value" id="val-qin">200</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">Q<sub>out</sub> (kJ)</span>
+          <input type="range" id="slider-qout" min="10" max="400" value="120" step="10">
+          <span class="control-value" id="val-qout">120</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">W<sub>cycle</sub> (kJ)</span>
+          <span class="readout-key lang-en" style="display:none;">W<sub>cycle</sub> (kJ)</span>
+          <span class="readout-val" id="ro-cycle-W">--</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">&eta; (%)</span>
+          <span class="readout-key lang-en" style="display:none;">&eta; (%)</span>
+          <span class="readout-val" id="ro-cycle-eta">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz 3 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q3.</strong> 열효율 &eta; = 1 (100%)인 동력 사이클이 가능한가?</span>
+      <span class="lang-en" style="display:none;"><strong>Q3.</strong> Can a power cycle achieve a thermal efficiency of &eta; = 1 (100%)?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q3')">
+        <span class="lang-ko">불가능하다</span>
+        <span class="lang-en" style="display:none;">Impossible</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">
+        <span class="lang-ko">가능하다</span>
+        <span class="lang-en" style="display:none;">Possible</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">
+        <span class="lang-ko">이상기체일 때만 가능하다</span>
+        <span class="lang-en" style="display:none;">Only with an ideal gas</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">
+        <span class="lang-ko">충분히 높은 온도에서 가능하다</span>
+        <span class="lang-en" style="display:none;">At sufficiently high temperatures</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q3-explain">
+      <span class="lang-ko">제2법칙에 의해 모든 동력 사이클의 열효율은 반드시 1 미만이다.</span>
+      <span class="lang-en" style="display:none;">The second law of thermodynamics requires that &eta; &lt; 1 for every power cycle.</span>
+    </div>
+  </div>
+
+  <!-- What-if -->
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 냉동기의 COP(&beta;)가 매우 크다면 무엇을 의미할까?</span>
+        <span class="lang-en" style="display:none;">What if a refrigerator has a very large COP (&beta;)?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &rarr;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &rarr;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">적은 일 입력으로 많은 열을 저온부에서 흡수한다는 뜻이며, 에너지 효율이 높다.</span>
+        <span class="lang-en" style="display:none;">A large &beta; means the system removes much heat from the cold body with little work input -- high efficiency.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Takeaways ===== -->
+<section class="takeaways">
+  <h2 class="section-title">Key Takeaways</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">01</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">에너지 보존 (제1법칙)</span>
+        <span class="lang-en" style="display:none;">Conservation of Energy (First Law)</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">밀폐계의 에너지 변화는 열전달과 일의 차이와 같다: E<sub>2</sub> &minus; E<sub>1</sub> = Q &minus; W</span>
+        <span class="lang-en" style="display:none;">The change in energy of a closed system equals the net heat transfer minus the net work: E<sub>2</sub> &minus; E<sub>1</sub> = Q &minus; W</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">02</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">일과 열전달은 성질이 아니다</span>
+        <span class="lang-en" style="display:none;">Work and Heat Are Not Properties</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">일과 열전달은 경로에 의존하는 과정량이며, 상태량(성질)이 아니다. &delta;W, &delta;Q로 표기한다.</span>
+        <span class="lang-en" style="display:none;">Work and heat are path-dependent process quantities, not state properties. They are denoted &delta;W and &delta;Q.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">03</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">사이클 성능 지표</span>
+        <span class="lang-en" style="display:none;">Cycle Performance Measures</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">동력 사이클은 열효율(&eta;), 냉동/히트펌프 사이클은 성능계수(&beta;, &gamma;)로 성능을 평가한다.</span>
+        <span class="lang-en" style="display:none;">Power cycles are evaluated by thermal efficiency (&eta;); refrigeration and heat pump cycles by COP (&beta;, &gamma;).</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.2</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES (모든 챕터 공통)
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC: Chapter 2
+// ============================================================
+
+// --- Figure 2.1: Polytropic Expansion Work ---
+function buildFigPolyWork() {
+  const p1 = 5;   // bar
+  const V1 = 0.1; // m^3
+  const V2 = 0.5; // m^3
+  const n = 1.0;
+  const nPts = 200;
+
+  const Varr = [];
+  const Parr = [];
+  for (let i = 0; i <= nPts; i++) {
+    const V = V1 + (V2 - V1) * i / nPts;
+    Varr.push(V);
+    Parr.push(p1 * Math.pow(V1 / V, n));
+  }
+
+  const trace = {
+    x: Varr, y: Parr, type: 'scatter', mode: 'lines',
+    fill: 'tozeroy', fillcolor: 'rgba(59,130,246,0.15)',
+    line: { color: '#3b82f6', width: 2.5 },
+    name: 'p(V)'
+  };
+
+  Plotly.newPlot('figPolyWork', [trace], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'V (m³)', range: [0, V2 * 1.05] },
+    yaxis: { ...plotlyLayout.yaxis, title: 'p (bar)', range: [0, p1 * 1.2] },
+  }, plotlyConfig);
+
+  updateFigPolyWork(n);
+}
+
+function updateFigPolyWork(n) {
+  const p1 = 5;   // bar
+  const V1 = 0.1; // m^3
+  const V2 = 0.5; // m^3
+  const nPts = 200;
+
+  const Varr = [];
+  const Parr = [];
+  let p2;
+
+  for (let i = 0; i <= nPts; i++) {
+    const V = V1 + (V2 - V1) * i / nPts;
+    Varr.push(V);
+    Parr.push(p1 * Math.pow(V1 / V, n));
+  }
+
+  p2 = p1 * Math.pow(V1 / V2, n);
+
+  // Work calculation (in bar*m^3, convert to kJ: 1 bar*m^3 = 100 kJ)
+  let W;
+  if (Math.abs(n - 1) < 0.001) {
+    W = p1 * V1 * Math.log(V2 / V1); // bar*m^3
+  } else {
+    W = (p2 * V2 - p1 * V1) / (1 - n); // bar*m^3
+  }
+  W = W * 100; // convert to kJ
+
+  const yMax = Math.max(p1 * 1.2, Parr[0] * 1.1);
+
+  Plotly.react('figPolyWork', [{
+    x: Varr, y: Parr, type: 'scatter', mode: 'lines',
+    fill: 'tozeroy', fillcolor: 'rgba(59,130,246,0.15)',
+    line: { color: '#3b82f6', width: 2.5 },
+    name: 'p(V)'
+  }], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'V (m³)', range: [0, V2 * 1.05] },
+    yaxis: { ...plotlyLayout.yaxis, title: 'p (bar)', range: [0, yMax] },
+  }, plotlyConfig);
+
+  document.getElementById('ro-poly-W').textContent = W.toFixed(1);
+  document.getElementById('ro-poly-p2').textContent = p2.toFixed(3);
+}
+
+// --- Figure 2.2: Cycle Efficiency ---
+function buildFigCycleEff() {
+  updateFigCycleEff(200, 120);
+}
+
+function updateFigCycleEff(Qin, Qout) {
+  // Clamp: Qout cannot exceed Qin
+  if (Qout >= Qin) Qout = Qin - 1;
+
+  const Wcycle = Qin - Qout;
+  const eta = (Wcycle / Qin) * 100;
+
+  const traces = [
+    {
+      x: ['Q<sub>in</sub>', 'Q<sub>out</sub>', 'W<sub>cycle</sub>'],
+      y: [Qin, Qout, Wcycle],
+      type: 'bar',
+      marker: {
+        color: ['#3b82f6', '#ef4444', '#10b981']
+      },
+      text: [Qin + ' kJ', Qout + ' kJ', Wcycle + ' kJ'],
+      textposition: 'outside',
+    }
+  ];
+
+  Plotly.react('figCycleEff', traces, {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: '' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Energy (kJ)', range: [0, 550] },
+    showlegend: false,
+  }, plotlyConfig);
+
+  document.getElementById('ro-cycle-W').textContent = Wcycle.toFixed(0);
+  document.getElementById('ro-cycle-eta').textContent = eta.toFixed(1);
+}
+
+// --- Slider setup ---
+function setupSliders() {
+  // Polytropic n slider
+  const sliderN = document.getElementById('slider-n');
+  const valN = document.getElementById('val-n');
+  sliderN.addEventListener('input', function() {
+    const n = parseFloat(this.value);
+    valN.textContent = n.toFixed(1);
+    throttledDraw('polyWork', () => updateFigPolyWork(n));
+  });
+
+  // Cycle efficiency sliders
+  const sliderQin = document.getElementById('slider-qin');
+  const sliderQout = document.getElementById('slider-qout');
+  const valQin = document.getElementById('val-qin');
+  const valQout = document.getElementById('val-qout');
+
+  function onCycleChange() {
+    const qin = parseFloat(sliderQin.value);
+    let qout = parseFloat(sliderQout.value);
+    // Enforce Qout < Qin
+    if (qout >= qin) {
+      qout = qin - 10;
+      if (qout < 10) qout = 10;
+      sliderQout.value = qout;
+    }
+    valQin.textContent = qin;
+    valQout.textContent = qout;
+    throttledDraw('cycleEff', () => updateFigCycleEff(qin, qout));
+  }
+
+  sliderQin.addEventListener('input', onCycleChange);
+  sliderQout.addEventListener('input', onCycleChange);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFigPolyWork();
+  buildFigCycleEff();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

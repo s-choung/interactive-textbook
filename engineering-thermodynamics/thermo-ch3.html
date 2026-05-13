@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Evaluating Properties</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">Evaluating Properties</a>
+    <ul class="nav-links">
+      <li><a href="#s31">3.1</a></li>
+      <li><a href="#s32">3.2</a></li>
+      <li><a href="#s33">3.3</a></li>
+      <li><a href="#s35">3.5</a></li>
+      <li><a href="#s36">3.6</a></li>
+      <li><a href="#s39">3.9</a></li>
+      <li><a href="#s311">3.11</a></li>
+      <li><a href="#s312">3.12</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.3</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">물성 평가</span>
+    <span class="lang-en" style="display:none;">Evaluating Properties</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 3. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 3. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <span class="chip">상평형</span>
+    <span class="chip">증기표</span>
+    <span class="chip">엔탈피</span>
+    <span class="chip">이상기체</span>
+    <span class="chip">압축인자</span>
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+
+<!-- ============ Section 3.1 ============ -->
+<section id="s31" class="section">
+  <p class="section-label">Section 3.1</p>
+  <h2 class="section-title">
+    <span class="lang-ko">기본 개념 — 상, 순수물질, 상태원리</span>
+    <span class="lang-en" style="display:none;">Getting Started — Phase, Pure Substance, State Principle</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">열역학에서 물질의 상태를 정량적으로 기술하려면 먼저 '상(phase)'과 '순수물질'의 정의를 명확히 해야 한다. 순수물질이란 전체에 걸쳐 화학 조성이 동일한 물질을 말하며, 고체·액체·기체 등 여러 상으로 존재할 수 있다. 상태원리는 이러한 계의 열역학적 상태를 결정하는 데 필요한 독립 성질의 수를 알려 준다.</span>
+      <span class="lang-en" style="display:none;">To quantitatively describe the state of a substance in thermodynamics, we must first clearly define 'phase' and 'pure substance.' A pure substance has uniform chemical composition throughout and can exist in multiple phases — solid, liquid, or gas. The state principle tells us how many independent properties are needed to fix the thermodynamic state of such a system.</span>
+    </p>
+  </div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>순수물질</strong>: 화학 조성이 균일하며, 여러 상에 걸쳐 존재할 수 있다. 물은 얼음·액체·수증기 어느 상이든 H<sub>2</sub>O로 동일하다.</span>
+      <span class="lang-en" style="display:none;"><strong>Pure substance</strong>: A substance with uniform chemical composition that can exist in multiple phases. Water is H<sub>2</sub>O whether ice, liquid, or steam.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>상태원리</strong>: 단순 압축성 계는 독립적인 세기 성질 2개만 지정하면 모든 열역학 상태가 결정된다.</span>
+      <span class="lang-en" style="display:none;"><strong>State principle</strong>: For a simple compressible system, specifying any two independent intensive properties completely determines the thermodynamic state.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 3.2 ============ -->
+<section id="s32" class="section">
+  <p class="section-label">Section 3.2</p>
+  <h2 class="section-title">
+    <span class="lang-ko">p-v-T 관계와 상다이어그램</span>
+    <span class="lang-en" style="display:none;">p-v-T Relations and Phase Diagrams</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">순수물질의 열역학적 거동은 압력(p), 비체적(v), 온도(T) 사이의 관계로 요약된다. 이 p-v-T 면을 평면에 투영하면 우리가 흔히 접하는 상다이어그램(p-T, p-v, T-v)이 만들어진다. 임계점(critical point) 위에서는 액체와 기체의 구분이 사라지며, 삼중점에서는 세 상이 동시에 평형 상태로 공존한다.</span>
+      <span class="lang-en" style="display:none;">The thermodynamic behavior of a pure substance is summarized by the relationship among pressure (p), specific volume (v), and temperature (T). Projecting the p-v-T surface onto planes produces the familiar phase diagrams (p-T, p-v, T-v). Above the critical point, the distinction between liquid and gas vanishes, while at the triple point all three phases coexist in equilibrium.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$x = \frac{m_{\text{vapor}}}{m_{\text{liquid}} + m_{\text{vapor}}}$$</div>
+  <div class="eq-block">$$\upsilon = \upsilon_f + x(\upsilon_g - \upsilon_f)$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>상다이어그램</strong>: p-v-T 면의 투영으로 p-T, p-v, T-v 다이어그램을 얻는다. 각 다이어그램은 상전이 경계와 평형 영역을 시각적으로 보여 준다.</span>
+      <span class="lang-en" style="display:none;"><strong>Phase diagrams</strong>: Projections of the p-v-T surface yield p-T, p-v, and T-v diagrams, each visually showing phase-change boundaries and equilibrium regions.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>임계점</strong>: 임계점 위에서는 액-기 상전이가 일어나지 않으며, 물질은 초임계 유체로 거동한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Critical point</strong>: Above the critical point, no liquid-vapor phase transition occurs, and the substance behaves as a supercritical fluid.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>삼중점</strong>: 고·액·기 세 상이 열역학적 평형 상태로 공존하는 유일한 온도-압력 조건이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Triple point</strong>: The unique temperature-pressure condition at which solid, liquid, and gas phases coexist in thermodynamic equilibrium.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 3.3 ============ -->
+<section id="s33" class="section">
+  <p class="section-label">Section 3.3</p>
+  <h2 class="section-title">
+    <span class="lang-ko">상변화 과정</span>
+    <span class="lang-en" style="display:none;">Studying Phase Change</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">일정 압력에서 액체를 가열하면 포화액(saturated liquid) 상태에 도달한 뒤 증발이 시작되고, 액-기 이상(two-phase) 혼합물을 거쳐 포화증기(saturated vapor)에 이른다. 이 과정에서 건도(quality) $x$가 0에서 1로 변하며, 혼합물의 모든 비성질을 결정하는 핵심 변수가 된다.</span>
+      <span class="lang-en" style="display:none;">When a liquid is heated at constant pressure, it reaches the saturated liquid state, begins to evaporate, passes through the two-phase liquid-vapor mixture region, and eventually becomes a saturated vapor. Throughout this process, quality $x$ varies from 0 to 1 and serves as the key variable determining all specific properties of the mixture.</span>
+    </p>
+  </div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>등압 가열 순서</strong>: 포화액(x=0) &#8594; 이상 혼합물(0&lt;x&lt;1) &#8594; 포화증기(x=1). 온도가 일정하게 유지되는 구간이 바로 상변화 구간이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Isobaric heating sequence</strong>: Saturated liquid (x=0) &#8594; two-phase mixture (0&lt;x&lt;1) &#8594; saturated vapor (x=1). The temperature remains constant during the phase-change interval.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>건도 x</strong>: 전체 질량 중 증기가 차지하는 질량 분율로, 0(포화액)에서 1(포화증기)까지의 범위를 갖는다.</span>
+      <span class="lang-en" style="display:none;"><strong>Quality x</strong>: The mass fraction of vapor in the total mass, ranging from 0 (saturated liquid) to 1 (saturated vapor).</span>
+    </li>
+  </ul>
+
+  <!-- Two-Phase Interactive Figure -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 3.1</span>
+      <span class="figure-title">
+        <span class="lang-ko">이상 혼합물의 비체적·내부에너지·엔탈피</span>
+        <span class="lang-en" style="display:none;">Two-Phase Liquid-Vapor Mixture Properties</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig_two_phase" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">건도 x</span>
+            <span class="lang-en" style="display:none;">Quality x</span>
+          </span>
+          <input type="range" id="slider-quality" min="0" max="1" value="0.5" step="0.01">
+          <span class="control-value" id="val-quality">0.50</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">포화온도 T<sub>sat</sub> (°C)</span>
+            <span class="lang-en" style="display:none;">Saturation Temp T<sub>sat</sub> (°C)</span>
+          </span>
+          <input type="range" id="slider-tsat" min="50" max="350" value="100" step="10">
+          <span class="control-value" id="val-tsat">100</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">v (m³/kg)</span>
+          <span class="readout-val" id="ro-v">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">u (kJ/kg)</span>
+          <span class="readout-val" id="ro-u">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key">h (kJ/kg)</span>
+          <span class="readout-val" id="ro-h">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 3.5 ============ -->
+<section id="s35" class="section">
+  <p class="section-label">Section 3.5</p>
+  <h2 class="section-title">
+    <span class="lang-ko">증기표와 보간법을 이용한 물성 평가</span>
+    <span class="lang-en" style="display:none;">Evaluating Properties Using Steam Tables</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">실제 공학 문제에서는 물의 성질을 증기표(steam table)에서 찾아 사용한다. 과열증기표, 포화표, 압축액표 등이 있으며, 주어진 상태가 어느 영역에 속하는지 먼저 판별한 후 적절한 표를 선택해야 한다. 표에 정확히 일치하는 값이 없으면 보간법(interpolation)을 사용하여 중간값을 구한다.</span>
+      <span class="lang-en" style="display:none;">In practical engineering problems, water properties are obtained from steam tables. These include superheated vapor tables, saturation tables, and compressed liquid tables. One must first identify which region the given state falls in, then select the appropriate table. When exact values are not tabulated, interpolation is used to estimate intermediate values.</span>
+    </p>
+  </div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>영역 판별</strong>: 주어진 온도·압력을 포화값과 비교하여 압축액, 이상 혼합물, 과열증기 중 어디에 해당하는지 결정한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Region identification</strong>: Compare the given temperature or pressure against saturation values to determine whether the state is compressed liquid, two-phase mixture, or superheated vapor.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>보간법</strong>: 표에 수록된 두 값 사이의 성질을 선형 비례로 추정하는 방법이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Interpolation</strong>: A method of estimating properties between two tabulated values using linear proportionality.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 3.6 ============ -->
+<section id="s36" class="section">
+  <p class="section-label">Section 3.6</p>
+  <h2 class="section-title">
+    <span class="lang-ko">내부에너지와 엔탈피</span>
+    <span class="lang-en" style="display:none;">Internal Energy and Enthalpy</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">내부에너지 $u$는 물질이 가진 미시적 에너지의 총합이며, 엔탈피 $h$는 $u + pv$로 정의되는 편의 성질이다. 엔탈피는 정압 과정의 열전달 해석에서 특히 유용하며, 열역학 분석 전반에 걸쳐 빈번하게 등장한다. 이상 혼합물 영역에서는 건도를 활용해 $u$와 $h$를 포화값의 선형 조합으로 계산한다.</span>
+      <span class="lang-en" style="display:none;">Internal energy $u$ represents the total microscopic energy of a substance, while enthalpy $h$ is defined as $u + pv$ — a convenient combined property. Enthalpy is especially useful in analyzing heat transfer in constant-pressure processes and appears frequently throughout thermodynamic analysis. In the two-phase region, $u$ and $h$ are calculated as linear combinations of saturated values using quality.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$h = u + p\upsilon$$</div>
+  <div class="eq-block">$$u = u_f + x(u_g - u_f)$$</div>
+  <div class="eq-block">$$h = h_f + x(h_g - h_f)$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>엔탈피의 정의</strong>: $h = u + pv$로 정의되며, 에너지와 유동일(flow work)을 결합한 성질이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Definition of enthalpy</strong>: Defined as $h = u + pv$, combining internal energy with flow work.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>이상 혼합물의 성질</strong>: 건도 $x$를 이용하여 $u = u_f + x(u_g - u_f)$, $h = h_f + x(h_g - h_f)$로 구한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Two-phase properties</strong>: Computed using quality $x$ as $u = u_f + x(u_g - u_f)$ and $h = h_f + x(h_g - h_f)$.</span>
+    </li>
+  </ul>
+
+  <!-- Quiz Block -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">100 °C, 건도 0.8인 물의 비체적은 약 얼마인가? ($v_f = 1.04 \times 10^{-3}$, $v_g = 1.673$ m³/kg)</span>
+      <span class="lang-en" style="display:none;">What is the approximate specific volume of water at 100 °C with quality 0.8? ($v_f = 1.04 \times 10^{-3}$, $v_g = 1.673$ m³/kg)</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')">0.335 m³/kg</button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q1')">1.339 m³/kg</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')">1.673 m³/kg</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q1')">0.837 m³/kg</button>
+    </div>
+    <div class="quiz-explain" id="q1-explain">
+      <span class="lang-ko">$v = v_f + x(v_g - v_f) = 0.00104 + 0.8 \times (1.673 - 0.00104) \approx 1.339$ m³/kg</span>
+      <span class="lang-en" style="display:none;">$v = v_f + x(v_g - v_f) \approx 1.339$ m³/kg</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 3.9 ============ -->
+<section id="s39" class="section">
+  <p class="section-label">Section 3.9</p>
+  <h2 class="section-title">
+    <span class="lang-ko">비열 c<sub>v</sub> 와 c<sub>p</sub></span>
+    <span class="lang-en" style="display:none;">Specific Heats c<sub>v</sub> and c<sub>p</sub></span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">비열은 물질의 온도를 단위 질량당 1도 올리는 데 필요한 에너지를 나타내는 성질이다. 정적 비열 $c_v$는 체적 일정 조건에서의 내부에너지 변화율이고, 정압 비열 $c_p$는 압력 일정 조건에서의 엔탈피 변화율이다. 비압축성 물질(고체·액체)에서는 $c_p \approx c_v = c$로 취급할 수 있어 에너지 계산이 크게 단순해진다.</span>
+      <span class="lang-en" style="display:none;">Specific heats quantify the energy required to raise the temperature of a unit mass by one degree. The constant-volume specific heat $c_v$ is the rate of change of internal energy with temperature at constant volume, while $c_p$ is the rate of change of enthalpy at constant pressure. For incompressible substances (solids and liquids), $c_p \approx c_v = c$, greatly simplifying energy calculations.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$c_v = \left(\frac{\partial u}{\partial T}\right)_v \qquad c_p = \left(\frac{\partial h}{\partial T}\right)_p$$</div>
+  <div class="eq-block">$$k = \frac{c_p}{c_v}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>정적 비열 c<sub>v</sub></strong>: 체적 일정 조건에서 온도에 대한 내부에너지의 편미분으로 정의된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Constant-volume specific heat c<sub>v</sub></strong>: Defined as the partial derivative of internal energy with respect to temperature at constant volume.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>정압 비열 c<sub>p</sub></strong>: 압력 일정 조건에서 온도에 대한 엔탈피의 편미분으로 정의된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Constant-pressure specific heat c<sub>p</sub></strong>: Defined as the partial derivative of enthalpy with respect to temperature at constant pressure.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>비압축성 물질</strong>: 고체·액체처럼 밀도 변화가 무시되는 물질에서는 $c_p = c_v = c$이고, $\Delta u = c \cdot \Delta T$로 근사한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Incompressible substances</strong>: For solids and liquids where density change is negligible, $c_p = c_v = c$, and $\Delta u \approx c \cdot \Delta T$.</span>
+    </li>
+  </ul>
+
+  <!-- Quiz Block 2 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">이상기체에서 $c_p$와 $c_v$의 차이는 무엇인가?</span>
+      <span class="lang-en" style="display:none;">For an ideal gas, what is the relationship between $c_p$ and $c_v$?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">$c_p = c_v$</button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q2')">$c_p - c_v = R$</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">$c_p - c_v = RT$</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q2')">$c_p / c_v = R$</button>
+    </div>
+    <div class="quiz-explain" id="q2-explain">
+      <span class="lang-ko">이상기체에서는 $h = u + RT$이므로 양변을 $T$로 미분하면 $c_p - c_v = R$이 된다.</span>
+      <span class="lang-en" style="display:none;">Since $h = u + RT$ for an ideal gas, differentiating with respect to $T$ gives $c_p - c_v = R$.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 3.11 ============ -->
+<section id="s311" class="section">
+  <p class="section-label">Section 3.11</p>
+  <h2 class="section-title">
+    <span class="lang-ko">일반화 압축인자 선도</span>
+    <span class="lang-en" style="display:none;">Generalized Compressibility Chart</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">실제 기체가 이상기체로부터 얼마나 벗어나는지를 정량화하는 무차원 수가 압축인자 $Z = pv/(RT)$이다. 임계 성질로 무차원화한 환산압력 $p_R$과 환산온도 $T_R$을 사용하면, 물질의 종류에 무관한 보편적(generalized) 압축인자 선도를 구성할 수 있다. 이를 통해 물성표 없이도 실제 기체의 비체적을 합리적 정확도로 추정할 수 있다.</span>
+      <span class="lang-en" style="display:none;">The compressibility factor $Z = pv/(RT)$ is a dimensionless quantity that measures how much a real gas deviates from ideal gas behavior. Using reduced pressure $p_R$ and reduced temperature $T_R$ (normalized by critical properties), a universal generalized compressibility chart can be constructed regardless of the substance. This allows estimating real-gas specific volumes with reasonable accuracy even without property tables.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$Z = \frac{p\upsilon}{RT}$$</div>
+  <div class="eq-block">$$p_R = \frac{p}{p_c}, \quad T_R = \frac{T}{T_c}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>압축인자 Z</strong>: $Z = 1$이면 이상기체, $Z \neq 1$이면 실제 기체 효과(분자간 인력·반발)가 유의미하다.</span>
+      <span class="lang-en" style="display:none;"><strong>Compressibility factor Z</strong>: $Z = 1$ indicates ideal gas behavior; $Z \neq 1$ implies significant real-gas effects (intermolecular attraction or repulsion).</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>환산 성질</strong>: $p_R = p/p_c$, $T_R = T/T_c$를 도입하면 서로 다른 물질들이 하나의 곡선군 위에 거의 겹치게 된다(대응 상태의 원리).</span>
+      <span class="lang-en" style="display:none;"><strong>Reduced properties</strong>: Introducing $p_R = p/p_c$ and $T_R = T/T_c$ causes different substances to nearly collapse onto a single family of curves (principle of corresponding states).</span>
+    </li>
+  </ul>
+
+  <!-- Compressibility Factor Interactive Figure -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 3.2</span>
+      <span class="figure-title">
+        <span class="lang-ko">압축인자 Z 선도</span>
+        <span class="lang-en" style="display:none;">Compressibility Factor Z Chart</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig_compressibility" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">환산온도 T<sub>R</sub></span>
+            <span class="lang-en" style="display:none;">Reduced Temp T<sub>R</sub></span>
+          </span>
+          <input type="range" id="slider-tr" min="1.0" max="2.5" value="1.5" step="0.05">
+          <span class="control-value" id="val-tr">1.50</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">환산압력 p<sub>R</sub></span>
+            <span class="lang-en" style="display:none;">Reduced Press p<sub>R</sub></span>
+          </span>
+          <input type="range" id="slider-pr" min="0.0" max="7.0" value="1.0" step="0.1">
+          <span class="control-value" id="val-pr">1.00</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key">Z</span>
+          <span class="readout-val" id="ro-z">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Block 3 -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko">어떤 기체의 환산온도 $T_R$이 매우 크고 환산압력 $p_R$이 매우 작으면, 압축인자 $Z$는 어떤 값에 가까운가?</span>
+      <span class="lang-en" style="display:none;">When $T_R$ is very large and $p_R$ is very small, what value does $Z$ approach?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">0</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">0.27</button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q3')">1</button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q3')">
+        <span class="lang-ko">불확정</span>
+        <span class="lang-en" style="display:none;">Indeterminate</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q3-explain">
+      <span class="lang-ko">분자간 힘이 무시될 조건이므로 이상기체 거동에 접근하여 $Z \to 1$이 된다.</span>
+      <span class="lang-en" style="display:none;">At low $p_R$ and high $T_R$, intermolecular forces are negligible, so $Z \to 1$.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 3.12 ============ -->
+<section id="s312" class="section">
+  <p class="section-label">Section 3.12</p>
+  <h2 class="section-title">
+    <span class="lang-ko">이상기체 모델</span>
+    <span class="lang-en" style="display:none;">Ideal Gas Model</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">이상기체 모델은 $pv = RT$라는 상태방정식을 따르며, 내부에너지와 엔탈피가 오직 온도만의 함수인 가상적 모델이다. 분자간 상호작용이 무시되는 조건 — 즉 환산압력이 낮고 환산온도가 높은 경우 — 에서 실제 기체의 거동을 잘 근사한다. 이 모델에서는 $c_p - c_v = R$이 항상 성립한다.</span>
+      <span class="lang-en" style="display:none;">The ideal gas model follows the equation of state $pv = RT$, with internal energy and enthalpy being functions of temperature only. It accurately approximates real gas behavior when intermolecular interactions are negligible — i.e., at low reduced pressure and high reduced temperature. Under this model, $c_p - c_v = R$ always holds.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$p\upsilon = RT$$</div>
+  <div class="eq-block">$$\Delta u = \int_{T_1}^{T_2} c_v(T)\,dT \qquad \Delta h = \int_{T_1}^{T_2} c_p(T)\,dT$$</div>
+  <div class="eq-block">$$c_p(T) - c_v(T) = R$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>이상기체 상태방정식</strong>: $pv = RT$로, 압력·비체적·온도가 단순한 비례 관계를 이룬다. $R$은 물질마다 다른 기체상수(보편기체상수/몰질량)이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Ideal gas equation of state</strong>: $pv = RT$ establishes a simple proportional relationship among pressure, specific volume, and temperature. $R$ is the substance-specific gas constant (universal gas constant divided by molar mass).</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>온도만의 함수</strong>: 이상기체에서는 $u = u(T)$, $h = h(T)$이므로 에너지 변화량은 온도 변화와 비열만으로 결정된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Functions of temperature only</strong>: For an ideal gas, $u = u(T)$ and $h = h(T)$, so energy changes are determined solely by temperature change and specific heats.</span>
+    </li>
+  </ul>
+
+  <!-- What-if Cards -->
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 수증기를 임계압력 이상에서 가열하면?</span>
+        <span class="lang-en" style="display:none;">What if you heat steam above the critical pressure?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">상전이가 일어나지 않고 연속적으로 밀도가 변한다 — 액·기 구분이 사라진다.</span>
+        <span class="lang-en" style="display:none;">No phase transition occurs; density changes continuously with no distinct liquid-vapor boundary.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 이상기체 모델을 임계점 근처에서 사용하면?</span>
+        <span class="lang-en" style="display:none;">What if the ideal gas model is used near the critical point?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">$Z$가 1에서 크게 벗어나므로 큰 오차가 발생한다 — 실제 물성표나 상태방정식을 써야 한다.</span>
+        <span class="lang-en" style="display:none;">$Z$ deviates significantly from 1, causing large errors — use property tables or real-gas EOS instead.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Takeaways ============ -->
+<section class="takeaways">
+  <h2 class="section-title">Key Takeaways</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">01</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">상태원리와 독립 성질</span>
+        <span class="lang-en" style="display:none;">State Principle and Independent Properties</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">단순 압축성 계는 독립 세기 성질 2개만 알면 모든 열역학 상태가 결정된다.</span>
+        <span class="lang-en" style="display:none;">For a simple compressible system, specifying any two independent intensive properties fixes the state.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">02</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">이상 혼합물과 건도</span>
+        <span class="lang-en" style="display:none;">Two-Phase Mixtures and Quality</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">포화 액-기 혼합물의 성질(v, u, h)은 건도 $x$를 통해 포화값의 선형 조합으로 구한다.</span>
+        <span class="lang-en" style="display:none;">Properties of saturated liquid-vapor mixtures are determined via quality $x$ as a linear combination of saturated values.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">03</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">이상기체 모델의 적용 범위</span>
+        <span class="lang-en" style="display:none;">When to Use the Ideal Gas Model</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">환산압력이 낮고 환산온도가 높아 $Z \approx 1$일 때만 이상기체 가정이 유효하다.</span>
+        <span class="lang-en" style="display:none;">The ideal gas model is valid only when $Z \approx 1$, typically at low reduced pressure and high reduced temperature.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.3</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC: Two-Phase & Compressibility Factor
+// ============================================================
+
+// Saturated water properties: [T(°C), v_f, v_g, u_f, u_g, h_f, h_g]
+const satData = [
+  { T: 50,  vf: 1.012e-3, vg: 12.032,  uf: 209.3,  ug: 2443.5, hf: 209.3,  hg: 2592.1 },
+  { T: 75,  vf: 1.026e-3, vg: 4.131,   uf: 313.9,  ug: 2475.2, hf: 314.0,  hg: 2635.3 },
+  { T: 100, vf: 1.044e-3, vg: 1.673,   uf: 418.9,  ug: 2506.5, hf: 419.0,  hg: 2676.1 },
+  { T: 125, vf: 1.065e-3, vg: 0.7706,  uf: 524.7,  ug: 2534.6, hf: 524.7,  hg: 2713.5 },
+  { T: 150, vf: 1.091e-3, vg: 0.3928,  uf: 631.7,  ug: 2559.5, hf: 632.2,  hg: 2746.5 },
+  { T: 175, vf: 1.121e-3, vg: 0.2168,  uf: 740.0,  ug: 2580.2, hf: 741.0,  hg: 2773.6 },
+  { T: 200, vf: 1.157e-3, vg: 0.1274,  uf: 850.5,  ug: 2595.3, hf: 852.4,  hg: 2793.2 },
+  { T: 225, vf: 1.199e-3, vg: 0.07849, uf: 963.7,  ug: 2603.1, hf: 966.8,  hg: 2803.3 },
+  { T: 250, vf: 1.251e-3, vg: 0.05013, uf: 1080.4, ug: 2602.4, hf: 1085.4, hg: 2801.5 },
+  { T: 275, vf: 1.317e-3, vg: 0.03279, uf: 1202.2, ug: 2590.2, hf: 1210.1, hg: 2785.0 },
+  { T: 300, vf: 1.404e-3, vg: 0.02167, uf: 1332.0, ug: 2563.0, hf: 1344.0, hg: 2749.0 },
+  { T: 325, vf: 1.528e-3, vg: 0.01380, uf: 1476.0, ug: 2513.7, hf: 1493.2, hg: 2685.4 },
+  { T: 350, vf: 1.741e-3, vg: 0.00881, uf: 1641.9, ug: 2418.4, hf: 1670.6, hg: 2563.9 }
+];
+
+// Interpolate saturation data for a given T
+function interpSat(T) {
+  if (T <= satData[0].T) return satData[0];
+  if (T >= satData[satData.length - 1].T) return satData[satData.length - 1];
+  let i = 0;
+  while (i < satData.length - 1 && satData[i + 1].T < T) i++;
+  const lo = satData[i], hi = satData[i + 1];
+  const frac = (T - lo.T) / (hi.T - lo.T);
+  return {
+    T: T,
+    vf: lo.vf + frac * (hi.vf - lo.vf),
+    vg: lo.vg + frac * (hi.vg - lo.vg),
+    uf: lo.uf + frac * (hi.uf - lo.uf),
+    ug: lo.ug + frac * (hi.ug - lo.ug),
+    hf: lo.hf + frac * (hi.hf - lo.hf),
+    hg: lo.hg + frac * (hi.hg - lo.hg)
+  };
+}
+
+// Build two-phase T-v diagram
+function buildFigTwoPhase() {
+  // Saturation dome curves
+  const Tvals = [];
+  const vfLine = [];
+  const vgLine = [];
+  for (let T = 50; T <= 350; T += 5) {
+    const s = interpSat(T);
+    Tvals.push(T);
+    vfLine.push(s.vf);
+    vgLine.push(s.vg);
+  }
+
+  const trSatLiquid = {
+    x: vfLine, y: Tvals,
+    mode: 'lines', name: 'Saturated Liquid',
+    line: { color: '#3b82f6', width: 2 }
+  };
+  const trSatVapor = {
+    x: vgLine, y: Tvals,
+    mode: 'lines', name: 'Saturated Vapor',
+    line: { color: '#ef4444', width: 2 }
+  };
+
+  // Current state point
+  const x0 = 0.5, T0 = 100;
+  const s0 = interpSat(T0);
+  const v0 = s0.vf + x0 * (s0.vg - s0.vf);
+  const trPoint = {
+    x: [v0], y: [T0],
+    mode: 'markers', name: 'Current State',
+    marker: { color: '#ef4444', size: 12, symbol: 'circle',
+              line: { color: '#fff', width: 2 } }
+  };
+
+  Plotly.newPlot('fig_two_phase', [trSatLiquid, trSatVapor, trPoint], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'v (m³/kg)', type: 'log',
+             range: [-4, 1.5], gridcolor: '#e5e7eb' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'T (°C)',
+             range: [30, 380], gridcolor: '#e5e7eb' },
+    showlegend: true,
+    legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.7)' }
+  }, plotlyConfig);
+
+  updateFigTwoPhase(x0, T0);
+}
+
+function updateFigTwoPhase(x, Tsat) {
+  const s = interpSat(Tsat);
+  const v = s.vf + x * (s.vg - s.vf);
+  const u = s.uf + x * (s.ug - s.uf);
+  const h = s.hf + x * (s.hg - s.hf);
+
+  Plotly.react('fig_two_phase',
+    [
+      Plotly.getData ? undefined : null,  // keep existing traces
+    ].filter(Boolean),
+    undefined
+  );
+
+  // Update point trace (index 2)
+  Plotly.restyle('fig_two_phase', { x: [[v]], y: [[Tsat]] }, [2]);
+
+  document.getElementById('ro-v').textContent = v.toFixed(4);
+  document.getElementById('ro-u').textContent = u.toFixed(1);
+  document.getElementById('ro-h').textContent = h.toFixed(1);
+}
+
+// ---- Compressibility Factor Z ----
+
+// Solve van der Waals reduced EOS: Z^3 - (1+B)Z^2 + AZ - AB = 0
+// A = 27*pR/(64*TR^2), B = pR/(8*TR)
+// Select largest real root (gas phase)
+function solveVdwZ(pR, TR) {
+  if (pR < 1e-10) return 1.0;
+  const A = 27 * pR / (64 * TR * TR);
+  const B = pR / (8 * TR);
+
+  // Cubic: Z^3 + a2*Z^2 + a1*Z + a0 = 0
+  const a2 = -(1 + B);
+  const a1 = A;
+  const a0 = -A * B;
+
+  // Cardano's method
+  const p = a1 - a2 * a2 / 3;
+  const q = a0 - a2 * a1 / 3 + 2 * a2 * a2 * a2 / 27;
+  const disc = q * q / 4 + p * p * p / 27;
+
+  let roots = [];
+  if (disc > 0) {
+    const sqrtDisc = Math.sqrt(disc);
+    const u = Math.cbrt(-q / 2 + sqrtDisc);
+    const v = Math.cbrt(-q / 2 - sqrtDisc);
+    roots.push(u + v - a2 / 3);
+  } else {
+    const r = Math.sqrt(-p * p * p / 27);
+    const theta = Math.acos(-q / (2 * r));
+    const m = 2 * Math.cbrt(r);
+    roots.push(m * Math.cos(theta / 3) - a2 / 3);
+    roots.push(m * Math.cos((theta + 2 * Math.PI) / 3) - a2 / 3);
+    roots.push(m * Math.cos((theta + 4 * Math.PI) / 3) - a2 / 3);
+  }
+
+  // Filter real positive roots, pick largest (gas phase)
+  const realPositive = roots.filter(z => z > 0);
+  return realPositive.length > 0 ? Math.max(...realPositive) : 1.0;
+}
+
+function buildFigCompressibility() {
+  const TRvals = [1.0, 1.2, 1.5, 2.0, 2.5];
+  const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6'];
+  const traces = [];
+
+  TRvals.forEach((TR, idx) => {
+    const pRarr = [];
+    const Zarr = [];
+    for (let pR = 0; pR <= 7.0; pR += 0.05) {
+      pRarr.push(pR);
+      Zarr.push(solveVdwZ(pR, TR));
+    }
+    traces.push({
+      x: pRarr, y: Zarr,
+      mode: 'lines',
+      name: 'T_R = ' + TR.toFixed(1),
+      line: { color: colors[idx], width: 2 }
+    });
+  });
+
+  // Ideal gas reference line
+  traces.push({
+    x: [0, 7], y: [1, 1],
+    mode: 'lines', name: 'Ideal Gas (Z=1)',
+    line: { color: '#9ca3af', width: 1, dash: 'dash' }
+  });
+
+  // Current point
+  const Z0 = solveVdwZ(1.0, 1.5);
+  traces.push({
+    x: [1.0], y: [Z0],
+    mode: 'markers', name: 'Current State',
+    marker: { color: '#ef4444', size: 12, symbol: 'diamond',
+              line: { color: '#fff', width: 2 } }
+  });
+
+  Plotly.newPlot('fig_compressibility', traces, {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'p_R (reduced pressure)', range: [0, 7.2] },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Z (compressibility factor)', range: [0, 1.3] },
+    showlegend: true,
+    legend: { x: 0.6, y: 0.98, bgcolor: 'rgba(255,255,255,0.7)' }
+  }, plotlyConfig);
+
+  document.getElementById('ro-z').textContent = Z0.toFixed(4);
+}
+
+function updateFigCompressibility(TR, pR) {
+  const Z = solveVdwZ(pR, TR);
+  // Update current point (last trace)
+  const nTraces = document.getElementById('fig_compressibility').data.length;
+  Plotly.restyle('fig_compressibility', { x: [[pR]], y: [[Z]] }, [nTraces - 1]);
+  document.getElementById('ro-z').textContent = Z.toFixed(4);
+}
+
+// ---- Sliders ----
+
+function setupSliders() {
+  // Two-phase sliders
+  const sliderQuality = document.getElementById('slider-quality');
+  const sliderTsat = document.getElementById('slider-tsat');
+  const valQuality = document.getElementById('val-quality');
+  const valTsat = document.getElementById('val-tsat');
+
+  function onTwoPhaseChange() {
+    const x = parseFloat(sliderQuality.value);
+    const T = parseFloat(sliderTsat.value);
+    valQuality.textContent = x.toFixed(2);
+    valTsat.textContent = T.toFixed(0);
+    throttledDraw('twoPhase', () => updateFigTwoPhase(x, T));
+  }
+  sliderQuality.addEventListener('input', onTwoPhaseChange);
+  sliderTsat.addEventListener('input', onTwoPhaseChange);
+
+  // Compressibility sliders
+  const sliderTR = document.getElementById('slider-tr');
+  const sliderPR = document.getElementById('slider-pr');
+  const valTR = document.getElementById('val-tr');
+  const valPR = document.getElementById('val-pr');
+
+  function onCompressChange() {
+    const TR = parseFloat(sliderTR.value);
+    const pR = parseFloat(sliderPR.value);
+    valTR.textContent = TR.toFixed(2);
+    valPR.textContent = pR.toFixed(2);
+    throttledDraw('compress', () => updateFigCompressibility(TR, pR));
+  }
+  sliderTR.addEventListener('input', onCompressChange);
+  sliderPR.addEventListener('input', onCompressChange);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFigTwoPhase();
+  buildFigCompressibility();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>

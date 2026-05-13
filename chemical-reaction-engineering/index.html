@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서 — Chemical Reaction Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-void: #000000;
+  --color-fog-border: #e5e7eb;
+  --color-chalk: #f1f1f1;
+  --color-graphite: #666666;
+  --color-ash: #8f8f8f;
+  --color-canvas: #ffffff;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --radius-cards: 6.08px;
+  --radius-full: 9999px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-inter);
+  background: var(--color-canvas);
+  color: var(--color-void);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 960px; margin: 0 auto; padding: 0 40px; }
+
+.lang-toggle {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  z-index: 10;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 9999px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.lang-btn {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-ash);
+  transition: all 0.15s;
+}
+.lang-btn.active {
+  background: var(--color-void);
+  color: #fff;
+}
+
+.hero {
+  padding: 120px 0 80px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-fog-border);
+}
+.hero-eyebrow {
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: 20px;
+}
+.hero-title {
+  font-size: clamp(36px, 5vw, 56px); font-weight: 600;
+  letter-spacing: -1.44px; line-height: 1.08; margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: 18px; color: var(--color-graphite); line-height: 1.5;
+  max-width: 560px; margin: 0 auto 40px;
+}
+.hero-stats {
+  display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+}
+.hero-stat { text-align: center; }
+.hero-stat-num { font-size: 32px; font-weight: 600; letter-spacing: -0.5px; }
+.hero-stat-label { font-size: 13px; color: var(--color-graphite); margin-top: 4px; }
+
+.chapters { padding: 80px 0; }
+.chapters-title {
+  font-size: 13px; font-weight: 500; color: var(--color-graphite);
+  letter-spacing: 0.011em; text-transform: uppercase; margin-bottom: 32px;
+}
+.chapter-grid { display: flex; flex-direction: column; gap: 1px; }
+.chapter-card {
+  display: grid; grid-template-columns: 60px 1fr auto;
+  align-items: center; gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--color-fog-border);
+  text-decoration: none; color: inherit;
+  transition: background 0.15s;
+}
+.chapter-card:first-child { border-top: 1px solid var(--color-fog-border); }
+.chapter-card:hover { background: var(--color-chalk); margin: 0 -16px; padding: 24px 16px; border-radius: var(--radius-cards); }
+.ch-num {
+  font-size: 28px; font-weight: 600; color: var(--color-fog-border);
+  letter-spacing: -0.03em; text-align: right;
+}
+.ch-info { display: flex; flex-direction: column; gap: 4px; }
+.ch-title { font-size: 18px; font-weight: 600; line-height: 1.3; }
+.ch-desc { font-size: 14px; color: var(--color-graphite); line-height: 1.5; }
+.ch-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.ch-tag {
+  font-size: 11px; font-weight: 500; color: var(--color-ash);
+  background: rgba(0,0,0,0.03); border-radius: var(--radius-full);
+  padding: 3px 10px; letter-spacing: 0.01em;
+}
+.ch-arrow {
+  font-size: 18px; color: var(--color-fog-border);
+  transition: color 0.15s, transform 0.15s;
+}
+.chapter-card:hover .ch-arrow { color: var(--color-void); transform: translateX(4px); }
+.chapter-card:hover .ch-num { color: var(--color-void); }
+
+.lang-en { display: none; }
+
+footer {
+  border-top: 1px solid var(--color-fog-border);
+  padding: 40px 0;
+  text-align: center;
+}
+.footer-text { font-size: 13px; color: var(--color-graphite); }
+.footer-text a { color: var(--color-void); text-decoration: none; }
+
+@media (max-width: 640px) {
+  .page { padding: 0 20px; }
+  .hero { padding: 64px 0 48px; }
+  .chapter-card { grid-template-columns: 40px 1fr auto; gap: 16px; }
+  .ch-num { font-size: 22px; }
+  .ch-title { font-size: 16px; }
+  .hero-stats { gap: 24px; }
+  .lang-toggle { top: 16px; right: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+  <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+</div>
+
+<div class="page">
+  <section class="hero">
+    <p class="hero-eyebrow"><a href="../" style="color:inherit;text-decoration:none;">&#8592; Collection</a> &nbsp;&middot;&nbsp; Fogler &middot; Elements of Chemical Reaction Engineering</p>
+    <h1 class="hero-title lang-ko">화학반응공학</h1>
+    <h1 class="hero-title lang-en">Chemical Reaction Engineering</h1>
+    <p class="hero-subtitle lang-ko">슬라이더를 움직이면 그래프가 실시간으로 반응합니다. CSTR과 PFR 비교부터 비이상 반응기까지 — 파라미터를 직접 조작하면서 반응공학의 '감'을 잡으세요.</p>
+    <p class="hero-subtitle lang-en">Graphs respond in real time as you move the sliders. From CSTR vs PFR comparisons to nonideal reactors — build intuition by manipulating parameters directly.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num">18</div><div class="hero-stat-label">Chapters</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Interactive Figures</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Quizzes</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">0</div><div class="hero-stat-label">Dependencies</div></div>
+    </div>
+  </section>
+
+  <section class="chapters">
+    <p class="chapters-title">All Chapters</p>
+    <div class="chapter-grid">
+
+      <a href="cre-ch1.html" class="chapter-card">
+        <div class="ch-num">01</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">몰수지</div>
+          <div class="ch-title lang-en">Mole Balances</div>
+          <div class="ch-desc lang-ko">반응기 종류(BR, CSTR, PFR, PBR), 반응 속도, 설계 방정식</div>
+          <div class="ch-desc lang-en">Reactor types (BR, CSTR, PFR, PBR), reaction rate, design equations</div>
+          <div class="ch-tags"><span class="ch-tag">BR</span><span class="ch-tag">CSTR</span><span class="ch-tag">PFR</span><span class="ch-tag">PBR</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch2.html" class="chapter-card">
+        <div class="ch-num">02</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">전환율과 반응기 크기</div>
+          <div class="ch-title lang-en">Conversion &amp; Reactor Sizing</div>
+          <div class="ch-desc lang-ko">Levenspiel 플롯, 반응기 직렬/병렬 배열, 부피 최적화</div>
+          <div class="ch-desc lang-en">Levenspiel plot, series/parallel reactors, volume optimization</div>
+          <div class="ch-tags"><span class="ch-tag">Levenspiel</span><span class="ch-tag">Sizing</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch3.html" class="chapter-card">
+        <div class="ch-num">03</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">속도 법칙</div>
+          <div class="ch-title lang-en">Rate Laws</div>
+          <div class="ch-desc lang-ko">Arrhenius 식, 반응 차수, 가역/비가역 반응</div>
+          <div class="ch-desc lang-en">Arrhenius equation, reaction order, reversible/irreversible reactions</div>
+          <div class="ch-tags"><span class="ch-tag">Arrhenius</span><span class="ch-tag">Order</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch4.html" class="chapter-card">
+        <div class="ch-num">04</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">화학양론</div>
+          <div class="ch-title lang-en">Stoichiometry</div>
+          <div class="ch-desc lang-ko">농도-전환율 관계, 기상/액상 반응, 화학양론표</div>
+          <div class="ch-desc lang-en">Concentration-conversion relations, gas/liquid phase, stoichiometric table</div>
+          <div class="ch-tags"><span class="ch-tag">Concentration</span><span class="ch-tag">Flow</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch5.html" class="chapter-card">
+        <div class="ch-num">05</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">등온 반응기 설계: 전환율</div>
+          <div class="ch-title lang-en">Isothermal Reactor Design: Conversion</div>
+          <div class="ch-desc lang-ko">CSTR/PFR 설계, 압력 강하, 직렬 반응기</div>
+          <div class="ch-desc lang-en">CSTR/PFR design, pressure drop, series reactors</div>
+          <div class="ch-tags"><span class="ch-tag">Design</span><span class="ch-tag">Pressure Drop</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch6.html" class="chapter-card">
+        <div class="ch-num">06</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">등온 설계: 몰유량</div>
+          <div class="ch-title lang-en">Isothermal Design: Molar Flow Rates</div>
+          <div class="ch-desc lang-ko">멤브레인 반응기, 반회분식 반응기, 다성분 시스템</div>
+          <div class="ch-desc lang-en">Membrane reactor, semibatch reactor, multicomponent systems</div>
+          <div class="ch-tags"><span class="ch-tag">Membrane</span><span class="ch-tag">Semibatch</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch7.html" class="chapter-card">
+        <div class="ch-num">07</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">속도 데이터 수집과 분석</div>
+          <div class="ch-title lang-en">Collection &amp; Analysis of Rate Data</div>
+          <div class="ch-desc lang-ko">미분법, 적분법, 비선형 회귀, 실험 설계</div>
+          <div class="ch-desc lang-en">Differential method, integral method, nonlinear regression, experimental design</div>
+          <div class="ch-tags"><span class="ch-tag">Differential</span><span class="ch-tag">Integral</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch8.html" class="chapter-card">
+        <div class="ch-num">08</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">다중 반응</div>
+          <div class="ch-title lang-en">Multiple Reactions</div>
+          <div class="ch-desc lang-ko">직렬/병렬 반응, 선택도, 수율, 최적 온도</div>
+          <div class="ch-desc lang-en">Series/parallel reactions, selectivity, yield, optimal temperature</div>
+          <div class="ch-tags"><span class="ch-tag">Selectivity</span><span class="ch-tag">Yield</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch9.html" class="chapter-card">
+        <div class="ch-num">09</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">반응 메커니즘과 생물반응</div>
+          <div class="ch-title lang-en">Reaction Mechanisms &amp; Bioreactions</div>
+          <div class="ch-desc lang-ko">PSSH, Michaelis-Menten, Lineweaver-Burk, 효소 반응</div>
+          <div class="ch-desc lang-en">PSSH, Michaelis-Menten, Lineweaver-Burk, enzyme reactions</div>
+          <div class="ch-tags"><span class="ch-tag">Michaelis-Menten</span><span class="ch-tag">Enzyme</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch10.html" class="chapter-card">
+        <div class="ch-num">10</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">촉매와 촉매 반응기</div>
+          <div class="ch-title lang-en">Catalysis &amp; Catalytic Reactors</div>
+          <div class="ch-desc lang-ko">흡착, 표면 반응, 탈착, rate-limiting step, 촉매 비활성화</div>
+          <div class="ch-desc lang-en">Adsorption, surface reaction, desorption, rate-limiting step, catalyst deactivation</div>
+          <div class="ch-tags"><span class="ch-tag">Adsorption</span><span class="ch-tag">RLS</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch11.html" class="chapter-card">
+        <div class="ch-num">11</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">비등온: 단열 PFR</div>
+          <div class="ch-title lang-en">Nonisothermal: Adiabatic PFR</div>
+          <div class="ch-desc lang-ko">에너지 밸런스, T-X 다이어그램, 단열 평형 전환율</div>
+          <div class="ch-desc lang-en">Energy balance, T-X diagram, adiabatic equilibrium conversion</div>
+          <div class="ch-tags"><span class="ch-tag">Adiabatic</span><span class="ch-tag">T-X</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch12.html" class="chapter-card">
+        <div class="ch-num">12</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">비등온: 열교환</div>
+          <div class="ch-title lang-en">Nonisothermal: Heat Exchange</div>
+          <div class="ch-desc lang-ko">CSTR 다중 정상상태, 점화-소화 곡선, 안정성 분석</div>
+          <div class="ch-desc lang-en">CSTR multiple steady states, ignition-extinction curves, stability analysis</div>
+          <div class="ch-tags"><span class="ch-tag">MSS</span><span class="ch-tag">Ignition</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch13.html" class="chapter-card">
+        <div class="ch-num">13</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">비정상 비등온 반응기</div>
+          <div class="ch-title lang-en">Unsteady Nonisothermal</div>
+          <div class="ch-desc lang-ko">배치 반응기 열폭주, 안전 설계, 냉각 실패</div>
+          <div class="ch-desc lang-en">Batch reactor thermal runaway, safety design, cooling failure</div>
+          <div class="ch-tags"><span class="ch-tag">Runaway</span><span class="ch-tag">Safety</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch14.html" class="chapter-card">
+        <div class="ch-num">14</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">물질전달 제한</div>
+          <div class="ch-title lang-en">Mass Transfer Limitations</div>
+          <div class="ch-desc lang-ko">외부 확산, 경계층, Mears 기준, 물질전달 계수</div>
+          <div class="ch-desc lang-en">External diffusion, boundary layer, Mears criterion, mass transfer coefficient</div>
+          <div class="ch-tags"><span class="ch-tag">Mears</span><span class="ch-tag">External Diff.</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch15.html" class="chapter-card">
+        <div class="ch-num">15</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">확산과 반응</div>
+          <div class="ch-title lang-en">Diffusion &amp; Reaction</div>
+          <div class="ch-desc lang-ko">Thiele 모듈러스, 유효성 인자, 내부 확산 제한</div>
+          <div class="ch-desc lang-en">Thiele modulus, effectiveness factor, internal diffusion limitation</div>
+          <div class="ch-tags"><span class="ch-tag">Thiele</span><span class="ch-tag">Effectiveness</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch16.html" class="chapter-card">
+        <div class="ch-num">16</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">체류시간 분포</div>
+          <div class="ch-title lang-en">Residence Time Distributions</div>
+          <div class="ch-desc lang-ko">E(t), F(t) 곡선, 펄스/계단 추적자, 평균 체류시간</div>
+          <div class="ch-desc lang-en">E(t), F(t) curves, pulse/step tracer, mean residence time</div>
+          <div class="ch-tags"><span class="ch-tag">RTD</span><span class="ch-tag">E(t)</span><span class="ch-tag">F(t)</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch17.html" class="chapter-card">
+        <div class="ch-num">17</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">RTD에서 전환율 예측</div>
+          <div class="ch-title lang-en">Conversion from RTD</div>
+          <div class="ch-desc lang-ko">분리 모델, 최대 혼합 모델, 전환율 한계</div>
+          <div class="ch-desc lang-en">Segregation model, maximum mixedness, conversion bounds</div>
+          <div class="ch-tags"><span class="ch-tag">Segregation</span><span class="ch-tag">Mixedness</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+      <a href="cre-ch18.html" class="chapter-card">
+        <div class="ch-num">18</div>
+        <div class="ch-info">
+          <div class="ch-title lang-ko">비이상 반응기 모델</div>
+          <div class="ch-title lang-en">Models for Nonideal Reactors</div>
+          <div class="ch-desc lang-ko">직렬 탱크 모델, 분산 모델, 비이상 유동</div>
+          <div class="ch-desc lang-en">Tanks-in-series, dispersion model, nonideal flow</div>
+          <div class="ch-tags"><span class="ch-tag">TIS</span><span class="ch-tag">Dispersion</span></div>
+        </div>
+        <div class="ch-arrow">&#8594;</div>
+      </a>
+
+    </div>
+  </section>
+</div>
+
+<footer>
+  <p class="footer-text">Based on topics covered in H. Scott Fogler — <em>Elements of Chemical Reaction Engineering</em>, 5th Ed. (Pearson, 2016).</p>
+  <p class="footer-text" style="margin-top:4px;">All explanations, visualizations, and exercises are original works.</p>
+  <p class="footer-text" style="margin-top:8px;">움직이는 교과서 &middot; <a href="https://schoung.com">Seokhyun Choung</a></p>
+</footer>
+
+<script>
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(function(el) { el.style.display = lang === 'ko' ? '' : 'none'; });
+  document.querySelectorAll('.lang-en').forEach(function(el) { el.style.display = lang === 'en' ? '' : 'none'; });
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+</script>
+</body>
+</html>

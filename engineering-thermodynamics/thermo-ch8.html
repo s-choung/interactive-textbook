@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>움직이는 교과서: Vapor Power Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ]
+  });"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="global-toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="./" class="nav-back" title="목차로">&#8592;</a>
+    <a href="#" class="nav-brand">Vapor Power Systems</a>
+    <ul class="nav-links">
+      <li><a href="#s81">8.1</a></li>
+      <li><a href="#s82">8.2</a></li>
+      <li><a href="#s83">8.3</a></li>
+      <li><a href="#s84">8.4</a></li>
+      <li><a href="#s85">8.5</a></li>
+      <li><a href="#s86">8.6</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnKO" onclick="setLang('ko')">KO</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <span class="nav-badge">Moran Ch.8</span>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">움직이는 교과서 · Interactive Textbook</p>
+  <h1 class="hero-title">
+    <span class="lang-ko">증기 동력 시스템</span>
+    <span class="lang-en" style="display:none;">Vapor Power Systems</span>
+  </h1>
+  <p class="hero-subtitle">
+    <span class="lang-ko">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 8. 슬라이더를 움직이면 그래프가 실시간으로 반응합니다.</span>
+    <span class="lang-en" style="display:none;">Moran, <em>Fundamentals of Engineering Thermodynamics</em>, Chapter 8. Move the sliders to see the graphs respond in real time.</span>
+  </p>
+  <div class="hero-chips">
+    <span class="chip">Rankine cycle</span>
+    <span class="chip">열효율</span>
+    <span class="chip">재열</span>
+    <span class="chip">재생</span>
+    <span class="chip">엑서지</span>
+  </div>
+</section>
+
+<!--====== CONTENT START ======-->
+
+<!-- ============ Section 8.1 ============ -->
+<section id="s81" class="section">
+  <p class="section-label">Section 8.1</p>
+  <h2 class="section-title">
+    <span class="lang-ko">증기 동력 발전소 개요</span>
+    <span class="lang-en" style="display:none;">Introducing Vapor Power Plants</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">증기 동력 발전소는 화석연료, 원자력, 태양열, 지열 등 다양한 열원을 이용하여 작동유체(주로 물)를 기화시키고, 고온·고압 증기로 터빈을 구동하여 전력을 생산하는 시스템이다. 전체 발전소는 기능에 따라 네 개의 하위시스템으로 나뉜다: 연료를 연소하여 열을 방출하는 보일러 계통(A), 작동유체가 순환하며 열을 일로 변환하는 열역학적 사이클 계통(B), 축일을 전기로 바꾸는 발전기 계통(C), 그리고 응축기에서 방출된 열을 환경으로 전달하는 냉각 계통(D)이다.</span>
+      <span class="lang-en" style="display:none;">A vapor power plant uses various heat sources — fossil fuels, nuclear energy, solar thermal, or geothermal — to vaporize a working fluid (typically water) and drive a turbine with the resulting high-temperature, high-pressure steam. The plant is divided into four subsystems: the boiler system (A) where fuel is combusted to release heat, the thermodynamic cycle system (B) where the working fluid circulates and converts heat into work, the generator system (C) that transforms shaft work into electricity, and the cooling system (D) that rejects waste heat from the condenser to the environment.</span>
+    </p>
+  </div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>보일러(열원) 계통</strong>: 연료 연소, 핵분열 반응, 태양열 집열 등으로 작동유체에 열에너지를 공급하는 영역이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Boiler (heat source) system</strong>: The subsystem that supplies thermal energy to the working fluid through fuel combustion, nuclear fission, solar collection, etc.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>열역학 사이클</strong>: 작동유체가 일련의 과정(가열-팽창-방열-압축)을 거쳐 초기 상태로 돌아오며, 이 과정에서 열을 순일(net work)로 변환한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Thermodynamic cycle</strong>: The working fluid undergoes a sequence of processes (heating-expansion-heat rejection-compression) returning to its initial state, converting heat into net work along the way.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>냉각 계통</strong>: 응축기에서 방출되는 폐열을 냉각탑이나 하천수로 전달하며, 환경 영향과 열효율 양 측면에서 중요한 역할을 한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Cooling system</strong>: Transfers waste heat from the condenser to the surroundings via cooling towers or river water, playing a critical role in both environmental impact and thermal efficiency.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 8.2 ============ -->
+<section id="s82" class="section">
+  <p class="section-label">Section 8.2</p>
+  <h2 class="section-title">
+    <span class="lang-ko">랭킨 사이클</span>
+    <span class="lang-en" style="display:none;">The Rankine Cycle</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">이상 랭킨 사이클은 증기 동력 시스템의 기본 모델로, 네 가지 과정으로 구성된다: 터빈에서의 등엔트로피 팽창(1→2), 응축기에서의 등압 방열(2→3), 펌프에서의 등엔트로피 압축(3→4), 보일러에서의 등압 가열(4→1). 실제 사이클에서는 터빈과 펌프의 비가역성 때문에 등엔트로피 효율이 도입되며, 이를 통해 이상 사이클 대비 실제 성능을 평가한다. 보일러 압력을 높이거나 응축기 압력을 낮추면 사이클 열효율이 향상되지만, 터빈 출구의 습증기 건도 감소에 주의해야 한다.</span>
+      <span class="lang-en" style="display:none;">The ideal Rankine cycle is the fundamental model for vapor power systems, consisting of four processes: isentropic expansion in the turbine (1→2), constant-pressure heat rejection in the condenser (2→3), isentropic compression in the pump (3→4), and constant-pressure heat addition in the boiler (4→1). In real cycles, isentropic efficiencies account for irreversibilities in the turbine and pump, enabling assessment of actual performance relative to the ideal case. Raising boiler pressure or lowering condenser pressure improves cycle efficiency, but one must be cautious about decreasing turbine exit quality in the wet region.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\eta = \frac{(h_1 - h_2) - (h_4 - h_3)}{h_1 - h_4}$$</div>
+  <div class="eq-block">$$\text{bwr} = \frac{h_4 - h_3}{h_1 - h_2}$$</div>
+  <div class="eq-block">$$\frac{\dot{W}_p}{\dot{m}} \approx v_3(p_4 - p_3)$$</div>
+  <div class="eq-block">$$\eta_t = \frac{h_1 - h_2}{h_1 - h_{2s}}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>열효율</strong>: 순일(터빈 출력 - 펌프 입력)을 보일러 열공급량으로 나눈 비율이다. 카르노 효율보다 항상 낮으며, 평균 가열·방열 온도에 의해 결정된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Thermal efficiency</strong>: The ratio of net work (turbine output minus pump input) to boiler heat input. Always less than Carnot efficiency, governed by the mean temperatures of heat addition and rejection.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>비역일비(bwr)</strong>: 펌프 소요 일 대 터빈 출력의 비로, 증기 사이클에서는 1~4%로 매우 낮다. 작동유체가 액체 상태에서 압축되어 비체적이 작기 때문이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Back work ratio (bwr)</strong>: The ratio of pump work to turbine output, typically 1-4% for steam cycles. This is very low because the working fluid is compressed as a liquid with small specific volume.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>등엔트로피 효율</strong>: 터빈이나 펌프의 실제 일 대 이상(등엔트로피) 일의 비로, 기기의 비가역성 정도를 나타낸다.</span>
+      <span class="lang-en" style="display:none;"><strong>Isentropic efficiency</strong>: The ratio of actual work to ideal (isentropic) work for a turbine or pump, quantifying the degree of irreversibility in the device.</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure: Rankine Cycle Efficiency Explorer -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 8.1</span>
+      <span class="figure-title">
+        <span class="lang-ko">랭킨 사이클 효율 탐색기</span>
+        <span class="lang-en" style="display:none;">Rankine Cycle Efficiency Explorer</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig8_rankine_efficiency" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">보일러 압력 $p_{\text{boiler}}$</span>
+            <span class="lang-en" style="display:none;">Boiler pressure $p_{\text{boiler}}$</span>
+          </span>
+          <input type="range" id="sl_p_boiler" min="1" max="16" value="8" step="0.5">
+          <span class="control-value" id="val_p_boiler">8.0 MPa</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">응축기 압력 $p_{\text{cond}}$</span>
+            <span class="lang-en" style="display:none;">Condenser pressure $p_{\text{cond}}$</span>
+          </span>
+          <input type="range" id="sl_p_cond" min="4" max="100" value="8" step="2">
+          <span class="control-value" id="val_p_cond">0.008 MPa</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">열효율 &eta;</span>
+          <span class="readout-key lang-en" style="display:none;">Thermal efficiency &eta;</span>
+          <span class="readout-val" id="ro_eta">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">터빈 출구 건도 $x_2$</span>
+          <span class="readout-key lang-en" style="display:none;">Turbine exit quality $x_2$</span>
+          <span class="readout-val" id="ro_x2">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">비역일비 bwr</span>
+          <span class="readout-key lang-en" style="display:none;">Back work ratio bwr</span>
+          <span class="readout-val" id="ro_bwr">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 8.3 ============ -->
+<section id="s83" class="section">
+  <p class="section-label">Section 8.3</p>
+  <h2 class="section-title">
+    <span class="lang-ko">성능 향상 — 과열, 재열, 초임계</span>
+    <span class="lang-en" style="display:none;">Improving Performance — Superheat, Reheat, and Supercritical</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">기본 랭킨 사이클의 한계를 극복하기 위해 여러 개선 방안이 사용된다. 과열(superheat)은 포화증기를 더 높은 온도까지 가열하여 터빈 입구 엔탈피를 높이고, 팽창 후 출구 건도를 개선한다. 재열(reheat)은 고압 터빈에서 부분 팽창한 증기를 보일러로 되돌려 재가열한 뒤 저압 터빈에서 다시 팽창시키는 방식으로, 전체 출력을 높이면서 최종 건도를 허용 범위 안에 유지한다. 초임계 사이클은 작동유체를 임계압력(22.1 MPa) 이상에서 가열하여 액-기 상전이 없이 연속적으로 온도를 올리며, 현대 대형 발전소에서 47~50% 수준의 열효율을 달성한다.</span>
+      <span class="lang-en" style="display:none;">Several modifications overcome the limitations of the basic Rankine cycle. Superheating raises the steam temperature beyond saturation, increasing turbine inlet enthalpy and improving exit quality. Reheat returns partially expanded steam from the high-pressure turbine to the boiler for reheating before further expansion in the low-pressure turbine, boosting total output while keeping exit quality within acceptable limits. Supercritical cycles heat the working fluid above the critical pressure (22.1 MPa), avoiding the liquid-vapor phase change entirely, and modern large-scale plants achieve thermal efficiencies of 47-50% with this approach.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\eta_{\text{reheat}} = \frac{(h_1-h_2)+(h_3-h_4)-(h_6-h_5)}{(h_1-h_6)+(h_3-h_2)}$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>과열</strong>: 포화증기를 더 높은 온도로 가열하면 T-s 선도에서 사이클 상단이 우측으로 이동하여 평균 가열 온도가 상승하고, 터빈 출구가 건증기 영역에 가까워진다.</span>
+      <span class="lang-en" style="display:none;"><strong>Superheat</strong>: Heating saturated vapor to higher temperature shifts the top of the cycle rightward on the T-s diagram, raising the mean heat-addition temperature and moving the turbine exit closer to the dry vapor region.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>재열</strong>: 최적의 재열 압력은 보통 보일러 압력의 20~25% 수준이며, 이 압력에서 열효율과 터빈 출구 건도의 균형이 가장 좋다.</span>
+      <span class="lang-en" style="display:none;"><strong>Reheat</strong>: The optimal reheat pressure is typically 20-25% of boiler pressure, balancing thermal efficiency improvement and turbine exit quality.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>초임계</strong>: 임계점(22.1 MPa, 374°C) 이상에서 작동하면 증발 잠열 개념이 사라지고, 연속적인 엔탈피 상승이 가능하여 열효율이 크게 향상된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Supercritical</strong>: Operating above the critical point (22.1 MPa, 374°C) eliminates the concept of latent heat, enabling continuous enthalpy rise and significantly improved thermal efficiency.</span>
+    </li>
+  </ul>
+
+  <!-- Interactive Figure: Reheat Cycle Performance -->
+  <div class="figure-card">
+    <div class="figure-header">
+      <span class="figure-label">Figure 8.2</span>
+      <span class="figure-title">
+        <span class="lang-ko">재열 사이클 성능</span>
+        <span class="lang-en" style="display:none;">Reheat Cycle Performance</span>
+      </span>
+    </div>
+    <div class="figure-body">
+      <div id="fig8_reheat_effect" class="plotly-container"></div>
+      <div class="controls">
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">재열 압력 $p_{\text{reheat}}$</span>
+            <span class="lang-en" style="display:none;">Reheat pressure $p_{\text{reheat}}$</span>
+          </span>
+          <input type="range" id="sl_p_reheat" min="5" max="40" value="7" step="1">
+          <span class="control-value" id="val_p_reheat">0.7 MPa</span>
+        </div>
+        <div class="control-row">
+          <span class="control-label">
+            <span class="lang-ko">터빈 등엔트로피 효율 $\eta_t$</span>
+            <span class="lang-en" style="display:none;">Turbine isentropic eff. $\eta_t$</span>
+          </span>
+          <input type="range" id="sl_eta_t" min="70" max="100" value="85" step="1">
+          <span class="control-value" id="val_eta_t">0.85</span>
+        </div>
+      </div>
+      <div class="readout">
+        <div class="readout-item">
+          <span class="readout-key lang-ko">열효율 &eta;</span>
+          <span class="readout-key lang-en" style="display:none;">Thermal efficiency &eta;</span>
+          <span class="readout-val" id="ro_eta_reheat">—</span>
+        </div>
+        <div class="readout-item">
+          <span class="readout-key lang-ko">최종 출구 건도 $x_4$</span>
+          <span class="readout-key lang-en" style="display:none;">Final exit quality $x_4$</span>
+          <span class="readout-val" id="ro_x4">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Section 8.4 ============ -->
+<section id="s84" class="section">
+  <p class="section-label">Section 8.4</p>
+  <h2 class="section-title">
+    <span class="lang-ko">성능 향상 — 재생 사이클</span>
+    <span class="lang-en" style="display:none;">Improving Performance — Regenerative Vapor Power Cycle</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">재생(regeneration)은 터빈의 중간 단계에서 일부 증기를 추출(extraction)하여 보일러로 유입되는 급수를 예열하는 방식이다. 이렇게 하면 보일러에서 저온 구간 가열이 줄어들어 평균 가열 온도가 상승하고, 사이클 열효율이 카르노 효율에 더 가까워진다. 개방형 급수가열기는 추기 증기와 급수를 직접 혼합하여 탈기 역할도 수행하며, 밀폐형 급수가열기는 셸-튜브 구조로 두 유체가 서로 다른 압력을 유지하며 열교환한다.</span>
+      <span class="lang-en" style="display:none;">Regeneration extracts steam from intermediate stages of the turbine to preheat the feedwater entering the boiler. This eliminates low-temperature heating in the boiler, raising the mean temperature of heat addition and bringing cycle efficiency closer to Carnot. Open feedwater heaters mix the extracted steam directly with feedwater, also serving as deaerators, while closed feedwater heaters use a shell-and-tube design to exchange heat between the two streams at different pressures.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$y = \frac{h_6 - h_5}{h_2 - h_5}$$</div>
+  <div class="eq-block">$$\frac{\dot{W}_t}{\dot{m}_1} = (h_1 - h_2) + (1-y)(h_2 - h_3)$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>추기 분율 $y$</strong>: 전체 유량 중 급수가열기로 추출되는 증기의 비율이다. 에너지 균형에서 결정되며, $y$가 클수록 급수 온도는 높아지지만 터빈 출력은 줄어든다.</span>
+      <span class="lang-en" style="display:none;"><strong>Extraction fraction $y$</strong>: The fraction of total flow extracted for feedwater heating. Determined from energy balance — larger $y$ raises feedwater temperature but reduces turbine output.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>개방형 급수가열기</strong>: 추기 증기와 급수가 같은 압력에서 직접 혼합되며, 혼합 후 포화액 상태가 된다. 용존 산소도 제거하여 배관 부식을 방지한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Open feedwater heater</strong>: Extracted steam and feedwater mix directly at the same pressure, leaving as saturated liquid. It also removes dissolved oxygen, preventing pipe corrosion.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>밀폐형 급수가열기</strong>: 두 유체가 물리적으로 분리된 상태로 열교환하므로 서로 다른 압력을 유지할 수 있어 배치 유연성이 높다.</span>
+      <span class="lang-en" style="display:none;"><strong>Closed feedwater heater</strong>: The two fluids remain physically separated during heat exchange, allowing them to be at different pressures and providing greater layout flexibility.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 8.5 ============ -->
+<section id="s85" class="section">
+  <p class="section-label">Section 8.5</p>
+  <h2 class="section-title">
+    <span class="lang-ko">기타 증기 동력 사이클 측면</span>
+    <span class="lang-en" style="display:none;">Other Vapor Power Cycle Aspects</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">물 외에도 유기 화합물을 작동유체로 사용하는 유기 랭킨 사이클(ORC)은 지열, 산업 폐열, 바이오매스 등 비교적 저온의 열원에서 전력을 생산하는 데 적합하다. 열병합 발전(CHP)은 전기 생산과 함께 발생하는 폐열을 난방이나 산업 공정에 활용함으로써 연료 이용률을 80% 이상까지 높인다. 또한 기후변화 대응 차원에서 발전소 배기가스에서 CO₂를 분리하여 지중에 저장하는 탄소 포집·저장(CCS) 기술이 활발히 연구되고 있다.</span>
+      <span class="lang-en" style="display:none;">Beyond water, Organic Rankine Cycles (ORC) use organic compounds as working fluids, making them suitable for power generation from relatively low-temperature sources such as geothermal, industrial waste heat, and biomass. Combined Heat and Power (CHP) systems utilize waste heat from electricity generation for district heating or industrial processes, raising overall fuel utilization above 80%. Additionally, Carbon Capture and Storage (CCS) technologies — separating CO₂ from power plant exhaust and storing it underground — are actively researched as a climate change mitigation strategy.</span>
+    </p>
+  </div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>유기 랭킨 사이클(ORC)</strong>: 비점이 낮은 유기 작동유체(R245fa, 이소펜탄 등)를 사용하여 80~300°C 범위의 저온 열원에서 효율적으로 작동한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Organic Rankine Cycle (ORC)</strong>: Uses low-boiling-point organic fluids (R245fa, isopentane, etc.) to operate efficiently with heat sources in the 80-300°C range.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>열병합 발전(CHP)</strong>: 전기와 열을 동시에 생산함으로써, 단순 발전보다 연료 이용률이 훨씬 높다. 지역난방 배관망이나 산업단지에서 널리 사용된다.</span>
+      <span class="lang-en" style="display:none;"><strong>Combined Heat and Power (CHP)</strong>: Produces electricity and useful heat simultaneously, achieving much higher fuel utilization than power generation alone. Widely used in district heating networks and industrial parks.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>탄소 포집·저장(CCS)</strong>: 연소 후 포집, 연소 전 포집, 순산소 연소 등의 방식이 있으며, 포집된 CO₂는 지층 깊숙이 주입하여 영구 저장한다.</span>
+      <span class="lang-en" style="display:none;"><strong>Carbon Capture and Storage (CCS)</strong>: Approaches include post-combustion capture, pre-combustion capture, and oxy-fuel combustion. Captured CO₂ is injected deep underground for permanent storage.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ============ Section 8.6 ============ -->
+<section id="s86" class="section">
+  <p class="section-label">Section 8.6</p>
+  <h2 class="section-title">
+    <span class="lang-ko">사례 연구 — 엑서지 분석</span>
+    <span class="lang-en" style="display:none;">Case Study: Exergy Accounting of a Vapor Power Plant</span>
+  </h2>
+  <div class="section-body">
+    <p>
+      <span class="lang-ko">에너지 분석만으로는 사이클의 실질적 개선 여지를 파악하기 어렵다. 엑서지(exergy) 분석은 각 구성기기에서 파괴되는 일할 수 있는 능력을 정량화하여, 어디에 자원이 낭비되고 있는지 명확하게 보여 준다. 전형적인 증기 발전소에서는 보일러의 연소 비가역성이 전체 엑서지 파괴의 약 30%를 차지하여 가장 큰 손실원이며, 반면 응축기는 에너지 기준으로 가장 큰 열방출을 하지만 엑서지 손실은 약 1%에 불과하다. 이 분석은 설비 개선의 우선순위를 정하는 데 핵심 도구가 된다.</span>
+      <span class="lang-en" style="display:none;">Energy analysis alone cannot reveal where genuine improvement opportunities lie. Exergy analysis quantifies the destruction of work potential in each component, clearly showing where resources are wasted. In a typical vapor power plant, combustion irreversibility in the boiler accounts for roughly 30% of total exergy destruction — the single largest loss — while the condenser, despite rejecting the most energy, accounts for only about 1% of exergy loss. This analysis is an essential tool for prioritizing equipment improvements.</span>
+    </p>
+  </div>
+
+  <div class="eq-block">$$\dot{E}_d = \dot{m}\, T_0\, (s_2 - s_1)$$</div>
+
+  <ul class="concept-list">
+    <li>
+      <span class="lang-ko"><strong>엑서지 파괴율</strong>: $\dot{E}_d = \dot{m}\,T_0\,(s_{\text{out}} - s_{\text{in}})$로, 환경 온도 $T_0$와 엔트로피 생성률의 곱이다. 비가역성이 클수록 엑서지 파괴가 크다.</span>
+      <span class="lang-en" style="display:none;"><strong>Exergy destruction rate</strong>: $\dot{E}_d = \dot{m}\,T_0\,(s_{\text{out}} - s_{\text{in}})$, the product of ambient temperature $T_0$ and entropy generation rate. Greater irreversibility means more exergy destruction.</span>
+    </li>
+    <li>
+      <span class="lang-ko"><strong>에너지 vs 엑서지 관점</strong>: 냉각수로 방출되는 에너지는 크지만 저온이므로 엑서지(일 잠재력)는 미미하다. 보일러 내 연소는 고온 열원과 작동유체 사이의 큰 온도차로 인해 엑서지 파괴가 지배적이다.</span>
+      <span class="lang-en" style="display:none;"><strong>Energy vs. exergy perspective</strong>: Though the cooling water rejects a large amount of energy, it is at low temperature, so its exergy (work potential) is negligible. Combustion in the boiler, with its large temperature difference between the heat source and working fluid, dominates exergy destruction.</span>
+    </li>
+  </ul>
+
+  <!-- Quiz Section -->
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q1.</strong> 이상 랭킨 사이클에서 보일러 압력을 높이면 어떤 변화가 나타나는가?</span>
+      <span class="lang-en" style="display:none;"><strong>Q1.</strong> What happens when the boiler pressure is increased in an ideal Rankine cycle?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q81')">
+        <span class="lang-ko">열효율 증가, 터빈 출구 건도 감소</span>
+        <span class="lang-en" style="display:none;">Efficiency increases, turbine exit quality decreases</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q81')">
+        <span class="lang-ko">열효율 감소, 터빈 출구 건도 증가</span>
+        <span class="lang-en" style="display:none;">Efficiency decreases, turbine exit quality increases</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q81')">
+        <span class="lang-ko">열효율과 건도 모두 증가</span>
+        <span class="lang-en" style="display:none;">Both efficiency and quality increase</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q81')">
+        <span class="lang-ko">열효율과 건도 모두 감소</span>
+        <span class="lang-en" style="display:none;">Both efficiency and quality decrease</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q81-explain">
+      <span class="lang-ko">보일러 압력이 올라가면 평균 가열 온도가 높아져 열효율은 향상된다. 그러나 팽창선이 T-s 선도상에서 습증기 영역 깊숙이 들어가 터빈 출구 건도는 감소한다.</span>
+      <span class="lang-en" style="display:none;">Higher boiler pressure raises the average temperature of heat addition, improving efficiency. However, the expansion extends deeper into the wet region on the T-s diagram, reducing exit quality.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q2.</strong> 증기 동력 사이클에서 비역일비(back work ratio)가 매우 낮은 이유는?</span>
+      <span class="lang-en" style="display:none;"><strong>Q2.</strong> Why is the back work ratio very low in vapor power cycles?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q82')">
+        <span class="lang-ko">터빈 입구 온도가 높기 때문</span>
+        <span class="lang-en" style="display:none;">Because turbine inlet temperature is high</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q82')">
+        <span class="lang-ko">펌프가 비압축성 액체를 다루므로 소요 일이 매우 작기 때문</span>
+        <span class="lang-en" style="display:none;">Because the pump handles incompressible liquid, requiring very little work</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q82')">
+        <span class="lang-ko">응축기 압력이 대기압보다 높기 때문</span>
+        <span class="lang-en" style="display:none;">Because condenser pressure is above atmospheric</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q82')">
+        <span class="lang-ko">작동유체가 초임계 상태이기 때문</span>
+        <span class="lang-en" style="display:none;">Because the working fluid is supercritical</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q82-explain">
+      <span class="lang-ko">펌프는 비압축성에 가까운 액체를 가압하므로 비체적이 매우 작아 소요 일($v \cdot \Delta p$)이 터빈 출력에 비해 극히 작다.</span>
+      <span class="lang-en" style="display:none;">The pump handles nearly incompressible liquid with a very small specific volume, so pump work ($v \cdot \Delta p$) is tiny compared to turbine output.</span>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-q">
+      <span class="lang-ko"><strong>Q3.</strong> 재생(regeneration)이 열효율을 높이는 근본 원리는?</span>
+      <span class="lang-en" style="display:none;"><strong>Q3.</strong> What is the fundamental principle by which regeneration improves thermal efficiency?</span>
+    </div>
+    <div class="quiz-options">
+      <button class="quiz-opt" onclick="checkQuiz(this,'q83')">
+        <span class="lang-ko">터빈 출력을 직접 증가시킨다</span>
+        <span class="lang-en" style="display:none;">It directly increases turbine output</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q83')">
+        <span class="lang-ko">응축기에서의 방열량을 없앤다</span>
+        <span class="lang-en" style="display:none;">It eliminates heat rejection in the condenser</span>
+      </button>
+      <button class="quiz-opt" data-correct="true" onclick="checkQuiz(this,'q83')">
+        <span class="lang-ko">보일러 입구 급수 온도를 높여 평균 가열 온도를 상승시킨다</span>
+        <span class="lang-en" style="display:none;">It raises feedwater temperature at the boiler inlet, increasing the average heat-addition temperature</span>
+      </button>
+      <button class="quiz-opt" onclick="checkQuiz(this,'q83')">
+        <span class="lang-ko">펌프 일을 감소시킨다</span>
+        <span class="lang-en" style="display:none;">It reduces pump work</span>
+      </button>
+    </div>
+    <div class="quiz-explain" id="q83-explain">
+      <span class="lang-ko">추기 증기로 급수를 예열하면 보일러에서의 저온 구간 가열이 줄어들어, 평균 가열 온도가 상승하고 열효율이 향상된다.</span>
+      <span class="lang-en" style="display:none;">Preheating feedwater with extracted steam eliminates low-temperature heating in the boiler, raising the average temperature of heat addition and improving efficiency.</span>
+    </div>
+  </div>
+
+  <!-- What-if Cards -->
+  <div class="whatif-grid">
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 응축기를 제거하고 터빈 배기를 대기로 방출하면?</span>
+        <span class="lang-en" style="display:none;">What if we removed the condenser and exhausted steam to the atmosphere?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">터빈 배압이 대기압(100°C)이 되어 팽창 여유가 크게 줄어든다. 순출력과 열효율이 급격히 감소하며, 작동유체를 계속 보충해야 하므로 경제적으로도 비현실적이다.</span>
+        <span class="lang-en" style="display:none;">The turbine exhaust pressure would rise to atmospheric (~100°C), drastically reducing the expansion range. Net work and efficiency drop dramatically, and continuous makeup water is needed, making it economically impractical.</span>
+      </div>
+    </div>
+    <div class="whatif-card" onclick="this.classList.toggle('revealed')">
+      <div class="whatif-q">
+        <span class="lang-ko">만약 터빈 출구 건도가 0.80 이하로 떨어지면?</span>
+        <span class="lang-en" style="display:none;">What if the turbine exit quality drops below 0.80?</span>
+      </div>
+      <div class="whatif-arrow">
+        <span class="lang-ko">클릭하여 확인 &#8594;</span>
+        <span class="lang-en" style="display:none;">Click to reveal &#8594;</span>
+      </div>
+      <div class="whatif-hint">
+        <span class="lang-ko">액적이 터빈 블레이드를 고속으로 침식시켜 효율이 저하되고 유지보수 비용이 급증한다. 실무에서는 $x \geq 0.90$을 유지하도록 과열·재열을 적용한다.</span>
+        <span class="lang-en" style="display:none;">Liquid droplets erode turbine blades at high speed, degrading efficiency and increasing maintenance costs. In practice, superheat and reheat are applied to maintain $x \geq 0.90$.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Takeaways ============ -->
+<section class="takeaways">
+  <h2 class="section-title">Key Takeaways</h2>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <div class="takeaway-number">01</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">랭킨 사이클의 효율 지배 인자</span>
+        <span class="lang-en" style="display:none;">Efficiency Drivers of the Rankine Cycle</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">보일러 압력 상승과 응축기 압력 하강은 평균 가열·방열 온도를 변화시켜 열효율을 좌우한다.</span>
+        <span class="lang-en" style="display:none;">Increasing boiler pressure and decreasing condenser pressure alter the mean temperatures, governing thermal efficiency.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">02</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">과열·재열·재생의 시너지</span>
+        <span class="lang-en" style="display:none;">Synergy of Superheat, Reheat, and Regeneration</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">과열과 재열은 터빈 출구 건도 문제를 해결하면서 효율을 높이고, 재생은 급수 예열로 평균 가열 온도를 추가 상승시킨다.</span>
+        <span class="lang-en" style="display:none;">Superheat and reheat solve the turbine exit moisture problem while boosting efficiency; regeneration further raises the average heat-addition temperature.</span>
+      </div>
+    </div>
+    <div class="takeaway-card">
+      <div class="takeaway-number">03</div>
+      <div class="takeaway-title">
+        <span class="lang-ko">엑서지 관점의 손실 우선순위</span>
+        <span class="lang-en" style="display:none;">Exergy-Based Loss Hierarchy</span>
+      </div>
+      <div class="takeaway-body">
+        <span class="lang-ko">에너지 기준으로는 냉각수 방열이 가장 크지만, 엑서지 기준으로는 보일러 연소 비가역성이 최대 손실원이다.</span>
+        <span class="lang-en" style="display:none;">While the condenser rejects the most energy, the largest exergy destruction occurs in the boiler due to combustion irreversibility.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--====== CONTENT END ======-->
+
+</div><!-- .page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-text">움직이는 교과서 · Interactive Textbook</span>
+    <span class="footer-text">Engineering Thermodynamics — Ch.8</span>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// SHARED UTILITIES
+// ============================================================
+
+// KO/EN toggle
+function setLang(lang) {
+  document.querySelectorAll('.lang-ko').forEach(el => el.style.display = lang === 'ko' ? '' : 'none');
+  document.querySelectorAll('.lang-en').forEach(el => el.style.display = lang === 'en' ? '' : 'none');
+  document.getElementById('btnKO').classList.toggle('active', lang === 'ko');
+  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('global-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Challenge toggle
+function toggleChallenge(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Explore toggle
+function toggleExplore(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// Quiz
+function checkQuiz(btn, qid) {
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  if ([...opts].some(o => o.classList.contains('correct') || o.classList.contains('wrong'))) return;
+  if (btn.dataset.correct === 'true') {
+    btn.classList.add('correct');
+    showToast('정답입니다!');
+  } else {
+    btn.classList.add('wrong');
+    const correct = [...opts].find(o => o.dataset.correct === 'true');
+    if (correct) correct.classList.add('correct');
+  }
+  const explain = document.getElementById(qid + '-explain');
+  if (explain) explain.classList.add('show');
+}
+
+// Plotly throttle
+const _timers = {};
+function throttledDraw(key, fn) {
+  if (_timers[key]) cancelAnimationFrame(_timers[key]);
+  _timers[key] = requestAnimationFrame(fn);
+}
+
+// Plotly default layout
+const plotlyLayout = {
+  font: { family: 'Inter, sans-serif', size: 13 },
+  margin: { t: 32, r: 24, b: 48, l: 56 },
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor: 'rgba(0,0,0,0)',
+  xaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+  yaxis: { gridcolor: '#e5e7eb', zerolinecolor: '#e5e7eb', automargin: true },
+};
+const plotlyConfig = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d','lasso2d'] };
+
+// ============================================================
+// CHAPTER-SPECIFIC: Vapor Power Systems
+// ============================================================
+
+// Saturated steam table: [p(MPa), T_sat(°C), h_f(kJ/kg), h_g(kJ/kg), s_f(kJ/kg·K), s_g(kJ/kg·K), v_f(m³/kg)]
+const steamData = [
+  [0.004, 28.96, 121.5, 2554.4, 0.4226, 8.4746, 0.001004],
+  [0.006, 36.16, 151.5, 2567.4, 0.5210, 8.3304, 0.001006],
+  [0.008, 41.51, 173.9, 2577.0, 0.5926, 8.2287, 0.001008],
+  [0.010, 45.81, 191.8, 2584.7, 0.6493, 8.1502, 0.001010],
+  [0.020, 60.06, 251.4, 2609.7, 0.8320, 7.9085, 0.001017],
+  [0.050, 81.33, 340.5, 2645.9, 1.0910, 7.5939, 0.001030],
+  [0.100, 99.63, 417.4, 2675.5, 1.3026, 7.3594, 0.001043],
+  [0.200, 120.23, 504.7, 2706.7, 1.5301, 7.1271, 0.001061],
+  [0.300, 133.55, 561.5, 2725.3, 1.6718, 6.9919, 0.001073],
+  [0.400, 143.63, 604.7, 2738.6, 1.7766, 6.8959, 0.001084],
+  [0.500, 151.86, 640.2, 2748.7, 1.8607, 6.8213, 0.001093],
+  [0.600, 158.85, 670.6, 2756.8, 1.9312, 6.7600, 0.001101],
+  [0.700, 164.97, 697.2, 2763.5, 1.9922, 6.7080, 0.001108],
+  [0.800, 170.43, 721.1, 2769.1, 2.0462, 6.6628, 0.001115],
+  [1.000, 179.91, 762.8, 2778.1, 2.1387, 6.5865, 0.001127],
+  [1.200, 187.99, 798.6, 2784.8, 2.2166, 6.5233, 0.001139],
+  [1.400, 195.07, 830.3, 2790.0, 2.2842, 6.4693, 0.001149],
+  [1.600, 201.41, 858.8, 2794.0, 2.3439, 6.4218, 0.001159],
+  [1.800, 207.15, 884.8, 2797.1, 2.3976, 6.3794, 0.001168],
+  [2.000, 212.42, 908.8, 2799.5, 2.4474, 6.3409, 0.001177],
+  [2.500, 223.99, 962.1, 2803.4, 2.5547, 6.2575, 0.001197],
+  [3.000, 233.90, 1008.4, 2804.2, 2.6457, 6.1869, 0.001217],
+  [3.500, 242.60, 1049.7, 2803.4, 2.7253, 6.1253, 0.001235],
+  [4.000, 250.40, 1087.3, 2801.4, 2.7964, 6.0701, 0.001252],
+  [5.000, 263.99, 1154.2, 2794.3, 2.9202, 5.9737, 0.001286],
+  [6.000, 275.64, 1213.4, 2784.3, 3.0267, 5.8892, 0.001319],
+  [7.000, 285.88, 1267.0, 2772.1, 3.1211, 5.8133, 0.001351],
+  [8.000, 295.06, 1316.6, 2758.0, 3.2068, 5.7432, 0.001384],
+  [9.000, 303.40, 1363.3, 2742.1, 3.2858, 5.6772, 0.001417],
+  [10.000, 311.06, 1407.6, 2724.7, 3.3596, 5.6141, 0.001452],
+  [12.000, 324.75, 1491.3, 2684.9, 3.4962, 5.4924, 0.001527],
+  [14.000, 336.75, 1571.1, 2637.6, 3.6232, 5.3717, 0.001611],
+  [16.000, 347.44, 1649.6, 2580.6, 3.7461, 5.2455, 0.001711]
+];
+
+// Superheated steam table for reheat: [p(MPa), T(°C), h(kJ/kg), s(kJ/kg·K)]
+const superheatData = [
+  // At various pressures, T=480°C (main inlet superheat temp)
+  // and T at saturation for reheat states
+  // We'll compute with simplified correlations for the interactive demo
+];
+
+// Linear interpolation helper for steam table
+function interpSteam(p, idx) {
+  // idx: 0=p, 1=T_sat, 2=h_f, 3=h_g, 4=s_f, 5=s_g, 6=v_f
+  if (p <= steamData[0][0]) return steamData[0][idx];
+  if (p >= steamData[steamData.length-1][0]) return steamData[steamData.length-1][idx];
+  let i = 0;
+  while (i < steamData.length - 1 && steamData[i+1][0] < p) i++;
+  const lo = steamData[i], hi = steamData[i+1];
+  const frac = (p - lo[0]) / (hi[0] - lo[0]);
+  return lo[idx] + frac * (hi[idx] - lo[idx]);
+}
+
+// Get all saturation properties at pressure p
+function satProps(p) {
+  return {
+    T_sat: interpSteam(p, 1),
+    h_f: interpSteam(p, 2),
+    h_g: interpSteam(p, 3),
+    s_f: interpSteam(p, 4),
+    s_g: interpSteam(p, 5),
+    v_f: interpSteam(p, 6),
+    h_fg: interpSteam(p, 3) - interpSteam(p, 2),
+    s_fg: interpSteam(p, 5) - interpSteam(p, 4)
+  };
+}
+
+// ============ Figure 8.1: Rankine Cycle Efficiency Explorer ============
+
+function calcRankine(p_boiler, p_cond) {
+  const boiler = satProps(p_boiler);
+  const cond = satProps(p_cond);
+
+  // State 1: saturated vapor at boiler pressure
+  const h1 = boiler.h_g;
+  const s1 = boiler.s_g;
+
+  // State 2: isentropic expansion to condenser pressure
+  // s2s = s1, find x2
+  const x2 = (s1 - cond.s_f) / cond.s_fg;
+  const h2 = cond.h_f + x2 * cond.h_fg;
+
+  // State 3: saturated liquid at condenser pressure
+  const h3 = cond.h_f;
+  const v3 = cond.v_f;
+
+  // State 4: compressed liquid after pump
+  const h4 = h3 + v3 * (p_boiler - p_cond) * 1000; // convert MPa to kPa
+
+  // Efficiency
+  const w_turbine = h1 - h2;
+  const w_pump = h4 - h3;
+  const q_in = h1 - h4;
+  const eta = (w_turbine - w_pump) / q_in;
+  const bwr = w_pump / w_turbine;
+
+  return { eta, x2, bwr, h1, h2, h3, h4, s1, w_turbine, w_pump, q_in };
+}
+
+function buildFigRankine() {
+  // Build efficiency surface: vary p_boiler at fixed p_cond
+  const p_cond_val = parseFloat(document.getElementById('sl_p_cond').value) / 1000;
+  const pVals = [];
+  const etaVals = [];
+  const x2Vals = [];
+  for (let p = 1; p <= 16; p += 0.25) {
+    const r = calcRankine(p, p_cond_val);
+    if (r.x2 > 0 && r.x2 < 1 && r.eta > 0) {
+      pVals.push(p);
+      etaVals.push(r.eta * 100);
+      x2Vals.push(r.x2);
+    }
+  }
+
+  const trEta = {
+    x: pVals, y: etaVals,
+    mode: 'lines', name: 'η (%)',
+    line: { color: '#3b82f6', width: 2.5 },
+    yaxis: 'y'
+  };
+  const trX2 = {
+    x: pVals, y: x2Vals,
+    mode: 'lines', name: 'x₂',
+    line: { color: '#ef4444', width: 2.5, dash: 'dash' },
+    yaxis: 'y2'
+  };
+
+  // Current operating point
+  const p_b = parseFloat(document.getElementById('sl_p_boiler').value);
+  const r = calcRankine(p_b, p_cond_val);
+  const trPtEta = {
+    x: [p_b], y: [r.eta * 100],
+    mode: 'markers', name: 'Current η',
+    marker: { color: '#3b82f6', size: 12, symbol: 'circle', line: { color: '#fff', width: 2 } },
+    yaxis: 'y', showlegend: false
+  };
+  const trPtX2 = {
+    x: [p_b], y: [r.x2],
+    mode: 'markers', name: 'Current x₂',
+    marker: { color: '#ef4444', size: 12, symbol: 'diamond', line: { color: '#fff', width: 2 } },
+    yaxis: 'y2', showlegend: false
+  };
+
+  Plotly.newPlot('fig8_rankine_efficiency', [trEta, trX2, trPtEta, trPtX2], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'Boiler Pressure (MPa)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Thermal Efficiency η (%)', titlefont: { color: '#3b82f6' }, tickfont: { color: '#3b82f6' }, side: 'left' },
+    yaxis2: { title: 'Turbine Exit Quality x₂', titlefont: { color: '#ef4444' }, tickfont: { color: '#ef4444' }, overlaying: 'y', side: 'right', gridcolor: 'rgba(0,0,0,0)', range: [0.6, 1.0] },
+    showlegend: true,
+    legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.85)' }
+  }, plotlyConfig);
+
+  // Update readouts
+  document.getElementById('ro_eta').textContent = (r.eta * 100).toFixed(2) + ' %';
+  document.getElementById('ro_x2').textContent = r.x2.toFixed(4);
+  document.getElementById('ro_bwr').textContent = (r.bwr * 100).toFixed(2) + ' %';
+}
+
+function updateFigRankine() {
+  const p_b = parseFloat(document.getElementById('sl_p_boiler').value);
+  const p_c = parseFloat(document.getElementById('sl_p_cond').value) / 1000;
+
+  document.getElementById('val_p_boiler').textContent = p_b.toFixed(1) + ' MPa';
+  document.getElementById('val_p_cond').textContent = p_c.toFixed(3) + ' MPa';
+
+  // Rebuild curves for current p_cond
+  const pVals = [];
+  const etaVals = [];
+  const x2Vals = [];
+  for (let p = 1; p <= 16; p += 0.25) {
+    const r = calcRankine(p, p_c);
+    if (r.x2 > 0 && r.x2 < 1 && r.eta > 0) {
+      pVals.push(p);
+      etaVals.push(r.eta * 100);
+      x2Vals.push(r.x2);
+    }
+  }
+
+  const r = calcRankine(p_b, p_c);
+
+  Plotly.restyle('fig8_rankine_efficiency', { x: [pVals], y: [etaVals] }, [0]);
+  Plotly.restyle('fig8_rankine_efficiency', { x: [pVals], y: [x2Vals] }, [1]);
+  Plotly.restyle('fig8_rankine_efficiency', { x: [[p_b]], y: [[r.eta * 100]] }, [2]);
+  Plotly.restyle('fig8_rankine_efficiency', { x: [[p_b]], y: [[r.x2]] }, [3]);
+
+  document.getElementById('ro_eta').textContent = (r.eta * 100).toFixed(2) + ' %';
+  document.getElementById('ro_x2').textContent = r.x2.toFixed(4);
+  document.getElementById('ro_bwr').textContent = (r.bwr * 100).toFixed(2) + ' %';
+
+  // Warn if quality too low
+  if (r.x2 < 0.9) {
+    document.getElementById('ro_x2').style.color = '#ef4444';
+  } else {
+    document.getElementById('ro_x2').style.color = '';
+  }
+}
+
+// ============ Figure 8.2: Reheat Cycle Performance ============
+
+// Simplified superheated steam enthalpy approximation
+// For a given pressure and entropy, estimate h using ideal gas-like correction from saturation
+function superheatH(p, T_super) {
+  // Approximate h for superheated steam: h ≈ h_g(p) + cp_avg * (T_super - T_sat(p))
+  // cp_avg for superheated steam ≈ 2.1 kJ/(kg·K) (reasonable for moderate superheat)
+  const sat = satProps(p);
+  const cp_avg = 2.1;
+  if (T_super <= sat.T_sat) return sat.h_g;
+  return sat.h_g + cp_avg * (T_super - sat.T_sat);
+}
+
+function superheatS(p, T_super) {
+  // Approximate s for superheated steam: s ≈ s_g(p) + cp_avg * ln(T_super_K / T_sat_K)
+  const sat = satProps(p);
+  const cp_avg = 2.1;
+  if (T_super <= sat.T_sat) return sat.s_g;
+  return sat.s_g + cp_avg * Math.log((T_super + 273.15) / (sat.T_sat + 273.15));
+}
+
+function calcReheat(p_reheat, eta_t) {
+  const p_boiler = 8.0;  // Fixed at 8 MPa for this demo
+  const T_inlet = 480;   // Superheat temperature, °C
+  const p_cond = 0.008;  // Fixed condenser pressure
+
+  const boiler = satProps(p_boiler);
+  const reheat_sat = satProps(p_reheat);
+  const cond = satProps(p_cond);
+
+  // State 1: superheated steam at p_boiler, T_inlet
+  const h1 = superheatH(p_boiler, T_inlet);
+  const s1 = superheatS(p_boiler, T_inlet);
+
+  // State 2s: isentropic expansion to p_reheat
+  // Find T or state at p_reheat where s = s1
+  // If s1 > s_g(p_reheat), it's superheated
+  let h2s;
+  if (s1 > reheat_sat.s_g) {
+    // Superheated at reheat pressure
+    // s1 = s_g(p_rh) + cp * ln(T2s_K / T_sat_K)
+    const cp_avg = 2.1;
+    const T2s = (reheat_sat.T_sat + 273.15) * Math.exp((s1 - reheat_sat.s_g) / cp_avg) - 273.15;
+    h2s = superheatH(p_reheat, T2s);
+  } else {
+    // Wet mixture at reheat pressure
+    const x2s = (s1 - reheat_sat.s_f) / reheat_sat.s_fg;
+    h2s = reheat_sat.h_f + x2s * reheat_sat.h_fg;
+  }
+
+  // State 2: actual expansion with eta_t
+  const h2 = h1 - eta_t * (h1 - h2s);
+
+  // State 3: reheated to T_inlet at p_reheat
+  const h3 = superheatH(p_reheat, T_inlet);
+  const s3 = superheatS(p_reheat, T_inlet);
+
+  // State 4s: isentropic expansion to p_cond
+  let h4s, x4s;
+  if (s3 > cond.s_g) {
+    // Superheated (unlikely at condenser pressure)
+    const cp_avg = 2.1;
+    const T4s = (cond.T_sat + 273.15) * Math.exp((s3 - cond.s_g) / cp_avg) - 273.15;
+    h4s = superheatH(p_cond, T4s);
+    x4s = 1.0;
+  } else {
+    x4s = (s3 - cond.s_f) / cond.s_fg;
+    h4s = cond.h_f + x4s * cond.h_fg;
+  }
+
+  // State 4: actual
+  const h4 = h3 - eta_t * (h3 - h4s);
+  // Estimate actual x4
+  const x4_actual = (h4 - cond.h_f) / cond.h_fg;
+
+  // State 5: sat liquid at p_cond
+  const h5 = cond.h_f;
+  const v5 = cond.v_f;
+
+  // State 6: after pump
+  const h6 = h5 + v5 * (p_boiler - p_cond) * 1000;
+
+  // Efficiency
+  const w_t = (h1 - h2) + (h3 - h4);
+  const w_p = h6 - h5;
+  const q_in = (h1 - h6) + (h3 - h2);
+  const eta = (w_t - w_p) / q_in;
+
+  return { eta, x4: Math.min(x4_actual, 1.0), h1, h2, h3, h4, h5, h6, w_t, w_p, q_in };
+}
+
+function buildFigReheat() {
+  const eta_t_val = parseFloat(document.getElementById('sl_eta_t').value) / 100;
+
+  // Sweep reheat pressure
+  const pVals = [];
+  const etaVals = [];
+  const x4Vals = [];
+  for (let p = 0.5; p <= 4.0; p += 0.1) {
+    const r = calcReheat(p, eta_t_val);
+    if (r.eta > 0 && r.eta < 1 && r.x4 > 0) {
+      pVals.push(p);
+      etaVals.push(r.eta * 100);
+      x4Vals.push(r.x4);
+    }
+  }
+
+  const trEta = {
+    x: pVals, y: etaVals,
+    mode: 'lines', name: 'η (%)',
+    line: { color: '#8b5cf6', width: 2.5 },
+    yaxis: 'y'
+  };
+  const trX4 = {
+    x: pVals, y: x4Vals,
+    mode: 'lines', name: 'x₄',
+    line: { color: '#f59e0b', width: 2.5, dash: 'dash' },
+    yaxis: 'y2'
+  };
+
+  const p_rh = parseFloat(document.getElementById('sl_p_reheat').value) / 10;
+  const r = calcReheat(p_rh, eta_t_val);
+  const trPtEta = {
+    x: [p_rh], y: [r.eta * 100],
+    mode: 'markers',
+    marker: { color: '#8b5cf6', size: 12, symbol: 'circle', line: { color: '#fff', width: 2 } },
+    yaxis: 'y', showlegend: false
+  };
+  const trPtX4 = {
+    x: [p_rh], y: [r.x4],
+    mode: 'markers',
+    marker: { color: '#f59e0b', size: 12, symbol: 'diamond', line: { color: '#fff', width: 2 } },
+    yaxis: 'y2', showlegend: false
+  };
+
+  Plotly.newPlot('fig8_reheat_effect', [trEta, trX4, trPtEta, trPtX4], {
+    ...plotlyLayout,
+    xaxis: { ...plotlyLayout.xaxis, title: 'Reheat Pressure (MPa)' },
+    yaxis: { ...plotlyLayout.yaxis, title: 'Thermal Efficiency η (%)', titlefont: { color: '#8b5cf6' }, tickfont: { color: '#8b5cf6' }, side: 'left' },
+    yaxis2: { title: 'Final Exit Quality x₄', titlefont: { color: '#f59e0b' }, tickfont: { color: '#f59e0b' }, overlaying: 'y', side: 'right', gridcolor: 'rgba(0,0,0,0)', range: [0.7, 1.05] },
+    showlegend: true,
+    legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.85)' }
+  }, plotlyConfig);
+
+  document.getElementById('ro_eta_reheat').textContent = (r.eta * 100).toFixed(2) + ' %';
+  document.getElementById('ro_x4').textContent = r.x4.toFixed(4);
+}
+
+function updateFigReheat() {
+  const p_rh = parseFloat(document.getElementById('sl_p_reheat').value) / 10;
+  const eta_t_val = parseFloat(document.getElementById('sl_eta_t').value) / 100;
+
+  document.getElementById('val_p_reheat').textContent = p_rh.toFixed(1) + ' MPa';
+  document.getElementById('val_eta_t').textContent = eta_t_val.toFixed(2);
+
+  // Rebuild curves
+  const pVals = [];
+  const etaVals = [];
+  const x4Vals = [];
+  for (let p = 0.5; p <= 4.0; p += 0.1) {
+    const r = calcReheat(p, eta_t_val);
+    if (r.eta > 0 && r.eta < 1 && r.x4 > 0) {
+      pVals.push(p);
+      etaVals.push(r.eta * 100);
+      x4Vals.push(r.x4);
+    }
+  }
+
+  const r = calcReheat(p_rh, eta_t_val);
+
+  Plotly.restyle('fig8_reheat_effect', { x: [pVals], y: [etaVals] }, [0]);
+  Plotly.restyle('fig8_reheat_effect', { x: [pVals], y: [x4Vals] }, [1]);
+  Plotly.restyle('fig8_reheat_effect', { x: [[p_rh]], y: [[r.eta * 100]] }, [2]);
+  Plotly.restyle('fig8_reheat_effect', { x: [[p_rh]], y: [[r.x4]] }, [3]);
+
+  document.getElementById('ro_eta_reheat').textContent = (r.eta * 100).toFixed(2) + ' %';
+  document.getElementById('ro_x4').textContent = r.x4.toFixed(4);
+
+  if (r.x4 < 0.9) {
+    document.getElementById('ro_x4').style.color = '#ef4444';
+  } else {
+    document.getElementById('ro_x4').style.color = '';
+  }
+}
+
+// ============ Slider Setup ============
+
+function setupSliders() {
+  // Rankine sliders
+  document.getElementById('sl_p_boiler').addEventListener('input', () => {
+    throttledDraw('rankine', updateFigRankine);
+  });
+  document.getElementById('sl_p_cond').addEventListener('input', () => {
+    throttledDraw('rankine', updateFigRankine);
+  });
+
+  // Reheat sliders
+  document.getElementById('sl_p_reheat').addEventListener('input', () => {
+    throttledDraw('reheat', updateFigReheat);
+  });
+  document.getElementById('sl_eta_t').addEventListener('input', () => {
+    throttledDraw('reheat', updateFigReheat);
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAll() {
+  buildFigRankine();
+  buildFigReheat();
+  setupSliders();
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    initAll();
+  }, 100);
+});
+</script>
+</body>
+</html>
